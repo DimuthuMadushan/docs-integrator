@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 # GraphQL Service
 
-GraphQL services let you build flexible APIs where clients request exactly the data they need. WSO2 Integrator supports designing a GraphQL service from scratch or importing an existing GraphQL schema file, and provides a visual canvas to model your schema and implement resolver logic.
+GraphQL services let you build flexible APIs where clients request exactly the data they need. WSO2 Integrator supports both code-first and schema-first approaches to design a GraphQL service. It also provides a visual canvas to model the schema and implement resolver logic.
 
 :::note Beta
 GraphQL service support is currently in beta.
@@ -19,11 +19,11 @@ GraphQL service support is currently in beta.
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-You can create a GraphQL service by designing it from scratch or by importing an existing GraphQL schema file.
+You can create a GraphQL service using either a code-first or schema-first approach. THe Code-first approach is useful when you want full control over the schema design directly in the tool and schema-frist approach is useful when you already have a predefined SDL schema.
 
-**Design from scratch**
+**Code-first approach**
 
-1. Open the **WSO2 Integrator** sidebar in VS Code.
+1. Open the **WSO2 Integrator** sidebar in IDE.
 2. Click **+** next to **Entry Points**.
 3. Select **GraphQL Service**.
 4. Select **Design From Scratch**.
@@ -34,15 +34,18 @@ You can create a GraphQL service by designing it from scratch or by importing an
    | **Base Path** | Endpoint path for the service | `/graphql` |
    | **Port** | Listener port | `8080` |
 
-6. Optionally expand **Advanced Configurations** and set the **Listener Name** (default: `graphqlListener`).
+6. Optionally expand **Advanced Configurations** and set the **Listener Name**.
 7. Click **Create**.
 
 ![GraphQL service creation form — Design From Scratch](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-creation-form.png)
 
-**Import from schema**
+**Schema-first approach**
 
-1. Select **Import GraphQL Schema** on the creation form.
-2. Click **Select File** and choose your `.graphql` schema file.
+1. Open the **WSO2 Integrator** sidebar in IDE.
+2. Click **+** next to **Entry Points**.
+3. Select **GraphQL Service**.
+1. Select **Import GraphQL Schema**.
+2. Click **Select File** and choose your SDL schema file.
 3. Optionally expand **Advanced Configurations** and set the **Listener Name**.
 4. Click **Create**.
 
@@ -68,63 +71,76 @@ service /graphql on graphqlListener {
 
 ## GraphQL diagram
 
-After creating the service, WSO2 Integrator opens the **GraphQL diagram** — a canvas that visualizes your service structure, including all operation types (Query, Mutation, Subscription) and the GraphQL types they reference.
+After creating the service, WSO2 Integrator opens the **GraphQL diagram** which is an interactive canvas where you can define and organize your GraphQL service. The diagram displays types, fields, and relationships, helps you understand dependencies between types, and allowing you to validate the structure and navigate complex schemas efficiently.
 
 ![GraphQL diagram canvas](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-graphql-diagram.png)
 
-Use the **Configure** button in the top right to open the service configuration view.
+## GraphQL operations
 
-## Service configuration
+Operations define entry points to your GraphQL API. GraphQL has three root operaion type which has mutiple fields. To add an operation, click **+ Create Operations** on the service card In the GraphQL diagram.
 
-The **GraphQL Service Configuration** view is opened via the **Configure** button on the GraphQL diagram. It has two sections in the left navigation: **GraphQL Service** and the attached listener (for example, **graphqlListener**).
+- **Query**: Read data.
+- **Mutation**: Modify data.
+- **Subscription**: Receive real-time updates.
 
-### GraphQL service settings
+![GraphQL Operations panel](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-create-operations.png) // TODO: Replace the screenshot with a service that has operations
+
+## Fields
+
+Each GraphQL operation consists of fields, where each field has a name and a return type, and may also include arguments.
+
+Click the **+** next to an operation type,to open the **Add Field** panel. 
 
 | Field | Description |
 |---|---|
-| **Service Base Path** | The base endpoint path for the GraphQL service (for example, `/graphql`) |
-| **Service Configuration** | Service-level settings such as maximum query depth (JSON record) |
+| **Field Name** | The name of the field |
+| **Description** | Documentation of the field |
+| **Arguments** | Input arguments — click **+ Add Argument** to add an argument |
+| **Field Type** | The type of the field |
 
-The **Configuration for graphqlListener** section on the same panel shows:
+![Add Field panel](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-add-field.png). // Change the screenshot
+
+## Arguments
+
+Fields can accept different type arguments like scalar, list and input object.
+
+Click **+ Add arguments** to open the Argument form.
 
 | Field | Description |
 |---|---|
-| **Name** | Name of the attached listener |
-| **Listen To** | An `http:Listener` or a port number to listen to the GraphQL service endpoint |
-| **Host** | The host name or IP address of the endpoint |
+| **Argument Type** | The type of the argument. Click the text area to open the type helper. Input objects or enums can be added using **+ Create New Type**. |
+| **Argument Name** | Name of the argument |
+| **Description** | Documentation of the argument (optional) |
+| **Default Value** | Default value (optional) — expand **Advance Configurations** to add a default value |
 
-### Listener configuration
+Click **Add** to save the argument.
 
-Select the listener (for example, **graphqlListener**) in the left navigation to configure its HTTP settings:
+## Types
 
-| Field | Description | Type |
-|---|---|---|
-| **HTTP1 Settings** | Configurations related to HTTP/1.x protocol | Record |
-| **Secure Socket** | SSL/TLS configurations for the service endpoint — required for HTTPS | Record |
-| **HTTP Version** | Highest HTTP version supported by the endpoint | Select |
-| **Timeout** | Time in seconds a connection waits for a read/write operation; use `0` to disable | Number |
-| **Server** | Server name to appear as a response header | Text |
-| **Request Limits** | Configurations associated with inbound request size limits | Record |
-| **Graceful Stop Timeout** | Grace period in seconds for a graceful listener stop | Number |
-| **Socket Config** | Server socket configuration settings | Record |
-| **HTTP2 Initial Window Size** | Initial window size for HTTP/2 connections | Number |
-| **Min Idle Time In Stale State** | Minimum time in seconds to keep an HTTP/2 connection open after receiving a GOAWAY; set to `-1` to close after all in-flight streams complete | Number |
-| **Time Between Stale Eviction** | Interval in seconds between HTTP/2 stale connection eviction runs | Number |
+Type is the fundamental unit of any GraphQL schema. Each field yields a value of a specific type.
 
-Click **Save Changes** to apply the configuration. Use **+ Attach Listener** at the bottom of the listener panel to attach an additional listener to the service.
+1. Click **Field Type** text are to open the type helper.
+2. Pre-defined scalar types are listed in the type helper.
+2. click **Createt New Type** to add an objcet, enum or union type.
 
-## Creating operations
+![Create new type dialog](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-create-new-type.png)
 
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
+:::note Id type
+**ID type** - If a given argument or field type can be made an ID type, a checkbox will be appeared to mark it as an ID type.
+:::
 
-1. In the GraphQL diagram, click **+ Create Operations** on the service card.
-2. The **GraphQL Operations** panel opens on the right, showing **Query**, **Mutation**, and **Subscription** sections.
-3. Click **+** next to the relevant operation type to add a field to it.
+:::note subscription return types
+**Subscriptions** - When adding a subscription field type, type should be wrapped with `stream` type. (Ex: stream<NewsUpdates, error?>)
+:::
 
-![GraphQL Operations panel](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-create-operations.png)
+## Implement resolver logic
 
-Once fields are added, they appear as rows in the panel. Click a field row (for example, `query1` or `mutation1`) to open the **flow designer view** for that operation, where you can define the resolver logic using the visual designer. Use the pencil icon to edit the field definition, or the trash icon to delete it.
+Once fields are added, they appear as rows in the panel under root operation types.
+
+1. Click the pencil icon of a field row (for example, `product` or `createProduct`) to open the **flow designer view**, where you can define the resolver logic using the visual designer.
+2. Click **+** icon below the start node to open the **Node palette**, where you can select any node including connections, variables and etc.
+
+// screenshot of node pallete
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
@@ -152,41 +168,29 @@ service /graphql on graphqlListener {
 </TabItem>
 </Tabs>
 
-### Operation types
+## Advanced configurations
 
-| Operation | Ballerina keyword | Description |
-|---|---|---|
-| **Query** | `resource function get` | Read data — analogous to HTTP GET |
-| **Mutation** | `remote function` | Write data — analogous to HTTP POST/PUT/DELETE |
-| **Subscription** | `resource function subscribe` | Real-time updates via WebSocket |
+Advanced configurations allow fine-grained control over service behavior.
 
-## Adding fields to an operation
+## Service configurations
 
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
-
-After clicking **+** next to an operation type, the **Add Field** panel opens on the right.
+Use the **Configure** button on the GraphQL diagram to open the service configuration view. Select the GraphQL service from the left navigation.
 
 | Field | Description |
 |---|---|
-| **Field Name** | Name of the field (required) |
-| **Description** | Optional description shown in the schema |
-| **Arguments** | Input arguments — click **+ Add Argument** to add each one |
-| **Field Type** | Return type of the field (required) |
-| **Field Configuration** | Field-level settings such as cache configuration (JSON) |
-| **Request Context** | Pass meta-information of a request among GraphQL resolvers |
-| **Field Metadata** | Access meta-information of a field in a GraphQL document |
+| **Service Base Path** | The base endpoint path for the GraphQL service |
+| **Service Configuration** | Service-level settings such as maximum query depth. Click the service configuration text area to open up the config panel. |
 
-Click **Save** to add the field.
-
-![Add Field panel](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-add-field.png)
+// screenshot of service config
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
 
 ```ballerina
+@graphql:ServiceConfig {
+    maxQueryDepth: 7
+}
 service /graphql on graphqlListener {
-
     resource function get product(string id) returns Product|error {
         return getProduct(id);
     }
@@ -196,67 +200,52 @@ service /graphql on graphqlListener {
 </TabItem>
 </Tabs>
 
-## Field types
+## Listener configurations
 
-### Scalar types
+The **Configuration for graphqlListener** section on the same panel shows:
 
-For basic scalar types (`int`, `decimal`, `float`, `string`), the field type editor displays an **ID Type** checkbox to mark the field as a GraphQL ID type. All field types support a **Nullable** option to allow null values.
+| Field | Description |
+|---|---|
+| **Name** | Name of the attached listener |
+| **Listen To** | An `http:Listener` or a port number to listen to the GraphQL service endpoint |
+| **Host** | The host name or IP address of the endpoint |
 
-<!-- ![Scalar field type editor](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-field-type-scalar.png) -->
+In addition, HTTP configurations are available which used as the underlying transport protocol.
 
-### Complex types
+### Field configurations
 
-When setting a field type, the type picker shows a dropdown of available types grouped by:
+WSO2 Integrator supports the following GraphQL field configurations.
 
-- **Within Project** — types defined in the current integration
-- **Scalar Types** — built-in scalar types (`int`, `string`, etc.)
-- **+ Create New Type** — create a new type inline
-- **↗ Open Type Browser** — browse all available types
+| Field | Description |
+|---|---|
+| **Field Configuration** | Field-level settings such as cache configuration |
+| **Request Context** | Pass meta-information of a request among GraphQL resolvers |
+| **Field Metadata** | Access meta-information of a field in a GraphQL document |
 
-<!-- ![Field type dropdown](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-field-type-dropdown.png) -->
+To configure the field configurations,
 
-:::note Type constraints
-For **output field types**, WSO2 Integrator supports Object, Enum, and Union types. For **argument types**, only Input Object and Enum types are supported.
-:::
+1. Click on the GraphQL service card in GraphQl diagram to open **GraphqQL Operations** panel.
+2. Select the field that needs to be configured.
+3. Click pencil icon to open the field form.
+4. Expand the **Advanced Configurations** at the bootm of the form.
+5. Click on **Field Configuration** text area to open the config panel.
 
-When you click **+ Create New Type**, a dialog opens where you can select a **Kind**, provide a **Name**, define fields, and configure advanced options such as **Allow Additional Fields**, **Is Readonly Type**, and **Accessible by Other Integrations**.
+</TabItem>
+<TabItem value="code" label="Ballerina Code">
 
-![Create new type dialog](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-create-new-type.png)
+```ballerina
+service /graphql on graphqlListener {
 
-## Type canvas
+    @graphql:CacheConfig {
+        cacheConfig: {
+            enabled: true
+        }
+    }
+    resource function get product(string id) returns Product|error {
+        return getProduct(id);
+    }
+}
+```
 
-As you add fields with complex return types, the canvas displays a type diagram showing the nested structure of your GraphQL types. Each type appears as a node with its fields and their types listed, with connector lines showing relationships between them.
-
-![GraphQL type diagram canvas](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-canvas-with-types.png)
-
-## Implementing service logic
-
-WSO2 Integrator provides two levels at which you can implement resolver logic for a GraphQL service:
-
-| Level | Entry point | Use case |
-|---|---|---|
-| **Operation level** | Click a field row in the GraphQL Operations panel | Implement the top-level resolver for a query, mutation, or subscription — the logic that runs when a client calls that operation |
-| **Service class level** | Edit Type → **Implement** in the canvas | Implement field-level resolvers for a complex return type — the logic that resolves individual fields of an object type |
-
-### Operation-level logic
-
-To implement logic for a root query, mutation, or subscription, click the field row in the **GraphQL Operations** panel (for example, `query1` or `mutation1`). This opens the **flow designer view** directly for that operation, where you can define the integration logic — such as calling a database, invoking an API, or transforming data — that produces the operation's response.
-
-### Service class designer
-
-When a field returns a complex object type, you can implement field-level resolvers through the **Service Class Designer**. To access it:
-
-1. In the canvas, click the three-dot menu (**⋮**) on a type node to open the **Edit Type** panel.
-2. Click **Implement** to open the **Service Class Designer**.
-
-![Edit Type panel](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-edit-type.png)
-
-The Service Class Designer lets you:
-
-- Manage **class variables** using **+ Variable**
-- View the resolver methods generated for each field of the type — displayed as **GET** methods
-- Add additional methods using **+ Method**
-
-![Service Class Designer](../../../../static/img/develop/integration-artifacts/service/graphql-service/step-service-class-designer.png)
-
-Click any resolver method (for example, `GET name1`) to open the **flow diagram view** for that field resolver, where you can define the logic for resolving that specific field of the object type.
+</TabItem>
+</Tabs>
