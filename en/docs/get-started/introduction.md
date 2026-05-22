@@ -8,13 +8,13 @@ slug: /get-started/introduction
 
 # Introduction
 
-The WSO2 Integration Platform is a 100% open-source integration solution for connecting AI agents, APIs, data, and events across cloud, on-prem, and hybrid environments. It lets you build any type of integration from a single API to a distributed AI-driven workflow and run it wherever your business needs it.
+The WSO2 Integration Platform is an open-source integration solution for connecting AI agents, APIs, data, and events across cloud, on-prem, and hybrid environments. It lets you build any type of integration from a single API to a distributed AI-driven workflow and run it wherever your business needs it.
 
 The platform pairs the rapid development of low-code with the full control of pro-code, with AI assistance available across both, taking you from your first local integration to a managed, observable deployment at scale.
 
 ## Design and run
 
-Working with the WSO2 Integration Platform involves two activities: you design integrations in the IDE, and you deploy them to the runtime of your choice. WSO2 Cloud, your own Kubernetes cluster, or on-premises infrastructure.
+Working with the WSO2 Integration Platform involves two activities: you design integrations in the IDE, and you deploy them to the runtime of your choice, such as WSO2 Cloud, your own Kubernetes cluster, or on-premises infrastructure.
 
 ### Design: WSO2 Integrator IDE
 
@@ -29,7 +29,7 @@ Integrations built in the IDE can run in two ways. Pick the one that fits your o
 
 **WSO2 Cloud:** A fully managed cloud platform operated by WSO2. WSO2 Integration Cloud handles build pipelines, environments, deployment tracks, observability, and zero-downtime promotion across development, staging, and production.
 
-**Self-hosted (open source).** Run the platform on your own infrastructure Kubernetes, Docker, VMs, or bare metal. You retain full control over data sovereignty, infrastructure choices, and CI/CD and observability stack. Your integrations never leave your perimeter, and the platform runs in air-gapped environments.
+**Self-hosted (open source).** Run the platform on your own infrastructure: Kubernetes, Docker, VMs, or bare metal. You retain full control over data sovereignty, infrastructure choices, and CI/CD and observability stack. Your integrations never leave your perimeter, and the platform runs in air-gapped environments.
 
 ## Architecture
 
@@ -45,7 +45,7 @@ The WSO2 Integrator IDE is the entry point for developers. It produces the sourc
 
 The control plane is the operations brain of the platform. It is where admins and DevOps users perform the three core lifecycle actions: deploy, manage, and observe.
 
-The control plane doesn't run your integrations. Its job is to orchestrate the data plane and interpret the observability plane. The control plane shown in the diagram is the one provided by WSO2 Integration Cloud. In self-hosted deployments, you can manage these actions through the Integration Control Plane or through your own tooling and pipelines.
+The control plane does not run your integrations. Its job is to orchestrate the data plane and interpret the observability plane. The control plane shown in the diagram is the one provided by WSO2 Integration Cloud. In self-hosted deployments, you can manage these actions through the Integration Control Plane or through your own tooling and pipelines.
 
 ### Data plane
 
@@ -69,7 +69,7 @@ Integrations connect to external systems and services like SAP, Salesforce, Snow
 
 ### 100% low-code and pro-code parity
 
-Every integration can be built in two ways, and both stay in sync. Add components through a graphical interface, configure properties visually, and see the flow as a diagram. Or write code directly with full IDE support, auto-complete, and type checking.
+Every integration can be built in two ways, and both remain in sync. You can add components through a graphical interface, configure properties visually, and view the flow as a diagram. Alternatively, you can write code directly with full IDE support, including autocompletion and type checking.
 
 ### Powered by Ballerina
 
