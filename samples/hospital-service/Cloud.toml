@@ -1,4 +1,0 @@
-[container.image]
-name="kola-hospital-backend"
-repository="anuruddhal"
-tag="0.1.0"

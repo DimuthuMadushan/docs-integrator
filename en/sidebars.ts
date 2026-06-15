@@ -28,7 +28,6 @@ const sidebars: SidebarsConfig = {
       collapsed: true,
       link: { type: 'doc', id: 'get-started/introduction' },
       items: [
-        'get-started/introduction',
         {
           type: 'category',
           label: 'Concepts',
@@ -54,7 +53,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'get-started/build-automation',
             'get-started/build-ai-agent',
-            'get-started/build-api-integration',
+            'get-started/build-integration-api',
             'get-started/build-event-driven-integration',
             'get-started/build-file-driven-integration',
           ],
@@ -224,6 +223,7 @@ const sidebars: SidebarsConfig = {
                     },
                     'develop/integration-artifacts/supporting/data-mapper/generic-type-mappings',
                     'develop/integration-artifacts/supporting/data-mapper/submappings',
+                    'develop/integration-artifacts/supporting/data-mapper/ai-mapping',
                   ],
                 },
               ],
@@ -287,23 +287,29 @@ const sidebars: SidebarsConfig = {
             'develop/test/ai-generated-cases',
           ],
         },
-        // 6.7 Debugging & Troubleshooting
+        // 6.7 Debug
         {
           type: 'category',
-          label: 'Debugging & Troubleshooting',
+          label: 'Debug',
           items: [
-            'develop/debugging/troubleshooting',
-            'develop/debugging/errors-and-stack-traces',
-            'develop/debugging/library-troubleshooting',
-            'develop/debugging/deployment-troubleshooting',
             'develop/debugging/editor',
-            'develop/debugging/remote',
-            'develop/debugging/strand-dump-analysis',
-            'develop/debugging/performance-profiling',
-            'develop/debugging/logging',
+            'develop/debugging/features',
           ],
         },
-        // 6.8 Tools
+        // 6.8 Troubleshooting
+        {
+          type: 'category',
+          label: 'Troubleshooting',
+          items: [
+            'develop/troubleshooting/errors-and-stack-traces',
+            'develop/troubleshooting/logging',
+            'develop/troubleshooting/deployment',
+            'develop/troubleshooting/strand-dump-analysis',
+            'develop/troubleshooting/profiling',
+            'develop/troubleshooting/ide-troubleshooting',
+          ],
+        },
+        // 6.9 Tools
         {
           type: 'category',
           label: 'Tools',
@@ -1198,6 +1204,24 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Microsoft SharePoint Pages',
+          link: { type: 'doc', id: 'connectors/catalog/storage-file/microsoft.sharepoint.pages/connector-overview' },
+          items: [
+            'connectors/catalog/storage-file/microsoft.sharepoint.pages/setup-guide',
+            'connectors/catalog/storage-file/microsoft.sharepoint.pages/action-reference',
+          ]
+        },
+        {
+          type: 'category',
+          label: 'Microsoft SharePoint Sites',
+          link: { type: 'doc', id: 'connectors/catalog/storage-file/sharepoint.sites/connector-overview' },
+          items: [
+            'connectors/catalog/storage-file/sharepoint.sites/setup-guide',
+            'connectors/catalog/storage-file/sharepoint.sites/action-reference',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Milvus',
           link: { type: 'doc', id: 'connectors/catalog/ai-ml/milvus/connector-overview' },
           items: [
@@ -1413,6 +1437,16 @@ const sidebars: SidebarsConfig = {
             'connectors/catalog/ecommerce/sap.commerce.webservices/setup-guide',
             'connectors/catalog/ecommerce/sap.commerce.webservices/actions',
             'connectors/catalog/ecommerce/sap.commerce.webservices/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP JCo',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.jco/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.jco/setup-guide',
+            'connectors/catalog/erp-business/sap.jco/action-reference',
+            'connectors/catalog/erp-business/sap.jco/trigger-reference',
           ],
         },
         {
@@ -1806,6 +1840,7 @@ const sidebars: SidebarsConfig = {
             'genai/develop/components/vector-stores',
             'genai/develop/components/knowledge-bases',
             'genai/develop/components/chunkers',
+            'genai/develop/components/data-loaders',
           ],
         },
         // Tutorials
@@ -1853,8 +1888,8 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Migration Guides',
           items: [
-            'guides/migration/coming-from-mulesoft',
-            'guides/migration/coming-from-tibco',
+            'guides/migration/from-mulesoft',
+            'guides/migration/from-tibco',
           ],
         },
       ],
@@ -1889,16 +1924,10 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Self-Hosted',
           items: [
-            'deploy/self-hosted/run-locally',
-            'deploy/self-hosted/docker',
-            'deploy/self-hosted/kubernetes',
-            'deploy/self-hosted/openshift',
-            'deploy-operate/deploy/vm-based-deployment',
+            'deploy/self-hosted/vm-deployment',
+            'deploy/self-hosted/containerized-deployment',
             'deploy-operate/deploy/serverless-deployment',
-            'deploy-operate/deploy/devant-ipaas',
-            'deploy-operate/deploy/aws-azure-gcp',
             'deploy-operate/deploy/graalvm-native-images',
-            'deploy-operate/deploy/environments',
             'deploy-operate/deploy/managing-configurations',
             'deploy-operate/deploy/scaling-high-availability',
           ],
@@ -1962,7 +1991,7 @@ const sidebars: SidebarsConfig = {
           label: 'Capacity Planning',
           items: [
             'deploy-operate/capacity-planning/overview',
-            'deploy-operate/capacity-planning/performance-reports',
+            'deploy-operate/capacity-planning/performance-benchmarks',
           ],
         },
       ],
@@ -1985,14 +2014,9 @@ const sidebars: SidebarsConfig = {
           link: { type: 'doc', id: 'manage/cloud/overview' },
           items: [
             // Integrations
-            {
-              type: 'category',
-              label: 'Integrations',
-              items: [
-                'manage/cloud/integrations/viewing-deployed',
-                'manage/cloud/integrations/lifecycle',
-              ],
-            },
+            'manage/cloud/integrations',
+            // Projects
+            'manage/cloud/projects',
             // Configuration Management
             {
               type: 'category',
@@ -2120,6 +2144,7 @@ const sidebars: SidebarsConfig = {
             'manage/icp/manage-runtimes',
             'manage/icp/reverse-proxy',
             'manage/icp/access-control',
+            'manage/icp/encrypt-secrets',
             {
               type: 'category',
               label: 'User Stores',
@@ -2128,14 +2153,6 @@ const sidebars: SidebarsConfig = {
                 'manage/icp/user-stores/default-user-store',
                 'manage/icp/user-stores/ldap-user-store',
                 'manage/icp/user-stores/sso-configuration',
-              ],
-            },
-            {
-              type: 'category',
-              label: 'MI Profile',
-              items: [
-                'manage/icp/mi-profile/observability-setup-mi',
-                'manage/icp/mi-profile/connect-runtime-mi',
               ],
             },
           ],
@@ -2239,11 +2256,10 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Appendix',
           items: [
-            'reference/appendix/system-requirements',
-            'reference/error-code',
-            'reference/glossary',
-            'reference/faq',
-            'reference/release-notes',
+            'reference/appendix/error-code',
+            'reference/appendix/glossary',
+            'reference/appendix/faq',
+            'reference/appendix/release-notes',
           ],
         },
       ],
@@ -2251,5 +2267,5 @@ const sidebars: SidebarsConfig = {
   ],
 };
 
-
 export default sidebars;
+

@@ -15,7 +15,7 @@ If your code still lives on your machine, you're in **Develop**. Once you push i
 :::
 
 :::info AI split
-Tools that help **you** code faster (Copilot, AI test generation, AI-assisted data mapping) live here. Building **AI-powered** integrations (agents, RAG, MCP) belongs in [GenAI](../genai/overview).
+Tools that help **you** code faster (Copilot, AI test generation, AI-assisted data mapping) live here. Building **AI-powered** integrations (agents, RAG, MCP) belongs in [GenAI](../genai/overview.md).
 :::
 
 ## Create and organize
@@ -38,7 +38,7 @@ Tools that help **you** code faster (Copilot, AI test generation, AI-assisted da
 | | |
 |---|---|
 | **[Try and test](test/built-in-try-it-tool.md)** | Built-in Try-It tool, unit testing, data-driven tests, mocking, code coverage, and AI-generated test cases |
-| **[Debugging and troubleshooting](debugging/troubleshooting.md)** | Editor debugging, remote debugging, strand dumps, and performance profiling |
+| **[Debug](debugging/editor.md)** | Editor debugging, remote debugging, strand dumps, and performance profiling |
 
 ## Tools
 
