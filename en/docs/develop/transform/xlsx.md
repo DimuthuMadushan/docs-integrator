@@ -276,7 +276,7 @@ public function main() returns error? {
 }
 ```
 
-## Reading and writing Excel Tables
+## Reading and writing Excel tables
 
 An Excel Table (ListObject) is a named, structured range with its own header and data region. Tables are unique by name across the entire workbook, so no sheet specifier is needed. For one-shot flows, use the tier-1 functions `xlsx:parseTable()` and `xlsx:writeTable()`. By default `writeTable` resizes the table's data range to fit the data exactly, growing or shrinking it.
 

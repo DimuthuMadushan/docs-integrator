@@ -89,7 +89,7 @@ public function main() returns error? {
 }
 ```
 
-### Read and write Excel Tables
+### Read and write Excel tables
 
 ```ballerina
 import ballerina/xlsx;
