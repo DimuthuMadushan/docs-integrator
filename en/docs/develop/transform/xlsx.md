@@ -13,10 +13,10 @@ Microsoft Excel files in the XLSX format are a common medium for reports, partne
 
 WSO2 Integrator provides built-in support for XLSX through the `ballerina/xlsx` module, which binds spreadsheet rows to strongly typed Ballerina records. It combines a one-shot functional API (`parseSheet`, `writeSheet`, `parseTable`, `writeTable`) for single-sheet and single-table work with an object-based Workbook API for multi-sheet operations, byte-array I/O, and cell-level control.
 
-All processing is local, with no external service dependency. The sections below progress from simple column mapping through multi-sheet workbooks, Excel Tables, dates and times, read and write options, and fail-safe processing.
+All processing is local, with no external service dependency. The sections below progress from reading and writing a single sheet, through read options, Excel Tables, and typed columns such as dates and times, to less frequent needs: headerless and fail-safe reads, multi-sheet workbooks, large files, and edge cases.
 
 :::note
-The Workbook API for multi-sheet, byte-array, and cell-level work is not available from the visual designer's **+** menu. It only offers the four one-shot functions: `parseSheet`, `writeSheet`, `parseTable`, and `writeTable`. 
+The Workbook API for multi-sheet, byte-array, and cell-level work is not available from the visual designer's **+** menu. It only offers the four one-shot functions: `parseSheet`, `writeSheet`, `parseTable`, and `writeTable`.
 
 Workbook API methods should be implemented in Ballerina code. Once they exist in the source, you can find them on the canvas to review and adjust the flow as needed.
 :::
@@ -137,9 +137,7 @@ The module loads each workbook fully into memory (the DOM model). There is no ro
 
    ![Flow designer showing a file read and a sheet parse step](/img/develop/transform/xlsx/xlsx-files-bytes-flow.png)
 
-:::note
-Reading from bytes uses the Workbook API (`xlsx:fromBytes`, `Sheet.getRows`, `Workbook.close`), which is not available from the **+** menu. Implement these calls using code from the **Ballerina Code** tab.
-:::
+Reading from a byte array instead uses the Workbook API (`fromBytes`, `getSheet`, `getRows`, `close`), shown in the **Ballerina Code** tab. The **+** menu offers only the four one-shot functions.
 
 </TabItem>
 
@@ -171,346 +169,9 @@ public function main() returns error? {
 </TabItem>
 </Tabs>
 
-## Working with multiple sheets
-
-The Workbook API gives you a stateful workbook with an explicit lifecycle, so you can read from one sheet, create another, and save the whole file in a single flow. Open an existing file with `xlsx:fromFile()`, read or modify sheets, then `save()` and `close()`. Construct an empty workbook with `new` and use `saveAs()` to write it to a new path.
-
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
-
-:::note
-These steps use the Workbook API (`xlsx:fromFile`, `getSheet`, `getRows`, `createSheet`, `putRows`, and `save`), which is not available from the **+** menu. Implement them using code from the **Ballerina Code** tab. Once they exist in the source, you can find the read, create-sheet, and save flow on the canvas.
-:::
-
-![Designer rendering the Workbook flow from code](/img/develop/transform/xlsx/xlsx-workbook-flow.png)
-
-</TabItem>
-
-<TabItem value="code" label="Ballerina Code">
-
-```ballerina
-import ballerina/xlsx;
-
-type Sale record {|
-    string product;
-    int quantity;
-    decimal price;
-|};
-
-public function main() returns error? {
-    xlsx:Workbook wb = check xlsx:fromFile("sales.xlsx");
-
-    // Read from one sheet.
-    xlsx:Sheet rawSheet = check wb.getSheet("Raw");
-    Sale[] sales = check rawSheet.getRows();
-
-    // Filter and write the result to a new sheet.
-    Sale[] highValue = from Sale s in sales where s.price > 100d select s;
-    xlsx:Sheet summary = check wb.createSheet("HighValue");
-    check summary.putRows(highValue);
-
-    check wb.save();
-    check wb.close();
-}
-```
-
-</TabItem>
-</Tabs>
-
-## Reading and writing Excel Tables
-
-An Excel Table (ListObject) is a named, structured range with its own header and data region. Tables are unique by name across the entire workbook, so no sheet specifier is needed. For one-shot flows, use the tier-1 functions `xlsx:parseTable()` and `xlsx:writeTable()`. By default `writeTable` resizes the table's data range to fit the data exactly, growing or shrinking it.
-
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
-
-1. **Define the record type**. Create a record named `Employee` with fields `name` (string) and `age` (int). For details, see [Types](../integration-artifacts/supporting/types.md).
-
-2. **Read the table**. Click **+** and select **Call Function**. Search for `parseTable` under **xlsx**. Configure:
-   - **Path***: `data.xlsx`
-   - **Table Name***: `EmployeeTable`
-   - **Result***: `employees`
-   - **T***: `Employee[]`
-
-3. **Write the table back**. Call `writeTable` under **xlsx** with the updated rows, the same path, and the table name. The data range resizes to fit.
-
-   ![Flow designer showing a parseTable and writeTable flow](/img/develop/transform/xlsx/xlsx-tables-flow.png)
-
-</TabItem>
-
-<TabItem value="code" label="Ballerina Code">
-
-```ballerina
-import ballerina/xlsx;
-
-type Employee record {|
-    string name;
-    int age;
-|};
-
-public function main() returns error? {
-    Employee[] employees = check xlsx:parseTable("data.xlsx", "EmployeeTable");
-
-    Employee[] updated = [...employees, {name: "Charlie", age: 35}];
-    // REPLACE (default) resizes the table's data range to fit the data.
-    check xlsx:writeTable(updated, "data.xlsx", "EmployeeTable");
-}
-```
-
-</TabItem>
-</Tabs>
-
-For richer operations, such as reading a totals row or renaming or resizing a table, reach the same table through the Workbook API and use the `Table` class. See the [Table methods](../../reference/data-formats/xlsx.md#table) in the reference.
-
-:::note
-These `Table` methods are part of the Workbook API, which is not available from the **+** menu. Implement them in Ballerina code.
-:::
-
-```ballerina
-import ballerina/xlsx;
-
-type Employee record {|
-    string name;
-    int age;
-|};
-
-public function main() returns error? {
-    xlsx:Workbook wb = check xlsx:fromFile("data.xlsx");
-    xlsx:Table empTable = check wb.getTable("EmployeeTable");
-
-    Employee[] employees = check empTable.getRows();
-    if check empTable.hasTotalRow() {
-        map<xlsx:CellValue> totals = check empTable.getTotalRow();
-        // Inspect the totals row.
-    }
-
-    Employee[] updated = [...employees, {name: "Charlie", age: 35}];
-    check empTable.putRows(updated);
-
-    check wb.save();
-    check wb.close();
-}
-```
-
-## Reading and writing dates and times
-
-The binder uses the target field type to decide what shape to produce for a date or time cell. Declare a field as `time:Civil` for a date-time value, `time:Date` for a date-only value, or `time:TimeOfDay` for a time-only value. Declare it as `string` to get an ISO 8601 string instead. Writing the records back produces date-formatted cells, not text cells.
-
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
-
-1. **Define the record type**. Create a record named `Transaction` with fields `id` (int), `timestamp` (`time:Civil`), `settledOn` (`time:Date`), and `amount` (decimal). For details, see [Types](../integration-artifacts/supporting/types.md).
-
-2. **Parse the sheet**. Call `parseSheet` under **xlsx** with the file path and `Transaction[]` as the target type. Date cells bind to the declared `time` types automatically.
-
-3. **(Optional) Write back**. Call `writeSheet` under **xlsx** with the same records to produce date-formatted cells.
-
-   ![Flow designer showing date and time binding to time types](/img/develop/transform/xlsx/xlsx-datetime-flow.png)
-
-</TabItem>
-
-<TabItem value="code" label="Ballerina Code">
-
-```ballerina
-import ballerina/xlsx;
-import ballerina/time;
-
-type Transaction record {|
-    int id;
-    time:Civil timestamp;   // a date-time cell binds to time:Civil
-    time:Date settledOn;    // a date-only cell binds to time:Date
-    decimal amount;
-|};
-
-public function main() returns error? {
-    Transaction[] txns = check xlsx:parseSheet("transactions.xlsx");
-
-    // Writing the records back produces date-formatted cells, not text.
-    check xlsx:writeSheet(txns, "transactions-out.xlsx");
-}
-```
-
-</TabItem>
-</Tabs>
-
-## Working with large workbooks
-
-The `ballerina/xlsx` module uses a DOM model. It loads the entire workbook into memory before returning, and there is no streaming or incremental-read API. For workbooks up to the tens of megabytes this is usually fine. For very large files, the memory footprint matters.
-
-The file path and the byte path have different costs. Reading from a file path with `xlsx:fromFile()` runs at roughly the size of the workbook's in-memory representation. The byte path with `xlsx:fromBytes()` sustains roughly 1.5 to 2.5 times that, because the underlying parser inflates every zip entry up front and holds the source bytes for the workbook's lifetime. When a large payload arrives in memory, stage it to a temporary file and open it from the path to keep the footprint close to the file-path cost.
-
-:::note
-This example uses the Workbook API (`xlsx:fromFile`, `Sheet.getRows`, `Workbook.close`), which is not available from the **+** menu. Implement it in Ballerina code.
-:::
-
-```ballerina
-import ballerina/file;
-import ballerina/io;
-import ballerina/xlsx;
-
-type DataRow record {|
-    int id;
-    string value;
-|};
-
-// Stage a large in-memory payload to disk, then open it from the file path
-// so memory stays close to the workbook's in-memory size.
-function processLargePayload(byte[] payload) returns DataRow[]|error {
-    string tempPath = "./staged-workbook.xlsx";
-    check io:fileWriteBytes(tempPath, payload);
-
-    xlsx:Workbook wb = check xlsx:fromFile(tempPath);
-    xlsx:Sheet sheet = check wb.getSheet(0);
-    DataRow[] rows = check sheet.getRows();
-    check wb.close();
-
-    // Remove the staged file once the data is read.
-    check file:remove(tempPath);
-    return rows;
-}
-```
-
-## Read options
-
-All of the read functions (`xlsx:parseSheet`, `xlsx:parseTable`, `Sheet.getRows`, and the single-row and column readers) accept options that control how the input is interpreted. Use these to handle formula cells, match headers case-insensitively, locate the header and data rows, cap how many rows are read, validate against record constraints, or enable [fail-safe processing](#fail-safe-processing).
-
-In the visual designer, read options live under **Advanced Configurations** → **Options** on the parse step. The field is empty by default (`{}`), meaning all defaults apply.
-
-![parseSheet step with the Options field under Advanced Configurations](/img/develop/transform/xlsx/xlsx-read-options-field.png)
-
-Click the **Options** field to open the **Record Configuration** helper. Tick the checkbox next to any option you want to set, fill in the value, and click **Save**.
-
-![Record Configuration helper listing the available ParseOptions fields](/img/develop/transform/xlsx/xlsx-read-options-helper.png)
-
-### Available options
-
-The fields below match the `ParseOptions` record used by sheet reads. Table reads use `TableParseOptions`, which omits the positional `headerRowIndex` and `dataStartRowIndex` fields because a table is self-describing.
-
-| Option | Type | Description |
-|---|---|---|
-| `formulaMode` | `FormulaMode` | How to read formula cells. `CACHED` (default) uses the last cached value; `TEXT` returns the formula string. See [Formulas](#formulas). |
-| `caseInsensitiveHeaders` | `boolean` | When `true`, header `"Name"` matches record field `name` or `NAME`. Default `false`. |
-| `headerRowIndex` | `int?` | 0-based index of the header row. Default `0`. Set to `()` for input with no header row. See [Headerless sheets](#headerless-sheets). |
-| `dataStartRowIndex` | `int` | 0-based index where data starts. Defaults to `headerRowIndex + 1`. See [Selecting a sheet and locating the header row](#selecting-a-sheet-and-locating-the-header-row). |
-| `rowCount` | `int?` | Maximum number of data rows to read. Default `()` reads all rows. |
-| `allowDataProjection` | `record\|false` | Controls projection when the record covers only a subset of columns. Set to `false` to require an exact match. The record form has `nilAsOptionalField` and `absentAsNilableType` boolean fields. Default `{}`. |
-| `enableConstraintValidation` | `boolean` | When `true`, parsed records are validated against any `@constraint` annotations. Default `true`. |
-| `failSafe` | `FailSafeOptions?` | Skips and logs invalid rows instead of aborting the read. See [Fail-safe processing](#fail-safe-processing). |
-
-In Ballerina code, options are passed as the third argument to `parseSheet`, after the path and the sheet selector:
-
-```ballerina
-import ballerina/xlsx;
-
-type Employee record {|
-    string name;
-    int age;
-|};
-
-public function main() returns error? {
-    Employee[] employees = check xlsx:parseSheet("report.xlsx", "Staff", {
-        headerRowIndex: 2,
-        caseInsensitiveHeaders: true,
-        rowCount: 100
-    });
-}
-```
-
-## Selecting a sheet and locating the header row
-
-XLSX is a binary format, so there are no delimiters or encodings to configure. Instead, the controls that matter are which sheet to read and where the header and data rows sit. Pass a sheet name or a 0-based index as the second argument to `parseSheet`. When a sheet has a title banner or blank rows above the data, set [`headerRowIndex`](#available-options) to the row that holds the column names and [`dataStartRowIndex`](#available-options) to the first data row. Both are 0-based.
-
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
-
-1. **Define the record type**. Create a record named `Sale` with fields `product` (string) and `price` (decimal). For details, see [Types](../integration-artifacts/supporting/types.md).
-
-2. **Select the sheet**. Call `parseSheet` under **xlsx** and set **Sheet** to the sheet name (for example, `"Q1"`) or a 0-based index.
-
-3. **Point to the header and data rows**. Under **Advanced Configurations** → **Options** (see [Read options](#read-options)), set:
-   - `headerRowIndex`: `2`
-   - `dataStartRowIndex`: `3`
-
-   ![Flow designer showing sheet selection and header-row options](/img/develop/transform/xlsx/xlsx-header-row-flow.png)
-
-</TabItem>
-
-<TabItem value="code" label="Ballerina Code">
-
-```ballerina
-import ballerina/xlsx;
-
-type Sale record {|
-    string product;
-    decimal price;
-|};
-
-public function main() returns error? {
-    // The "Q1" sheet has a two-line title banner. The real header is on row 2 (0-based),
-    // and data starts on row 3.
-    Sale[] sales = check xlsx:parseSheet("report.xlsx", "Q1", {
-        headerRowIndex: 2,
-        dataStartRowIndex: 3
-    });
-}
-```
-
-</TabItem>
-</Tabs>
-
-## Headerless sheets
-
-At its most general, a sheet is just a grid of cells, and the universal representation of that grid is a 2D string array (`string[][]`): one inner array per row, one string per cell. The module supports this raw form directly, but the preferred representation is `record[]`, which gives you typed fields and named columns instead of positional indexing.
-
-When a sheet has no header row, you have two options:
-
-- **Read into `string[][]`** and access cells by index. Raw mode is lossless, so every row is returned as data. Use this when you don't have a fixed schema or the column order is unreliable.
-- **Read into a typed `record[]`** by setting [`headerRowIndex`](#available-options) to `()`. The columns are then exposed as `col0`, `col1`, and so on, which you map onto record fields with `@xlsx:Name`.
-
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
-
-1. **Read as a raw grid**. Call `parseSheet` under **xlsx** with **T** set to `string[][]`. Every row, including any that look like a header, is returned as string cells you access by index.
-
-2. **(Alternative) Read into typed records**. Define a record whose fields use `@xlsx:Name` to map the generated `col0`, `col1`, and so on. Under **Advanced Configurations** → **Options** (see [Read options](#read-options)), set `headerRowIndex` to `()`, and set **T** to your record array.
-
-   ![Flow designer showing headerless sheet parsing into string arrays](/img/develop/transform/xlsx/xlsx-headerless-flow.png)
-
-</TabItem>
-
-<TabItem value="code" label="Ballerina Code">
-
-```ballerina
-import ballerina/xlsx;
-
-// Bind positionally by mapping fields to the generated column keys.
-type Employee record {|
-    @xlsx:Name {value: "col0"}
-    string name;
-    @xlsx:Name {value: "col1"}
-    string department;
-    @xlsx:Name {value: "col2"}
-    int salary;
-|};
-
-public function main() returns error? {
-    // Option 1: read the raw grid as string arrays, accessed by index.
-    string[][] rows = check xlsx:parseSheet("no-headers.xlsx");
-
-    // Option 2: set headerRowIndex to () so columns become col0, col1, ...,
-    // then map them onto record fields with @xlsx:Name.
-    Employee[] employees = check xlsx:parseSheet("no-headers.xlsx", 0, {
-        headerRowIndex: ()
-    });
-}
-```
-
-</TabItem>
-</Tabs>
-
 ## Writing a sheet
 
-Write an array of records to a sheet with `xlsx:writeSheet()`. If the file already exists, it is opened and only the named sheet is affected, so every other sheet, table, and formula is preserved. The write is atomic, so a failed write never destroys the original file. 
+Write an array of records to a sheet with `xlsx:writeSheet()`. If the file already exists, it is opened and only the named sheet is affected, so every other sheet, table, and formula is preserved. The write is atomic, so a failed write never destroys the original file.
 
 :::note
 Writing rewrites only the cell values, so a `parseSheet` followed by `writeSheet` does not preserve the target sheet's formulas, formatting, or charts.
@@ -563,6 +224,256 @@ public function main() returns error? {
 
     // Or append rows below the existing data.
     check xlsx:writeSheet(products, "catalog.xlsx", "Catalog", sheetWriteMode = xlsx:APPEND);
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Read options
+
+All of the read functions (`xlsx:parseSheet`, `xlsx:parseTable`, `Sheet.getRows`, and the single-row and column readers) accept options that control how the input is interpreted. Use these to handle formula cells, match headers case-insensitively, locate the header and data rows, cap how many rows are read, validate against record constraints, or enable [fail-safe processing](#fail-safe-processing).
+
+In the visual designer, read options live under **Advanced Configurations** → **Options** on the parse step. The field is empty by default (`{}`), meaning all defaults apply.
+
+![parseSheet step with the Options field under Advanced Configurations](/img/develop/transform/xlsx/xlsx-read-options-field.png)
+
+Click the **Options** field to open the **Record Configuration** helper. Tick the checkbox next to any option you want to set, fill in the value, and click **Save**.
+
+![Record Configuration helper listing the available ParseOptions fields](/img/develop/transform/xlsx/xlsx-read-options-helper.png)
+
+### Available options
+
+The fields below match the `ParseOptions` record used by sheet reads. Table reads use `TableParseOptions`, which omits the positional `headerRowIndex` and `dataStartRowIndex` fields because a table is self-describing.
+
+| Option | Type | Description |
+|---|---|---|
+| `formulaMode` | `FormulaMode` | How to read formula cells. `CACHED` (default) uses the last cached value; `TEXT` returns the formula string. See [Formulas](#formulas). |
+| `caseInsensitiveHeaders` | `boolean` | When `true`, header `"Name"` matches record field `name` or `NAME`. Default `false`. |
+| `headerRowIndex` | `int?` | 0-based index of the header row. Default `0`. Set to `()` for input with no header row. See [Headerless sheets](#headerless-sheets). |
+| `dataStartRowIndex` | `int` | 0-based index where data starts. Defaults to `headerRowIndex + 1`. See [Selecting a sheet and locating the header row](#selecting-a-sheet-and-locating-the-header-row). |
+| `rowCount` | `int?` | Maximum number of data rows to read. Default `()` reads all rows. |
+| `allowDataProjection` | `record\|false` | Controls projection when the record covers only a subset of columns. Set to `false` to require an exact match. The record form has `nilAsOptionalField` and `absentAsNilableType` boolean fields. Default `{}`. |
+| `enableConstraintValidation` | `boolean` | When `true`, parsed records are validated against any `@constraint` annotations. Default `true`. |
+| `failSafe` | `FailSafeOptions?` | Skips and logs invalid rows instead of aborting the read. See [Fail-safe processing](#fail-safe-processing). |
+
+In Ballerina code, options are passed as the third argument to `parseSheet`, after the path and the sheet selector:
+
+```ballerina
+import ballerina/xlsx;
+
+type Employee record {|
+    string name;
+    int age;
+|};
+
+public function main() returns error? {
+    Employee[] employees = check xlsx:parseSheet("report.xlsx", "Staff", {
+        headerRowIndex: 2,
+        caseInsensitiveHeaders: true,
+        rowCount: 100
+    });
+}
+```
+
+## Reading and writing Excel Tables
+
+An Excel Table (ListObject) is a named, structured range with its own header and data region. Tables are unique by name across the entire workbook, so no sheet specifier is needed. For one-shot flows, use the tier-1 functions `xlsx:parseTable()` and `xlsx:writeTable()`. By default `writeTable` resizes the table's data range to fit the data exactly, growing or shrinking it.
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+1. **Define the record type**. Create a record named `Employee` with fields `name` (string) and `age` (int). For details, see [Types](../integration-artifacts/supporting/types.md).
+
+2. **Read the table**. Click **+** and select **Call Function**. Search for `parseTable` under **xlsx**. Configure:
+   - **Path***: `data.xlsx`
+   - **Table Name***: `EmployeeTable`
+   - **Result***: `employees`
+   - **T***: `Employee[]`
+
+3. **Write the table back**. Call `writeTable` under **xlsx** with the updated rows, the same path, and the table name. The data range resizes to fit.
+
+   ![Flow designer showing a parseTable and writeTable flow](/img/develop/transform/xlsx/xlsx-tables-flow.png)
+
+</TabItem>
+
+<TabItem value="code" label="Ballerina Code">
+
+```ballerina
+import ballerina/xlsx;
+
+type Employee record {|
+    string name;
+    int age;
+|};
+
+public function main() returns error? {
+    Employee[] employees = check xlsx:parseTable("data.xlsx", "EmployeeTable");
+
+    Employee[] updated = [...employees, {name: "Charlie", age: 35}];
+    // REPLACE (default) resizes the table's data range to fit the data.
+    check xlsx:writeTable(updated, "data.xlsx", "EmployeeTable");
+}
+```
+
+</TabItem>
+</Tabs>
+
+For richer operations, such as reading a totals row or renaming or resizing a table, reach the same table through the Workbook API and use the `Table` class. Write these in code (see [Working with multiple sheets](#working-with-multiple-sheets)); the full method list is in the [Table methods](../../reference/data-formats/xlsx.md#table) reference.
+
+```ballerina
+import ballerina/xlsx;
+
+type Employee record {|
+    string name;
+    int age;
+|};
+
+public function main() returns error? {
+    xlsx:Workbook wb = check xlsx:fromFile("data.xlsx");
+    xlsx:Table empTable = check wb.getTable("EmployeeTable");
+
+    Employee[] employees = check empTable.getRows();
+    if check empTable.hasTotalRow() {
+        map<xlsx:CellValue> totals = check empTable.getTotalRow();
+        // Inspect the totals row.
+    }
+
+    Employee[] updated = [...employees, {name: "Charlie", age: 35}];
+    check empTable.putRows(updated);
+
+    check wb.save();
+    check wb.close();
+}
+```
+
+## Selecting a sheet and locating the header row
+
+XLSX is a binary format, so there are no delimiters or encodings to configure. Instead, the controls that matter are which sheet to read and where the header and data rows sit. Pass a sheet name or a 0-based index as the second argument to `parseSheet`. When a sheet has a title banner or blank rows above the data, set [`headerRowIndex`](#available-options) to the row that holds the column names and [`dataStartRowIndex`](#available-options) to the first data row. Both are 0-based.
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+1. **Define the record type**. Create a record named `Sale` with fields `product` (string) and `price` (decimal). For details, see [Types](../integration-artifacts/supporting/types.md).
+
+2. **Select the sheet**. Call `parseSheet` under **xlsx** and set **Sheet** to the sheet name (for example, `"Q1"`) or a 0-based index.
+
+3. **Point to the header and data rows**. Under **Advanced Configurations** → **Options** (see [Read options](#read-options)), set:
+   - `headerRowIndex`: `2`
+   - `dataStartRowIndex`: `3`
+
+   ![Flow designer showing sheet selection and header-row options](/img/develop/transform/xlsx/xlsx-header-row-flow.png)
+
+</TabItem>
+
+<TabItem value="code" label="Ballerina Code">
+
+```ballerina
+import ballerina/xlsx;
+
+type Sale record {|
+    string product;
+    decimal price;
+|};
+
+public function main() returns error? {
+    // The "Q1" sheet has a two-line title banner. The real header is on row 2 (0-based),
+    // and data starts on row 3.
+    Sale[] sales = check xlsx:parseSheet("report.xlsx", "Q1", {
+        headerRowIndex: 2,
+        dataStartRowIndex: 3
+    });
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Reading and writing dates and times
+
+The binder uses the target field type to decide what shape to produce for a date or time cell. Declare a field as `time:Civil` for a date-time value, `time:Date` for a date-only value, or `time:TimeOfDay` for a time-only value. Declare it as `string` to get an ISO 8601 string instead. Writing the records back produces date-formatted cells, not text cells.
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+1. **Define the record type**. Create a record named `Transaction` with fields `id` (int), `timestamp` (`time:Civil`), `settledOn` (`time:Date`), and `amount` (decimal). For details, see [Types](../integration-artifacts/supporting/types.md).
+
+2. **Parse the sheet**. Call `parseSheet` under **xlsx** with the file path and `Transaction[]` as the target type. Date cells bind to the declared `time` types automatically.
+
+3. **(Optional) Write back**. Call `writeSheet` under **xlsx** with the same records to produce date-formatted cells.
+
+   ![Flow designer showing date and time binding to time types](/img/develop/transform/xlsx/xlsx-datetime-flow.png)
+
+</TabItem>
+
+<TabItem value="code" label="Ballerina Code">
+
+```ballerina
+import ballerina/xlsx;
+import ballerina/time;
+
+type Transaction record {|
+    int id;
+    time:Civil timestamp;   // a date-time cell binds to time:Civil
+    time:Date settledOn;    // a date-only cell binds to time:Date
+    decimal amount;
+|};
+
+public function main() returns error? {
+    Transaction[] txns = check xlsx:parseSheet("transactions.xlsx");
+
+    // Writing the records back produces date-formatted cells, not text.
+    check xlsx:writeSheet(txns, "transactions-out.xlsx");
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Headerless sheets
+
+At its most general, a sheet is just a grid of cells, and the universal representation of that grid is a 2D string array (`string[][]`): one inner array per row, one string per cell. The module supports this raw form directly, but the preferred representation is `record[]`, which gives you typed fields and named columns instead of positional indexing.
+
+When a sheet has no header row, you have two options:
+
+- **Read into `string[][]`** and access cells by index. Raw mode is lossless, so every row is returned as data. Use this when you don't have a fixed schema or the column order is unreliable.
+- **Read into a typed `record[]`** by setting [`headerRowIndex`](#available-options) to `()`. The columns are then exposed as `col0`, `col1`, and so on, which you map onto record fields with `@xlsx:Name`.
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+1. **Read as a raw grid**. Call `parseSheet` under **xlsx** with **T** set to `string[][]`. Every row, including any that look like a header, is returned as string cells you access by index.
+
+2. **(Alternative) Read into typed records**. Define a record whose fields use `@xlsx:Name` to map the generated `col0`, `col1`, and so on. Under **Advanced Configurations** → **Options** (see [Read options](#read-options)), set `headerRowIndex` to `()`, and set **T** to your record array.
+
+   ![Flow designer showing headerless sheet parsing into string arrays](/img/develop/transform/xlsx/xlsx-headerless-flow.png)
+
+</TabItem>
+
+<TabItem value="code" label="Ballerina Code">
+
+```ballerina
+import ballerina/xlsx;
+
+// Bind positionally by mapping fields to the generated column keys.
+type Employee record {|
+    @xlsx:Name {value: "col0"}
+    string name;
+    @xlsx:Name {value: "col1"}
+    string department;
+    @xlsx:Name {value: "col2"}
+    int salary;
+|};
+
+public function main() returns error? {
+    // Option 1: read the raw grid as string arrays, accessed by index.
+    string[][] rows = check xlsx:parseSheet("no-headers.xlsx");
+
+    // Option 2: set headerRowIndex to () so columns become col0, col1, ...,
+    // then map them onto record fields with @xlsx:Name.
+    Employee[] employees = check xlsx:parseSheet("no-headers.xlsx", 0, {
+        headerRowIndex: ()
+    });
 }
 ```
 
@@ -627,6 +538,85 @@ public function main() returns error? {
 
 </TabItem>
 </Tabs>
+
+## Working with multiple sheets
+
+The Workbook API gives you a stateful workbook with an explicit lifecycle, so you can read from one sheet, create another, and save the whole file in a single flow. Open an existing file with `xlsx:fromFile()`, read or modify sheets, then `save()` and `close()`. Construct an empty workbook with `new` and use `saveAs()` to write it to a new path.
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+:::note
+These steps use the Workbook API (`xlsx:fromFile`, `getSheet`, `getRows`, `createSheet`, `putRows`, and `save`), which is not available from the **+** menu. Implement them using code from the **Ballerina Code** tab. Once they exist in the source, you can find the read, create-sheet, and save flow on the canvas.
+:::
+
+![Designer rendering the Workbook flow from code](/img/develop/transform/xlsx/xlsx-workbook-flow.png)
+
+</TabItem>
+
+<TabItem value="code" label="Ballerina Code">
+
+```ballerina
+import ballerina/xlsx;
+
+type Sale record {|
+    string product;
+    int quantity;
+    decimal price;
+|};
+
+public function main() returns error? {
+    xlsx:Workbook wb = check xlsx:fromFile("sales.xlsx");
+
+    // Read from one sheet.
+    xlsx:Sheet rawSheet = check wb.getSheet("Raw");
+    Sale[] sales = check rawSheet.getRows();
+
+    // Filter and write the result to a new sheet.
+    Sale[] highValue = from Sale s in sales where s.price > 100d select s;
+    xlsx:Sheet summary = check wb.createSheet("HighValue");
+    check summary.putRows(highValue);
+
+    check wb.save();
+    check wb.close();
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Working with large workbooks
+
+The `ballerina/xlsx` module uses a DOM model. It loads the entire workbook into memory before returning, and there is no streaming or incremental-read API. For workbooks up to the tens of megabytes this is usually fine. For very large files, the memory footprint matters.
+
+The file path and the byte path have different costs. Reading from a file path with `xlsx:fromFile()` runs at roughly the size of the workbook's in-memory representation. The byte path with `xlsx:fromBytes()` sustains roughly 1.5 to 2.5 times that, because the underlying parser inflates every zip entry up front and holds the source bytes for the workbook's lifetime. When a large payload arrives in memory, stage it to a temporary file and open it from the path (Workbook API, so write it in code) to keep the footprint close to the file-path cost.
+
+```ballerina
+import ballerina/file;
+import ballerina/io;
+import ballerina/xlsx;
+
+type DataRow record {|
+    int id;
+    string value;
+|};
+
+// Stage a large in-memory payload to disk, then open it from the file path
+// so memory stays close to the workbook's in-memory size.
+function processLargePayload(byte[] payload) returns DataRow[]|error {
+    string tempPath = "./staged-workbook.xlsx";
+    check io:fileWriteBytes(tempPath, payload);
+
+    xlsx:Workbook wb = check xlsx:fromFile(tempPath);
+    xlsx:Sheet sheet = check wb.getSheet(0);
+    DataRow[] rows = check sheet.getRows();
+    check wb.close();
+
+    // Remove the staged file once the data is read.
+    check file:remove(tempPath);
+    return rows;
+}
+```
 
 ## Edge cases
 
