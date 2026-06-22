@@ -41,7 +41,7 @@ For EDIFACT or X12 documents not covered by prebuilt packages, use the [EDI Tool
 
 ## Module
 
-`ballerina/edi`
+`ballerina/edi` (v1.6.0)
 
 ## Usage
 
@@ -142,13 +142,45 @@ public function main() returns error? {
 }
 ```
 
+### Parse a full interchange
+
+When the schema declares an `envelope` (schemas generated from an X12 or EDIFACT spec do), `interchangeFromEdiString` parses the whole interchange hierarchy into typed records. Each transaction body is **fail-safe** — a malformed body is captured as an `error` on `EdiTransaction.body` instead of aborting the parse, so you can process what you can and quarantine the rest.
+
+```ballerina
+import ballerina/edi;
+import ballerina/io;
+
+public function main() returns error? {
+    edi:EdiSchema schema = check edi:getSchema(check io:fileReadJson("path/to/schema.json"));
+    string ediText = check io:fileReadString("path/to/interchange.edi");
+
+    edi:EdiInterchange interchange = check edi:interchangeFromEdiString(ediText, schema);
+    foreach var txn in interchange.transactions ?: [] {
+        if txn.body is error {
+            io:println("Quarantined: ", (<error>txn.body).message());
+            continue;
+        }
+        io:println(txn.body);
+    }
+}
+```
+
+To route or filter messages without a schema, `x12HeadersFromEdiString` and `edifactHeadersFromEdiString` extract just the interchange headers (X12 ISA/GS, EDIFACT UNB/UNH).
+
 ## Functions
 
 | Function | Signature | Description |
 |----------|-----------|-------------|
-| `fromEdiString` | `fromEdiString(string ediText, EdiSchema schema) returns json\|Error` | Parse EDI text into JSON using a schema. |
-| `toEdiString` | `toEdiString(json msg, EdiSchema schema) returns string\|Error` | Serialize JSON into EDI text using a schema. |
 | `getSchema` | `getSchema(string\|json schema) returns EdiSchema\|error` | Load and validate an EDI schema from a JSON string or object. |
+| `fromEdiString` | `fromEdiString(string ediText, EdiSchema schema) returns json\|Error` | Parse a transaction body into JSON using a schema. |
+| `toEdiString` | `toEdiString(json msg, EdiSchema schema) returns string\|Error` | Serialize JSON into EDI text using a schema. |
+| `x12HeadersFromEdiString` / `x12HeadersFromEdiFile` | `... returns X12Headers\|Error` | Schema-free parse of X12 ISA/GS headers for routing and partner identification. |
+| `edifactHeadersFromEdiString` / `edifactHeadersFromEdiFile` | `... returns EdifactHeaders\|Error` | Schema-free parse of EDIFACT UNB/UNH headers. |
+| `headersFromEdiString` / `headersFromEdiFile` | `... returns json\|Error` | Schema-driven parse of just the envelope header segments. |
+| `interchangeFromEdiString` | `interchangeFromEdiString(string ediText, EdiSchema schema) returns EdiInterchange\|Error` | Parse the full envelope hierarchy into typed records, with fail-safe per-transaction bodies. |
+| `interchangeToEdiString` | `interchangeToEdiString(EdiInterchange msg, EdiSchema schema) returns string\|Error` | Serialize a full interchange back to EDI text (recomputes envelope counts). |
+
+For full signatures, parameters, error types (`InvalidEnvelopeError`, `SchemaCompatibilityError`, `SerializationError`), and envelope processing semantics, see the [Module Specification](https://github.com/ballerina-platform/module-ballerina-edi/blob/main/docs/specs/ModuleSpecification.md).
 
 ## Custom EDI schemas
 

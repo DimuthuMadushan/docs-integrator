@@ -56,6 +56,12 @@ This generates the following functions in the output file along with the relevan
 - `fromEdiStringWithSchema`: Convert an EDI string to a Ballerina record using a pre-loaded schema.
 - `toEdiStringWithSchema`: Convert a Ballerina record to an EDI string using a pre-loaded schema.
 
+When the schema carries an envelope definition — which schemas converted from an X12 or EDIFACT spec do — `codegen` additionally emits envelope-aware functions and the matching typed wrapper records (`<Name>Interchange`, `<Name>FunctionalGroup`, `<Name>Transaction`):
+
+- `headersFromEdiString`: Parse just the interchange/group/transaction headers.
+- `interchangeFromEdiString`: Parse the full interchange hierarchy, with a fail-safe `error` body per transaction.
+- `interchangeToEdiString`: Serialize a `<Name>Interchange` back to EDI text.
+
 ## Generating types from an X12 schema
 
 X12 is a widely used EDI standard in North America, covering transaction sets for orders, invoices, shipping notices, and more.
