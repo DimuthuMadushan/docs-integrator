@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4.5
-title: Excel (XLSX) Processing
+title: XLSX Processing
 description: Parse, transform, and write Microsoft Excel (XLSX) data.
 ---
 
