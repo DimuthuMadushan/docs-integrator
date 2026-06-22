@@ -7,7 +7,7 @@ description: Parse, transform, and write Microsoft Excel (XLSX) data.
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Excel (XLSX) Processing
+# XLSX Processing
 
 Microsoft Excel files in the XLSX format are a common medium for reports, partner data exchange, and bulk import and export. Spreadsheets move tabular data between business users and systems, often with multiple sheets, typed columns such as dates and amounts, and structured Excel Tables.
 
