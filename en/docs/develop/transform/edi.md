@@ -101,17 +101,9 @@ See the [EDI tool](../tools/integration-tools/edi-tool.md#bal-edi-convertx12sche
 bal edi codegen -i schema/schema.json -o x12.bal
 ```
 
-## Generating code from an ESL or custom schema
+## Generating code from a custom schema
 
-For formats outside the two mainstream standards, you supply the schema definition yourself.
-
-**ESL (EDI Schema Language)** is a YAML format that describes an EDI message's structure, alongside a base definitions file listing the shared segment definitions. Both inputs are required when converting:
-
-```bash
-bal edi convertESL -b path/to/base-definitions -i path/to/esl-schema -o schema
-```
-
-**A custom schema** lets you describe a proprietary or non-standard delimited format directly in the Ballerina EDI JSON schema format — the same format that `convertEdifactSchema`, `convertX12Schema`, and `convertESL` all produce — so you can skip conversion and write it by hand:
+For a proprietary or non-standard format that is neither X12 nor EDIFACT, describe its structure directly in the Ballerina EDI JSON schema format — the same format that `convertEdifactSchema`, `convertX12Schema`, and `convertESL` all produce internally, so you can skip conversion and write it by hand:
 
 ```json
 {
@@ -151,10 +143,16 @@ bal edi convertESL -b path/to/base-definitions -i path/to/esl-schema -o schema
 }
 ```
 
-In either case, run `codegen` to generate the records and functions:
+Then generate Ballerina code from it:
 
 ```bash
 bal edi codegen -i schema.json -o document.bal
+```
+
+If your format is already defined in **ESL (EDI Schema Language)** — a YAML schema definition with a separate base segment-definitions file — convert it to a Ballerina EDI schema first with `convertESL`, then run `codegen` as above:
+
+```bash
+bal edi convertESL -b path/to/base-definitions -i path/to/esl-schema -o schema
 ```
 
 The same generated artifacts are produced whether the source is EDIFACT, X12, ESL, or a custom schema. Once you have a generated module, the rest of this page applies unchanged.
@@ -243,6 +241,33 @@ public function main() returns error? {
 
 </TabItem>
 </Tabs>
+
+### Parsing the full interchange
+
+A complete EDI file is an *interchange* — one or more transactions wrapped in envelope headers and trailers. `interchangeFromEdiString` parses the whole hierarchy into typed records, capturing any malformed transaction body as an `error` instead of failing the entire parse, so well-formed transactions can still be processed:
+
+```ballerina
+import ballerina/io;
+import ballerina/log;
+
+// Generated library from the EDIFACT ORDERS schema.
+import <add-org-name>/orders;
+
+public function main() returns error? {
+    string ediContent = check io:fileReadString("path/to/orders.edi");
+
+    orders:ORDERSInterchange interchange = check orders:interchangeFromEdiString(ediContent);
+    foreach var txn in interchange.transactions {
+        if txn.body is error {
+            log:printError("Quarantined malformed transaction", 'error = <error>txn.body);
+            continue;
+        }
+        log:printInfo(txn.body.toString());
+    }
+}
+```
+
+To route or filter messages by trading partner without parsing the whole document, `orders:headersFromEdiString` returns just the envelope headers.
 
 ## Generating EDI output
 
