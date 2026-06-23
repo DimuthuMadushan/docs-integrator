@@ -15,7 +15,7 @@ The `bal edi` tool covers all the standards commonly seen in B2B integration:
 
 - **EDIFACT**: the international UN/EDIFACT standard (`ORDERS`, `INVOIC`, `DESADV`, and many more).
 - **X12**: the ANSI ASC X12 standard widely used in North America for transactions such as `850` (purchase orders), `810` (invoices), and `856` (advance ship notices).
-- **ESL**: the Electronic Shelf Labeling format used in retail pricing and product information feeds.
+- **ESL**: the EDI Schema Language — a YAML schema definition that describes an EDI message's structure.
 - **Custom EDI**: any proprietary or non-standard delimited format, described in the tool's own JSON schema.
 
 The workflow is the same for every standard: convert the source spec into the Ballerina EDI JSON schema, then generate typed records and parser functions from it. After that, the integration code is identical regardless of which standard the data originally came from.
@@ -38,88 +38,6 @@ Verify the installation:
 
 ```bash
 bal edi --help
-```
-
-## Generating code from an X12 transaction set
-
-X12 is the ANSI ASC X12 EDI standard widely used in North America for purchase orders, invoices, advance ship notices, and many other transaction sets. The `bal edi convertX12Schema` command converts an X12 schema file into the Ballerina EDI JSON schema format.
-
-```bash
-bal edi convertX12Schema -i path/to/x12-schema.json -o schema
-```
-
-The command supports three optional flags for tuning how the schema is interpreted:
-
-- `-H, --headers`: turn on headers mode when the source schema separates interchange/group headers from the transaction set body.
-- `-c, --collection`: treat the input as a collection of related schemas rather than a single transaction set.
-- `-d, --segdet`: point to an external segment-details file when the X12 schema references segment definitions stored separately.
-
-See the [EDI tool](../tools/integration-tools/edi-tool.md#bal-edi-convertx12schema) page for full flag details.
-
-Once the schema is converted, run `codegen` to produce typed records and parser functions:
-
-```bash
-bal edi codegen -i schema/schema.json -o x12.bal
-```
-
-## Generating code from an ESL schema
-
-ESL (Electronic Shelf Labeling) schemas describe retail pricing and product information formats. They reference a base definitions file that lists the shared segment definitions; both inputs are required when converting.
-
-```bash
-bal edi convertESL -b path/to/base-definitions -i path/to/esl-schema -o schema
-```
-
-After conversion, run `codegen` the same way as for X12 to generate the records and functions.
-
-## Generating code from a custom EDI schema
-
-If you work with a non-standard or proprietary EDI format, you can define your own schema as a JSON file and generate Ballerina code from it. This is the same format that `convertEdifactSchema`, `convertX12Schema`, and `convertESL` all produce internally; skipping conversion lets you describe the format directly.
-
-Define your schema:
-
-```json
-{
-  "name": "Document",
-  "delimiters": {
-    "segment": "~",
-    "field": "*",
-    "component": ":",
-    "repetition": "^"
-  },
-  "segments": [
-    {
-      "code": "BEG",
-      "tag": "BEG",
-      "minOccurances": 1,
-      "maxOccurances": 1,
-      "fields": [
-        {"tag": "purposeCode"},
-        {"tag": "typeCode"},
-        {"tag": "poNumber"},
-        {"tag": "releaseNumber"},
-        {"tag": "date"}
-      ]
-    },
-    {
-      "code": "SE",
-      "tag": "SE",
-      "minOccurances": 1,
-      "maxOccurances": 1,
-      "fields": [
-        {"tag": "code"},
-        {"tag": "segmentCount"},
-        {"tag": "controlNumber"}
-      ]
-    }
-  ]
-}
-```
-
-Then generate Ballerina code from it:
-
-```bash
-bal edi codegen -i schema.json -o document.bal
 ```
 
 ## Generating code from an EDIFACT spec
@@ -163,7 +81,83 @@ The generated file contains:
 - **`getSchema`**: returns the EDI schema as an `EdiSchema` object.
 - **`fromEdiStringWithSchema`** / **`toEdiStringWithSchema`**: variants that accept a pre-loaded `EdiSchema`, useful when the same code must handle multiple schemas selected at runtime.
 
-The same generated artifacts are produced whether the source standard is EDIFACT, X12, ESL, or a custom schema. Once you have a generated module, the rest of this page applies unchanged.
+## Generating code from an X12 schema
+
+X12 is the ANSI ASC X12 EDI standard widely used in North America for purchase orders, invoices, advance ship notices, and many other transaction sets. The `bal edi convertX12Schema` command converts an X12 schema file into the Ballerina EDI JSON schema format.
+
+```bash
+bal edi convertX12Schema -i path/to/x12-schema.json -o schema
+```
+
+The command supports three optional flags for tuning how the schema is interpreted:
+
+- `-H, --headers`: turn on headers mode when the source schema separates interchange/group headers from the transaction set body.
+- `-c, --collection`: treat the input as a collection of related schemas rather than a single transaction set.
+- `-d, --segdet`: point to an external segment-details file when the X12 schema references segment definitions stored separately.
+
+See the [EDI tool](../tools/integration-tools/edi-tool.md#bal-edi-convertx12schema) page for full flag details. Once converted, run `codegen` the same way as for EDIFACT:
+
+```bash
+bal edi codegen -i schema/schema.json -o x12.bal
+```
+
+## Generating code from an ESL or custom schema
+
+For formats outside the two mainstream standards, you supply the schema definition yourself.
+
+**ESL (EDI Schema Language)** is a YAML format that describes an EDI message's structure, alongside a base definitions file listing the shared segment definitions. Both inputs are required when converting:
+
+```bash
+bal edi convertESL -b path/to/base-definitions -i path/to/esl-schema -o schema
+```
+
+**A custom schema** lets you describe a proprietary or non-standard delimited format directly in the Ballerina EDI JSON schema format — the same format that `convertEdifactSchema`, `convertX12Schema`, and `convertESL` all produce — so you can skip conversion and write it by hand:
+
+```json
+{
+  "name": "Document",
+  "delimiters": {
+    "segment": "~",
+    "field": "*",
+    "component": ":",
+    "repetition": "^"
+  },
+  "segments": [
+    {
+      "code": "BEG",
+      "tag": "BEG",
+      "minOccurances": 1,
+      "maxOccurances": 1,
+      "fields": [
+        {"tag": "purposeCode"},
+        {"tag": "typeCode"},
+        {"tag": "poNumber"},
+        {"tag": "releaseNumber"},
+        {"tag": "date"}
+      ]
+    },
+    {
+      "code": "SE",
+      "tag": "SE",
+      "minOccurances": 1,
+      "maxOccurances": 1,
+      "fields": [
+        {"tag": "code"},
+        {"tag": "segmentCount"},
+        {"tag": "controlNumber"}
+      ]
+    }
+  ]
+}
+```
+
+In either case, run `codegen` to generate the records and functions:
+
+```bash
+bal edi codegen -i schema.json -o document.bal
+```
+
+The same generated artifacts are produced whether the source is EDIFACT, X12, ESL, or a custom schema. Once you have a generated module, the rest of this page applies unchanged.
 
 If you need to handle several EDI schemas at once, you can bundle them into a single reusable package instead of generating each module by hand. See [Building a reusable library package](#building-a-reusable-library-package).
 

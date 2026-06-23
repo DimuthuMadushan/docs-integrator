@@ -24,11 +24,12 @@ In this example, `*` is the data element separator and `~` is the segment termin
 The fastest path for standard EDIFACT documents is to import a prebuilt package — no schema writing required. Prebuilt packages for common EDIFACT D03A message types are available under the `ballerinax` organization.
 
 ```ballerina
+import ballerina/io;
 import ballerinax/edifact.d03a.finance.mINVOIC;
 
 public function main() returns error? {
     string ediText = check io:fileReadString("resources/invoice.edi");
-    mINVOIC:EDI_INVOIC_Invoice invoiceMsg = check mINVOIC:fromEdiString(ediText);
+    mINVOIC:EDI_INVOIC_Invoice_message invoiceMsg = check mINVOIC:fromEdiString(ediText);
     // Process the typed invoice data
 }
 ```
@@ -330,11 +331,12 @@ These packages are published under the `ballerinax` organization and can be impo
 ### Prebuilt package usage
 
 ```ballerina
+import ballerina/io;
 import ballerinax/edifact.d03a.finance.mINVOIC;
 
 public function main() returns error? {
     string ediText = check io:fileReadString("resources/invoice.edi");
-    mINVOIC:EDI_INVOIC_Invoice invoiceMsg = check mINVOIC:fromEdiString(ediText);
+    mINVOIC:EDI_INVOIC_Invoice_message invoiceMsg = check mINVOIC:fromEdiString(ediText);
     // Process the typed invoice data
 }
 ```
