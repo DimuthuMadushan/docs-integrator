@@ -158,7 +158,7 @@ public function main() returns error? {
     edi:EdiInterchange interchange = check edi:interchangeFromEdiString(ediText, schema);
     foreach var txn in interchange.transactions ?: [] {
         if txn.body is error {
-            io:println("Quarantined: ", (<error>txn.body).message());
+            io:println("Quarantined: ", txn.body.message());
             continue;
         }
         io:println(txn.body);

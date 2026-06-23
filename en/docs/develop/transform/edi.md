@@ -259,7 +259,7 @@ public function main() returns error? {
     orders:ORDERSInterchange interchange = check orders:interchangeFromEdiString(ediContent);
     foreach var txn in interchange.transactions {
         if txn.body is error {
-            log:printError("Quarantined malformed transaction", 'error = <error>txn.body);
+            log:printError("Quarantined malformed transaction", 'error = txn.body);
             continue;
         }
         log:printInfo(txn.body.toString());
