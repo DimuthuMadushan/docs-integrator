@@ -171,7 +171,6 @@ To route or filter messages without a schema, `x12HeadersFromEdiString` and `edi
 
 | Function | Signature | Description |
 |----------|-----------|-------------|
-| `getSchema` | `getSchema(string\|json schema) returns EdiSchema\|error` | Load and validate an EDI schema from a JSON string or object. |
 | `fromEdiString` | `fromEdiString(string ediText, EdiSchema schema) returns json\|Error` | Parse a transaction body into JSON using a schema. |
 | `toEdiString` | `toEdiString(json msg, EdiSchema schema) returns string\|Error` | Serialize JSON into EDI text using a schema. |
 | `x12HeadersFromEdiString` / `x12HeadersFromEdiFile` | `... returns X12Headers\|Error` | Schema-free parse of X12 ISA/GS headers for routing and partner identification. |
@@ -179,6 +178,7 @@ To route or filter messages without a schema, `x12HeadersFromEdiString` and `edi
 | `headersFromEdiString` / `headersFromEdiFile` | `... returns json\|Error` | Schema-driven parse of just the envelope header segments. |
 | `interchangeFromEdiString` | `interchangeFromEdiString(string ediText, EdiSchema schema) returns EdiInterchange\|Error` | Parse the full envelope hierarchy into typed records, with fail-safe per-transaction bodies. |
 | `interchangeToEdiString` | `interchangeToEdiString(EdiInterchange msg, EdiSchema schema) returns string\|Error` | Serialize a full interchange back to EDI text (recomputes envelope counts). |
+| `getSchema` | `getSchema(string\|json schema) returns EdiSchema\|error` | Load and validate an EDI schema from a JSON string or object. |
 
 For full signatures, parameters, error types (`InvalidEnvelopeError`, `SchemaCompatibilityError`, `SerializationError`), and envelope processing semantics, see the [Module Specification](https://github.com/ballerina-platform/module-ballerina-edi/blob/main/docs/specs/ModuleSpecification.md).
 

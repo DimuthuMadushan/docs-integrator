@@ -42,11 +42,13 @@ bal edi convertEdifactSchema -v d96a -t ORDERS -o path/to/output
 
 ### Step 2: Generate Ballerina code
 
-Use `codegen` to generate typed Ballerina records and parser functions from the converted schema.
+Use `codegen` to generate typed Ballerina records and parser functions into the package's default module.
 
 ```bash
-bal edi codegen -i path/to/output/schema.json -o modules/orders/main.bal
+bal edi codegen -i path/to/output/schema.json -o orders.bal
 ```
+
+For larger projects, keep the generated EDI code in its own package within a Ballerina workspace alongside your integration.
 
 This generates the following functions in the output file along with the relevant record types.
 
@@ -79,7 +81,7 @@ bal edi convertX12Schema -i path/to/x12-schema -o path/to/output
 Use `codegen` to generate typed Ballerina records and parser functions from the converted schema.
 
 ```bash
-bal edi codegen -i path/to/output/schema.json -o modules/orders/main.bal
+bal edi codegen -i path/to/output/schema.json -o orders.bal
 ```
 
 ## Generating types from a custom schema
@@ -137,7 +139,7 @@ ITM*Stapler*2~
 Run `codegen` directly on the custom schema file:
 
 ```bash
-bal edi codegen -i path/to/schema.json -o modules/orders/main.bal
+bal edi codegen -i path/to/schema.json -o orders.bal
 ```
 
 This generates the corresponding Ballerina record types along with edi functions:
