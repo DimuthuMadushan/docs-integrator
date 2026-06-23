@@ -42,10 +42,10 @@ bal edi convertEdifactSchema -v d96a -t ORDERS -o path/to/output
 
 ### Step 2: Generate Ballerina code
 
-Use `codegen` to generate typed Ballerina records and parser functions into the package's default module.
+Use `codegen` to generate typed Ballerina records and parser functions into the package's default module. `convertEdifactSchema` writes the schema into the output directory as `<transaction-type>.json`, so point `codegen` at that file:
 
 ```bash
-bal edi codegen -i path/to/output/schema.json -o orders.bal
+bal edi codegen -i path/to/output/ORDERS.json -o orders.bal
 ```
 
 For larger projects, keep the generated EDI code in its own package within a Ballerina workspace alongside your integration.

@@ -166,7 +166,7 @@ public function main() returns error? {
 }
 ```
 
-To route or filter messages without a schema, `x12HeadersFromEdiString` and `edifactHeadersFromEdiString` extract just the interchange headers (X12 ISA/GS, EDIFACT UNB/UNH).
+To route or filter messages without a schema, `x12HeadersFromEdiString` and `edifactHeadersFromEdiString` extract just the envelope headers (X12 ISA/GS, EDIFACT UNB/UNH).
 
 ## Functions
 
