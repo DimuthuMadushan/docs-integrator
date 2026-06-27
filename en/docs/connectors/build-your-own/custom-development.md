@@ -33,7 +33,7 @@ cd module-ballerinax-<connector-name>
 
 The expected project structure:
 
-```
+```text
 module-ballerinax-myconnector/
 ├── .github/
 ├── ballerina/
