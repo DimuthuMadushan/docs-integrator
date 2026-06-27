@@ -271,7 +271,7 @@ Modify XML structures by updating child elements or attributes. XML mutation is 
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-1. **Add a Variable**: Create a **Declare Variable**  with the type set to `xml:Element` and initialize it using an XML literal.
+1. **Add a Variable**: Create a **Declare Variable** with the type set to `xml:Element` and initialize it using an XML literal.
 
 2. **Mutate the XML element**: Click **+** and select **Call Function**. In the right-side panel, search for `setChildren` and select it from the `lang.xml` module. Provide `doc` as the target and the replacement XML literal as the argument.
 
