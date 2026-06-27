@@ -28,7 +28,7 @@ integration `main.bal` file. Navigate to File explorer view in WSO2 Integrator t
 import ballerinax/newrelic as _;
 ```
 
-New Relic extension has an `Opentelemetry GRPC Span Exporter` which will push tracing data as batches to the New Relic server endpoint (`https://otlp.nr-data.net:4317`) in opentelemetry format.
+The New Relic extension has an `OpenTelemetry gRPC Span Exporter` that pushes tracing data in batches to the New Relic server endpoint (`https://otlp.nr-data.net:4317`) in OpenTelemetry format.
 
 New Relic extension pushes metrics in New Relic metric format to the New Relic server endpoint (`https://metric-api.newrelic.com/metric/v1`).
 
