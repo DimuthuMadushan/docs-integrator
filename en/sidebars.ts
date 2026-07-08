@@ -1850,6 +1850,13 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
+          label: 'Use Cases',
+          items: [
+            'guides/usecases/sap-b1-low-stock-purchase-automation',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Enterprise Integration Patterns',
           items: [
             'guides/patterns/message',
