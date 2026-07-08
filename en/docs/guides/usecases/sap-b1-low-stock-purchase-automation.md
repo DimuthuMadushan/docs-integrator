@@ -207,7 +207,20 @@ Then build the loop:
         }}
     />
 
-    In the **Email** record, set **to** to your procurement address (for example `"procurement@example.com"`) and **subject** to `"Low stock: " + (lowStockItem.ItemCode ?: "")`. Set **body** to `` "Item " + (lowStockItem.ItemCode ?: "") + " (" + (lowStockItem.ItemName ?: "") + ") is down to " + (lowStockItem.QuantityOnStock ?: 0d).toString() + " units. Purchase request #" + (purchaseRequest.DocNum ?: 0).toString() + string `was raised for 50 units.` ``. `ItemCode`, `ItemName`, `QuantityOnStock`, and `DocNum` are all optional fields, so each is given a fallback with `?:` before use.
+    In the **Email** record:
+
+    - Set **to** to your procurement address, for example `"procurement@example.com"`.
+    - Set **subject** to `"Low stock: " + (lowStockItem.ItemCode ?: "")`.
+    - Set **body** to the following expression:
+
+      ```ballerina
+      "Item " + (lowStockItem.ItemCode ?: "") + " (" + (lowStockItem.ItemName ?: "") +
+      ") is down to " + (lowStockItem.QuantityOnStock ?: 0d).toString() +
+      " units. Purchase request #" + (purchaseRequest.DocNum ?: 0).toString() +
+      string `was raised for 50 units.`
+      ```
+
+    `ItemCode`, `ItemName`, `QuantityOnStock`, and `DocNum` are all optional fields, so each is given a fallback with `?:` before use.
 
 4. Inside the loop, add a **Log Info** node with the message `` string `Purchase request raised: ${purchaseRequest.DocNum ?: 0} for ${lowStockItem.ItemCode ?: ""}` ``.
 
