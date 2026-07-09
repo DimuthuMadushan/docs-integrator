@@ -367,5 +367,5 @@ The `inventory:Client` and `purchasing:Client` are generated when you add the co
 
 Now that the automation works, you can take it further:
 
-- **Deploy and schedule it.** Ship it to [WSO2 Cloud](../../deploy/cloud/overview.md), a [Docker container](../../deploy/self-hosted/docker.md), [Kubernetes](../../deploy/self-hosted/kubernetes.md), or a [virtual machine](../../deploy/self-hosted/run-locally.md), then schedule periodic runs there (a `cron` entry, a Kubernetes `CronJob`, a host scheduler, or the WSO2 Integration Platform).
+- **Deploy and schedule it.** Ship it to [WSO2 Cloud](../../deploy/cloud/overview.md), a [Docker container](../../deploy/self-hosted/containerized-deployment.md#docker-deployment), [Kubernetes](../../deploy/self-hosted/containerized-deployment.md#kubernetes-deployment), or a [virtual machine](../../deploy/self-hosted/vm-deployment.md), then schedule periodic runs there (a `cron` entry, a Kubernetes `CronJob`, a host scheduler, or the WSO2 Integration Platform).
 - **Richen the notification.** The [Email connector](../../connectors/catalog/built-in/email/email.md) also supports HTML bodies, CC/BCC, and attachments, so procurement's plain note can become a formatted daily digest listing every item raised in that run.
