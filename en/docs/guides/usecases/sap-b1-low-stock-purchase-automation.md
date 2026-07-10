@@ -350,16 +350,13 @@ The `inventory:Client` and `purchasing:Client` are generated when you add the co
 
 1. Go to **Configurations** and supply your SAP Business One credentials and your SMTP server details, then select **Run** on the integration overview:
 
-    ```toml
-    b1ServiceUrl = "https://<service-layer-host>:50000/b1s/v1"
-    b1CompanyDb = "<your-company-db>"
-    b1Username = "<your-user-id>"
-    b1Password = "<your-password>"
-    emailHost = "smtp.example.com"
-    emailUserName = "procurement-bot@example.com"
-    emailPassword = "<your-smtp-password>"
-    emailPort = 465
-    ```
+    <ThemedImage
+        alt="Configurable Variables panel with the SAP Business One and SMTP configurable values filled in"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/sap-b1-low-stock-automation/configurable-variables-panel.png'),
+            dark: useBaseUrl('/img/guides/usecases/sap-b1-low-stock-automation/configurable-variables-panel.png'),
+        }}
+    />
 
 2. Watch the terminal. Each low-stock item gets a purchase request, procurement is emailed, and a final line reports completion.
 
