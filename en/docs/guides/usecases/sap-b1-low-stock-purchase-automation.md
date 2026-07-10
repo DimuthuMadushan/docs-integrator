@@ -102,7 +102,7 @@ The **Current Server** field identifies the SAP HANA or SQL Server instance behi
     | Service URL | `https://<service-layer-host>:50000/b1s/v1` |
     | Company DB | Your company database, from the **Database** field in the SAP Business One client |
     | Username | Your SAP Business One **User ID** |
-    | Password | Your SAP Business One **Password**, bound to a [configurable value](../../develop/integration-artifacts/supporting/configurations.md) |
+    | Password | Your SAP Business One **Password** |
 
     :::tip Best practice
     Don't hardcode credentials into the connection. Click each field and select **Configurables** in the [Expression editor](../../develop/understand-ide/editors/expression-editor.md)'s helper pane, then click **New Configurable** and set up a configurable, so the value is supplied at runtime instead of stored in the flow.
@@ -178,7 +178,7 @@ To reach your mail server, add an [**Email Smtp**](../../connectors/catalog/buil
 | --- | --- |
 | Host | Your SMTP host, for example `smtp.gmail.com` |
 | Username | Your SMTP account username, for example `youremail@gmail.com` |
-| Password | Your SMTP account password, bound to a configurable value (for example, a Gmail App Password) |
+| Password | Your SMTP account password (for example, a Gmail App Password) |
 
 <ThemedImage
     alt="Configure Email Smtp connection dialog with Host set to smtp.gmail.com and Username and Password fields bound to configurable values"
