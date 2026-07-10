@@ -92,6 +92,8 @@ Click the company name at the top of the SAP Business One desktop application, o
 The **Current Server** field identifies the SAP HANA or SQL Server instance behind the Service Layer, not the Service Layer itself — it is not part of the connector configuration. Ask your SAP administrator for the Service Layer's own address if you do not already have it.
 :::
 
+### Add the Inventory connection
+
 1. Add a [connection](../../develop/integration-artifacts/supporting/connections.md#adding-a-connection): **Add Connection → Search Connectors**, then search for `sap.businessone.inventory` and select **ballerinax/sap.businessone.inventory**.
 2. Configure the connection:
 
@@ -100,7 +102,11 @@ The **Current Server** field identifies the SAP HANA or SQL Server instance behi
     | Service URL | `https://<service-layer-host>:50000/b1s/v1` |
     | Company DB | Your company database, from the **Database** field in the SAP Business One client |
     | Username | Your SAP Business One **User ID** |
-    | Password | Your SAP Business One **Password** |
+    | Password | Your SAP Business One **Password**, bound to a [configurable value](../../develop/integration-artifacts/supporting/configurations.md) |
+
+    :::tip Best practice
+    Don't hardcode credentials into the connection. Click each field and select **Configurables** in the [Expression editor](../../develop/understand-ide/editors/expression-editor.md)'s helper pane, then click **New Configurable** and set up a configurable, so the value is supplied at runtime instead of stored in the flow.
+    :::
 
     <ThemedImage
         alt="Configure Inventory connection dialog with the SAP Business One session record (companyDb, username, password) and the connection named inventoryClient"
@@ -111,11 +117,12 @@ The **Current Server** field identifies the SAP HANA or SQL Server instance behi
     />
 
 3. Name the connection `inventoryClient`.
-4. Repeat the same steps with `sap.businessone.purchasing`, using the same Service URL, Company DB, Username, and Password, and name this connection `purchasingClient`.
 
-WSO2 Integrator stores the Service URL, Company DB, Username, and Password as [configurable values](../../develop/integration-artifacts/supporting/configurations.md), so you can repoint the automation at a different SAP Business One company per environment without touching the flow.
+### Add the Purchasing connection
 
-Both connections now appear under **Connections**.
+Similar to the connection you just added, add one more: search for `sap.businessone.purchasing` and select **ballerinax/sap.businessone.purchasing**. Configure it with the same Service URL, Company DB, Username, and Password as `inventoryClient`, and name this connection `purchasingClient`.
+
+Both connections will appear under **Connections**.
 
 ## Step 3: Read the items running low on stock
 
@@ -139,9 +146,19 @@ Your operation should match the checkpoint below.
 
 Exit early when there is nothing to reorder, so an empty run stays cheap and quiet.
 
-1. Add an [**If**](../../develop/understand-ide/editors/flow-diagram-editor/control.md#if) node after **List Items** with the condition `(lowStockResult.value ?: []).length() == 0`. `value` is optional, so the `?:` supplies an empty array as a fallback before calling `.length()`.
-2. Inside the branch, add a **Log Info** node with the message `"No low-stock items to reorder."`
-3. After the log, add a [**Return**](../../develop/understand-ide/editors/flow-diagram-editor/control.md#return) node with no value.
+1. Add a [**Declare Variable**](../../develop/understand-ide/editors/flow-diagram-editor/statement.md#declare-variable) node after **List Items** that assigns `lowStockResult.value ?: []` to a variable named `lowStockItems` (type `Item[]`).
+
+    <ThemedImage
+        alt="Declare Variable panel creating lowStockItems with type inventory:Item[] and expression lowStockResult.value ?: []"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/sap-b1-low-stock-automation/declare-variable-lowstockitems.png'),
+            dark: useBaseUrl('/img/guides/usecases/sap-b1-low-stock-automation/declare-variable-lowstockitems.png'),
+        }}
+    />
+
+2. Add an [**If**](../../develop/understand-ide/editors/flow-diagram-editor/control.md#if) node after it with the condition `lowStockItems.length() == 0`.
+3. Inside the branch, add a **Log Info** node with the message `"No low-stock items to reorder."`
+4. After the log, add a [**Return**](../../develop/understand-ide/editors/flow-diagram-editor/control.md#return) node with no value.
 
 Your flow should now branch and return early when nothing is low.
 
@@ -171,20 +188,20 @@ To reach your mail server, add an [**Email Smtp**](../../connectors/catalog/buil
     }}
 />
 
-Then build the loop:
+### Build the loop
 
-1. Add a [**Foreach**](../../develop/understand-ide/editors/flow-diagram-editor/control.md#foreach) node after the **If**, looping over `lowStockResult.value ?: []` with the item variable `lowStockItem` (type `Item`).
+1. Add a [**Foreach**](../../develop/understand-ide/editors/flow-diagram-editor/control.md#foreach) node after the **If**, looping over `lowStockItems` with the item variable `lowStockItem` (type `Item`).
 2. Inside the loop, add the `purchasingClient` **Create Purchase Requests** operation, and set **Result** to `purchaseRequest`. Configure the following fields on the **Document** record:
 
     | Field | Value |
     | --- | --- |
-    | DocumentLines | One line with **ItemCode** = `lowStockItem.ItemCode` and **Quantity** = `50` |
+    | DocumentLines | For **ItemCode**, open the field's [Expression editor](../../develop/understand-ide/editors/expression-editor.md) and select `lowStockItem` → `ItemCode` from the **Variables** list in the helper pane. Set **Quantity** to `50`. |
     | RequesterEmail | A valid email address, for example `"requester@example.com"` |
     | RequriedDate | A required-by date, for example `"2026-07-13"` |
     | BPL_IDAssignedToInvoice | Required only when your company has multiple branches (Business Places) enabled; the `BPLID` of a branch your user is authorized for |
 
     :::note
-    Instead of hardcoding **RequriedDate** to a fixed date, you can compute it dynamically relative to the run date — for example, three days out — using Ballerina's `time` module: `time:utcToCivil(time:utcAddSeconds(time:utcNow(), 3 * 24 * 60 * 60))` returns a `time:Civil` three days from now, whose `year`, `month`, and `day` fields you can format as a `yyyy-MM-dd` string for the field.
+    Instead of hardcoding **RequriedDate** to a fixed date, you can compute it dynamically relative to the run date. for example, using time module: `time:utcToCivil(time:utcAddSeconds(time:utcNow(), 3 * 24 * 60 * 60))` returns a `time:Civil` three days from now.
     :::
 
     Your payload should match the checkpoint below.
@@ -292,11 +309,12 @@ import ballerinax/sap.businessone.purchasing;
 public function main() returns error? {
     do {
         inventory:ItemsCollectionResponse lowStockResult = check inventoryClient->listItems(dollarFilter = "QuantityOnStock lt 10 and PurchaseItem eq 'YES'");
-        if (lowStockResult.value ?: []).length() == 0 {
+        inventory:Item[] lowStockItems = lowStockResult.value ?: [];
+        if lowStockItems.length() == 0 {
             log:printInfo("No low-stock items to reorder.");
             return;
         }
-        foreach inventory:Item lowStockItem in lowStockResult.value ?: [] {
+        foreach inventory:Item lowStockItem in lowStockItems {
             purchasing:Document purchaseRequest = check purchasingClient->createPurchaseRequests({
                 DocumentLines: [
                     {ItemCode: lowStockItem.ItemCode, Quantity: 50}
@@ -330,7 +348,7 @@ The `inventory:Client` and `purchasing:Client` are generated when you add the co
 
 ## Run and verify
 
-1. Select **Run** on the integration overview. When prompted, create the `Config.toml` and supply your SAP Business One password and your SMTP server details:
+1. Go to **Configurations** and supply your SAP Business One credentials and your SMTP server details, then select **Run** on the integration overview:
 
     ```toml
     b1ServiceUrl = "https://<service-layer-host>:50000/b1s/v1"
