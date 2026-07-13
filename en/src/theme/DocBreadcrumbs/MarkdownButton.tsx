@@ -22,23 +22,32 @@ export default function MarkdownButton({ markdownUrl }: MarkdownButtonProps): Re
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleCopyPage = async () => {
+const handleCopyPage = async () => {
     try {
       setCopyError(false);
 
       // In modern browsers, we must write to the clipboard using ClipboardItem with a Promise
       // to prevent the browser from blocking the write due to the asynchronous fetch delay.
       if (typeof ClipboardItem !== 'undefined' && navigator.clipboard && navigator.clipboard.write) {
-        const copyPromise = fetch(markdownUrl).then(async (response) => {
-          if (!response.ok) throw new Error('Failed to fetch content');
-          return response.text();
-        });
+        try {
+          const copyPromise = fetch(markdownUrl).then(async (response) => {
+            if (!response.ok) throw new Error('Failed to fetch content');
+            return response.text();
+          });
 
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            'text/plain': copyPromise,
-          }),
-        ]);
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/plain': copyPromise,
+            }),
+          ]);
+        } catch (writeErr) {
+          // If the modern ClipboardItem path fails, fallback to standard writeText
+          console.warn('ClipboardItem write failed, trying fallback:', writeErr);
+          const response = await fetch(markdownUrl);
+          if (!response.ok) throw new Error('Failed to fetch content');
+          const markdown = await response.text();
+          await navigator.clipboard.writeText(markdown);
+        }
       } else {
         // Fallback for older browsers
         const response = await fetch(markdownUrl);
