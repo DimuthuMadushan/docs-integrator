@@ -596,7 +596,7 @@ docker buildx build \
 ```
 
 :::tip
-If your build machine is already `x86_64`, you can skip `docker buildx` and use `docker push` on the image built by `bal build` instead. For **Arm64 node groups**, omit the `--platform` flag or set it to `linux/arm64`.
+If your build machine is already `x86_64`, you can skip `docker buildx` and use `docker push` on the image built by `bal build` instead. For **Arm64 node groups**, set `--platform linux/arm64`; you can omit the flag only when building on an Arm64 machine (such as Apple Silicon) where the default platform already matches.
 :::
 
 ### Step 5: Configure VPC endpoints for private clusters
@@ -830,7 +830,7 @@ If your build machine is already `x86_64`, you can skip `docker buildx` and push
 docker push <registry-name>.azurecr.io/my-integration:v1.0.0
 ```
 
-For **Arm64 node pools**, omit the `--platform` flag or set it to `linux/arm64`.
+For **Arm64 node pools**, set `--platform linux/arm64`; you can omit the flag only when building on an Arm64 machine (such as Apple Silicon) where the default platform already matches.
 :::
 
 ### Step 5: Deploy
