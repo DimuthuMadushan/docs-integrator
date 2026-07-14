@@ -90,6 +90,9 @@ The [Vault Secrets Operator (VSO)](https://developer.hashicorp.com/vault/docs/pl
 **1. Install VSO**
 
 ```bash
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm repo update
+
 helm install vault-secrets-operator hashicorp/vault-secrets-operator \
   --namespace vault-secrets-operator-system \
   --create-namespace \
