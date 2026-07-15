@@ -128,7 +128,7 @@ const sections: SectionCard[] = [
   },
   {
     title: 'Connectors',
-    description: 'Browse 400+ pre-built connectors for SaaS, databases, messaging, and AI.',
+    description: 'Browse pre-built connectors for SaaS, databases, messaging, and AI.',
     link: '/connectors/overview',
     icon: <IconConnectors />,
     iconBg: '#F0EDFF',
