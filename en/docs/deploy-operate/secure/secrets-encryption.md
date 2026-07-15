@@ -198,7 +198,7 @@ function readInjectedSecret(string filePath) returns map<string>|error {
     foreach string line in lines {
         int? eq = line.indexOf("=");
         if eq is int {
-            props[line.substring(0, eq).trim()] = line.substring(eq + 1).trim();
+            props[line.substring(0, eq).trim()] = line.substring(eq + 1);
         }
     }
     return props;
