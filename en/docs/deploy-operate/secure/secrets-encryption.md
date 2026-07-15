@@ -97,8 +97,12 @@ helm install vault-secrets-operator hashicorp/vault-secrets-operator \
   --namespace vault-secrets-operator-system \
   --create-namespace \
   --set "defaultVaultConnection.enabled=true" \
-  --set "defaultVaultConnection.address=http://vault.vault.svc.cluster.local:8200"
+  --set "defaultVaultConnection.address=https://vault.vault.svc.cluster.local:8200"
 ```
+
+> If Vault uses a custom or self-signed CA, supply the CA cert via
+> `--set defaultVaultConnection.caCertSecretRef=<secret-name>` where the secret
+> contains the PEM-encoded CA certificate.
 
 **2. Create VSO resources**
 
