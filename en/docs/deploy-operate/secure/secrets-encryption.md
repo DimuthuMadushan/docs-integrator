@@ -135,6 +135,7 @@ spec:
     name: my-integration-secret
     create: true
     transformation:
+      excludeRaw: true
       templates:
         DB_PASSWORD:
           text: "{{ .Secrets.db_password }}"
