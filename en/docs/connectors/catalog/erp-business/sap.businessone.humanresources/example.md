@@ -63,7 +63,16 @@ Expand **Connections**, select the saved connection, then select **List Employee
 ![SAP Business One Humanresources connection node expanded showing all available operations before selection](/img/connectors/catalog/erp-business/sap.businessone.humanresources/sap-businessone-humanresources-screenshot-04-operations-panel.png)
 The operation requires no input parameters and stores its result in a response variable of type `humanresources:EmployeesInfoCollectionResponse`.
 ![SAP Business One Humanresources List Employees Info operation configuration filled with all values](/img/connectors/catalog/erp-business/sap.businessone.humanresources/sap-businessone-humanresources-screenshot-05-operation-values.png)
-Select **Save** to add the operation node to the flow.
+Rename the response variable to `employeesInfo`, then select **Save** to add the operation node to the flow.
+
+### Step 7: Log the List Employees Info result
+
+1. Select **Add Step** after the connector operation.
+2. Expand **Logging** and select **Log Info**.
+3. Switch **Msg** to **Expression** mode.
+4. Enter `employeesInfo.toJsonString()` to log the returned employee collection.
+5. Select **Save** and return to the visual flow.
+
 ![Completed SAP Business One Humanresources automation flow](/img/connectors/catalog/erp-business/sap.businessone.humanresources/sap-businessone-humanresources-screenshot-06-completed-flow.png)
 
 ## Try it yourself

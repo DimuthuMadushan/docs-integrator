@@ -90,7 +90,7 @@ Select **Save**.
 
 Add a log action for `blanketAgreements`, then return to the visual flow.
 
-![Completed automation flow with the SAP Business One Sales operation and error handler](/img/connectors/catalog/erp-business/sap.businessone.sales/sap-businessone-sales-screenshot-06-completed-flow.png)
+![Completed automation flow with the SAP Business One Sales operation](/img/connectors/catalog/erp-business/sap.businessone.sales/sap-businessone-sales-screenshot-06-completed-flow.png)
 
 ## Try it yourself
 

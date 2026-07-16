@@ -85,6 +85,14 @@ Save the operation and confirm that **purchasing : listPurchaseOrders** appears 
 
 ![Completed automation flow with List Purchase Orders](/img/connectors/catalog/erp-business/sap.businessone.purchasing/sap-businessone-purchasing-screenshot-06-completed-flow.png)
 
+## Try it yourself
+
+Try this sample in WSO2 Integration Platform.
+
+[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/connectors/sap_businessone_purchasing_connector_sample)
+
+[View source on GitHub](https://github.com/wso2/integration-samples/tree/main/integrator-default-profile/connectors/sap_businessone_purchasing_connector_sample)
+
 ## More code examples
 
 The SAP Business One connectors provide practical examples illustrating usage in various scenarios. Explore these

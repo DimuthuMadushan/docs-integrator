@@ -81,9 +81,7 @@ Select **Save** and verify that the connection appears in the **Connections** se
 
 ![SAP Business One Service connection expanded to display operations before selection](/img/connectors/catalog/erp-business/sap.businessone.service/sap-businessone-service-screenshot-04-operations-panel.png)
 
-3. Select **List Contract Templates** and enter its required values.
-
-This operation does not require any parameters.
+3. Select **List Contract Templates**. This operation does not require any request parameters.
 
 ![SAP Business One Service List Contract Templates operation configuration form](/img/connectors/catalog/erp-business/sap.businessone.service/sap-businessone-service-screenshot-05-operation-form.png)
 

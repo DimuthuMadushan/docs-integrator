@@ -85,9 +85,19 @@ Select **Create Asset Capitalization**, then configure the payload fields listed
 - **Remarks** : free-text remarks stored on the document.
 - **Currency** : currency code used for the document.
 
+Select **Save** to add the Create Asset Capitalization operation to the automation flow.
+
 ![SAP Business One Fixed Assets Create Asset Capitalization operation configuration filled with all values](/img/connectors/catalog/erp-business/sap.businessone.fixedassets/sap-businessone-fixedassets-screenshot-05-operation-values.png)
 
 ![Completed SAP Business One Fixed Assets automation flow](/img/connectors/catalog/erp-business/sap.businessone.fixedassets/sap-businessone-fixedassets-screenshot-06-completed-flow.png)
+
+## Try it yourself
+
+Try this sample in WSO2 Integration Platform.
+
+[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/connectors/sap_businessone_fixedassets_connector_sample)
+
+[View source on GitHub](https://github.com/wso2/integration-samples/tree/main/integrator-default-profile/connectors/sap_businessone_fixedassets_connector_sample)
 
 ## More code examples
 

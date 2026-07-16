@@ -87,6 +87,14 @@ In the left panel of WSO2 Integrator, select **Configurations** (listed at the b
 
 ![SAP B1 Financials listJournalEntries operation configuration filled with all values](/img/connectors/catalog/erp-business/sap.businessone.financials/sap-businessone-financials-screenshot-05-operation-filled.png)
 
+### Step 8: Log the List Journal Entries result
+
+1. Select **Add Step** after the connector operation.
+2. Expand **Logging** and select **Log Info**.
+3. Switch **Msg** to **Expression** mode.
+4. Enter `result.toJsonString()` to log the returned journal entries collection.
+5. Select **Save** and return to the visual flow.
+
 ![Completed SAP B1 Financials automation flow showing Automation trigger, listJournalEntries operation node, log node, and Error Handler all connected](/img/connectors/catalog/erp-business/sap.businessone.financials/sap-businessone-financials-screenshot-06-completed-flow.png)
 
 ## Try it yourself

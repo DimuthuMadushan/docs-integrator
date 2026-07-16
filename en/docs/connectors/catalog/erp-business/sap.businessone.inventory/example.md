@@ -90,7 +90,11 @@ Select **Save Connection** and verify that the connection appears in the **Conne
 
 ### Step 8: Log the List Items result
 
-Add a log action for the returned value, then return to the visual flow.
+1. Select **Add Step** after the connector operation.
+2. Expand **Logging** and select **Log Info**.
+3. Switch **Msg** to **Expression** mode.
+4. Enter `inventoryItems.toJsonString()` to log the returned inventory collection.
+5. Select **Save** and return to the visual flow.
 
 ![Completed Inventory flow with List Items and result logging](/img/connectors/catalog/erp-business/sap.businessone.inventory/sap-businessone-inventory-screenshot-06-completed-flow.png)
 
