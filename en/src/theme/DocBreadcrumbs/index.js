@@ -19,7 +19,6 @@ const CATEGORY_TAGS = {
   'database':                   { label: 'Database',                     color: '#0891b2', bg: '#ecfeff', border: '#a5f3fc' },
   'developer-tools':            { label: 'Developer Tools',              color: '#475569', bg: '#f8fafc', border: '#cbd5e1' },
   'ecommerce':                  { label: 'E-Commerce',                   color: '#db2777', bg: '#fdf2f8', border: '#f9a8d4' },
-  'erp-business':               { label: 'ERP & Business',               color: '#b45309', bg: '#fffbeb', border: '#fde68a' },
   'finance-accounting':         { label: 'Finance & Accounting',         color: '#15803d', bg: '#f0fdf4', border: '#bbf7d0' },
   'healthcare':                 { label: 'Healthcare',                   color: '#0f766e', bg: '#f0fdfa', border: '#99f6e4' },
   'hrms':                       { label: 'HRMS',                         color: '#7e22ce', bg: '#faf5ff', border: '#e9d5ff' },
