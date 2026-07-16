@@ -172,6 +172,10 @@
   background-color: var(--ifm-background-color);
 }
 
+.navbar-sidebar {
+  background-color: var(--ifm-background-color);
+}
+
 [data-theme='dark'] .navbar {
   border-bottom-color: rgba(255, 255, 255, 0.06);
 }
