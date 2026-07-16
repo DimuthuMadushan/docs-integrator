@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Link from '@docusaurus/Link';
 import styles from './styles.module.css';
 
 interface Connector {
@@ -113,7 +114,7 @@ export default function ConnectorCatalog({ connectors, categories }: Props) {
       {resultCount > 0 ? (
         <div className={styles.grid}>
           {filtered.map((c) => (
-            <a key={c.name + c.link} href={`${catalogBase}${c.link.endsWith('/') ? c.link : `${c.link}/`}`} className={styles.card}>
+            <Link key={c.name + c.link} to={`${catalogBase}${c.link.replace(/\\/$/, '')}`} className={styles.card}>
               <div className={styles.cardHeader}>
                 {c.icon ? (
                   <img
@@ -131,7 +132,7 @@ export default function ConnectorCatalog({ connectors, categories }: Props) {
               </div>
               <p className={styles.cardDesc}>{c.description}</p>
               <span className={styles.cardLink}>Learn more →</span>
-            </a>
+            </Link>
           ))}
         </div>
       ) : (
