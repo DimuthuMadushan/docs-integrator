@@ -2026,9 +2026,9 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'How to Guide',
+          label: 'How to Guides',
           items: [
-            'guides/howtoguide/sap-b1-low-stock-purchase-automation',
+            'guides/howtoguides/sap-b1-low-stock-purchase-automation',
           ],
         },
         // Migration Guides
