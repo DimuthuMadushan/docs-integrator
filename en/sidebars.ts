@@ -2010,6 +2010,13 @@ const sidebars: SidebarsConfig = {
             'guides/patterns/message-mapper',
           ],
         },
+        {
+          type: 'category',
+          label: 'How to Guide',
+          items: [
+            'guides/howtoguide/sap-b1-low-stock-purchase-automation',
+          ],
+        },
         // Migration Guides
         {
           type: 'category',
