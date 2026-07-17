@@ -1437,6 +1437,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.administration/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.administration/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.administration/example',
           ],
         },
         {
@@ -1446,6 +1447,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.banking/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.banking/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.banking/example',
           ],
         },
         {
@@ -1455,6 +1457,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.businesspartners/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.businesspartners/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.businesspartners/example',
           ],
         },
         {
@@ -1464,6 +1467,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.crm/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.crm/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.crm/example',
           ],
         },
         {
@@ -1473,6 +1477,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.financials/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.financials/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.financials/example',
           ],
         },
         {
@@ -1482,6 +1487,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.fixedassets/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.fixedassets/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.fixedassets/example',
           ],
         },
         {
@@ -1491,6 +1497,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.humanresources/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.humanresources/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.humanresources/example',
           ],
         },
         {
@@ -1500,6 +1507,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.inventory/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.inventory/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.inventory/example',
           ],
         },
         {
@@ -1509,6 +1517,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.localization/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.localization/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.localization/example',
           ],
         },
         {
@@ -1518,6 +1527,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.production/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.production/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.production/example',
           ],
         },
         {
@@ -1527,6 +1537,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.projects/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.projects/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.projects/example',
           ],
         },
         {
@@ -1536,6 +1547,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.purchasing/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.purchasing/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.purchasing/example',
           ],
         },
         {
@@ -1545,6 +1557,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.sales/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.sales/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.sales/example',
           ],
         },
         {
@@ -1554,6 +1567,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.businessone.service/setup-guide',
             'connectors/catalog/erp-business/sap.businessone.service/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.service/example',
           ],
         },
         {
