@@ -250,6 +250,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'develop/copilot/getting-started',
             'develop/copilot/overview',
+            'develop/copilot/mcp-tools',
           ],
         },
         // 6.6 Try & Test
