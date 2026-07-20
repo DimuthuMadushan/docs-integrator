@@ -329,6 +329,7 @@ const sidebars: SidebarsConfig = {
                 'develop/tools/integration-tools/wsdl-tool',
                 'develop/tools/integration-tools/xsd-tool',
                 'develop/tools/integration-tools/persist-tool',
+                'develop/tools/integration-tools/connector-tool',
               ],
             },
             {
@@ -1431,6 +1432,146 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'SAP Business One Administration',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.administration/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.administration/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.administration/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.administration/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Banking',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.banking/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.banking/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.banking/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.banking/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Business Partners',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.businesspartners/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.businesspartners/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.businesspartners/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.businesspartners/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One CRM',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.crm/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.crm/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.crm/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.crm/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Financials',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.financials/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.financials/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.financials/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.financials/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Fixed Assets',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.fixedassets/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.fixedassets/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.fixedassets/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.fixedassets/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Human Resources',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.humanresources/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.humanresources/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.humanresources/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.humanresources/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Inventory',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.inventory/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.inventory/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.inventory/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.inventory/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Localization',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.localization/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.localization/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.localization/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.localization/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Production',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.production/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.production/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.production/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.production/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Projects',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.projects/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.projects/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.projects/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.projects/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Purchasing',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.purchasing/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.purchasing/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.purchasing/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.purchasing/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Sales',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.sales/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.sales/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.sales/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.sales/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SAP Business One Service',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.businessone.service/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.businessone.service/setup-guide',
+            'connectors/catalog/erp-business/sap.businessone.service/action-reference',
+            'connectors/catalog/erp-business/sap.businessone.service/example',
+          ],
+        },
+        {
+          type: 'category',
           label: 'SAP Commerce',
           link: { type: 'doc', id: 'connectors/catalog/ecommerce/sap.commerce.webservices/sap-commerce-connector-overview' },
           items: [
@@ -1883,6 +2024,13 @@ const sidebars: SidebarsConfig = {
             'guides/patterns/message-mapper',
           ],
         },
+        {
+          type: 'category',
+          label: 'How to Guides',
+          items: [
+            'guides/howtoguides/sap-b1-low-stock-purchase-automation',
+          ],
+        },
         // Migration Guides
         {
           type: 'category',
@@ -2116,6 +2264,25 @@ const sidebars: SidebarsConfig = {
                 'manage/cloud/audit/compliance-data-residency',
               ],
             },
+            // API Management
+            {
+              type: 'category',
+              label: 'API Management',
+              link: { type: 'doc', id: 'manage/cloud/api-management/overview' },
+              items: [
+                'manage/cloud/api-management/lifecycle-management',
+                'manage/cloud/api-management/api-security',
+                {
+                  type: 'category',
+                  label: 'Consuming APIs',
+                  items: [
+                    'manage/cloud/api-management/consuming-apis/consuming-an-api-secured-with-an-api-key',
+                    'manage/cloud/api-management/consuming-apis/consuming-an-api-secured-with-oauth2',
+                  ],
+                },
+                'manage/cloud/api-management/api-rate-limiting',
+              ],
+            },
             // Private data plane
             {
               type: 'category',
@@ -2270,4 +2437,3 @@ const sidebars: SidebarsConfig = {
 };
 
 export default sidebars;
-
