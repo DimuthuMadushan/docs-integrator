@@ -406,6 +406,16 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Ardoq',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/ardoq/overview' },
+          items: [
+            'connectors/catalog/erp-business/ardoq/setup-guide',
+            'connectors/catalog/erp-business/ardoq/action-reference',
+            'connectors/catalog/erp-business/ardoq/example',
+          ],
+        },
+        {
+          type: 'category',
 
           label: 'Asana',
           link: { type: 'doc', id: 'connectors/catalog/productivity-collaboration/asana/connector-overview' },
