@@ -1677,6 +1677,15 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'SAP Signavio',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/sap.signavio/overview' },
+          items: [
+            'connectors/catalog/erp-business/sap.signavio/setup-guide',
+            'connectors/catalog/erp-business/sap.signavio/action-reference',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Salesforce',
           link: { type: 'doc', id: 'connectors/catalog/crm-sales/salesforce/connector-overview' },
           items: [
