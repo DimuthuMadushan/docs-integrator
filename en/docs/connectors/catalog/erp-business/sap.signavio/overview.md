@@ -7,8 +7,6 @@ description: "Overview of the ballerinax/sap.signavio connector for WSO2 Integra
 
 [SAP Signavio](https://www.signavio.com/) is SAP's business process transformation suite for modeling, analyzing, and improving business processes. The `ballerinax/sap.signavio` connector provides a unified client for the SAP Signavio REST APIs, covering Process Manager (Dictionary, Directory, Model, Import and Export, Search), Process Intelligence (Ingestion and SIGNAL Engine OData), Process Governance Analytics, Journey Modeler Metrics, and Process Transformation Manager (Initiatives, Assets, Insights, and Objectives).
 
-SAP Signavio splits its REST surface across two backends that each need their own authentication — an API gateway (JWT-based) and a Process Manager workspace (session-based). The connector logs in to both from a single set of credentials when the client is created, so callers never need to handle either auth flow themselves.
-
 ## Key Features
 
 - Manage dictionary entries and categories that define your organization's shared business glossary

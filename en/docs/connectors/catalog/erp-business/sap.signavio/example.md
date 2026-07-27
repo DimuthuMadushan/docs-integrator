@@ -57,7 +57,17 @@ Select **Save** and verify that the connection appears in the **Connections** se
 
 ![SAP Signavio connection visible after saving](/img/connectors/catalog/erp-business/sap.signavio/example/ballerinax_sap.signavio_screenshot_03_connections_list.png)
 
-### Step 5: Set actual values for your configurables
+## Configuring the SAP Signavio List Dictionary Categories operation
+
+### Step 5: Add an automation entry point
+
+1. In the left panel under **Entry Points**, select **+** (**Add Entry Point**).
+2. Under **Automation**, select **Automation**.
+3. In the **Create New Automation** dialog, accept the default settings and select **Create**.
+
+The canvas switches to the Automation flow view, showing a Start node, an Error Handler node, and an End node.
+
+### Step 6: Set actual values for your configurables
 
 1. Select **Configurations** at the bottom of the project tree under **Data Mappers**.
 2. Enter a value for each configurable listed below before you run the integration.
@@ -65,15 +75,7 @@ Select **Save** and verify that the connection appears in the **Connections** se
 - **username** (`string`) : Your SAP Signavio account's user name.
 - **password** (`string`) : Your SAP Signavio account's password.
 
-## Configuring the SAP Signavio List Dictionary Categories operation
-
-### Step 6: Add an automation entry point
-
-1. In the low-code canvas, select **Add Artifact** in the Design section.
-2. Select **Automation** in the artifact selection panel.
-3. Accept the default schedule settings and select **Create** to add the automation to the canvas.
-
-### Step 7: Expand the SAP Signavio connection and select the List Dictionary Categories operation
+### Step 7: Select the List Dictionary Categories operation
 
 1. In the automation flow body on the canvas, select the **+** (Add Step) button between the Start and Error Handler nodes to open the step-addition panel.
 2. Under **Connections** in the step panel, select the **signavioClient** connection node to expand it and reveal all available SAP Signavio API operations.
