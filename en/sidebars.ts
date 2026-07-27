@@ -1682,6 +1682,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/sap.signavio/setup-guide',
             'connectors/catalog/erp-business/sap.signavio/action-reference',
+            'connectors/catalog/erp-business/sap.signavio/example',
           ],
         },
         {
