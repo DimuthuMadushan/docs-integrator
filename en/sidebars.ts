@@ -240,6 +240,7 @@ const sidebars: SidebarsConfig = {
             'develop/transform/csv-flat-file',
             'develop/transform/edi',
             'develop/transform/pdf',
+            'develop/transform/freemarker',
             'develop/transform/yaml-toml'
           ],
         },
