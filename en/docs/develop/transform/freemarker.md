@@ -13,7 +13,7 @@ Generate emails, configuration files, reports, API responses, and any other text
 
 ## Rendering from a file
 
-Use `freemarker:renderFromFile` when templates are stored on disk as `.ftl` files. This keeps templates out of source code, lets non-developers edit them, and makes it easy to swap templates at deployment time. Pair it with a JSON data file to separate content from logic entirely.
+Use `freemarker:renderFromFile` when templates are stored on disk as `.ftl` files. This keeps templates out of source code and makes it easy to swap templates at deployment time. Pair it with a JSON data file to separate content from logic entirely. Since FreeMarker templates execute as server-side code, treat them as trusted operator-managed content and never load templates from user-supplied input.
 
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
@@ -195,7 +195,8 @@ ${user.name} lives in ${user.address.city}, ${user.address.country}.
 
 ## Best practices
 
-- **Use `renderFromFile` for production templates**: Keeping templates in `.ftl` files separates content from logic, allows updates without recompilation, and enables review by non-developers.
+- **Use `renderFromFile` for production templates**: Keeping templates in `.ftl` files separates content from logic and allows updates without recompilation.
+- **Escape values in HTML output**: FreeMarker interpolates values unescaped by default. When rendering HTML, use `${value?html}` for each interpolation or name your template files with the `.ftlh` extension to enable automatic HTML escaping across the entire template.
 - **Format numbers with `?c`**: Apache FreeMarker applies locale-aware grouping separators by default. A value of `1000` renders as `1,000` in some locales. Use `${id?c}` to suppress grouping when you need a plain numeric string.
 - **Format decimals with `?string('0.##')`**: For controlled decimal places, use `${price?string('0.##')}` rather than relying on the default locale format.
 - **Use `?c` for booleans in non-display contexts**: `${active?c}` produces `"true"` or `"false"` as plain strings, which is safe for config generation and JSON-in-template use cases.
