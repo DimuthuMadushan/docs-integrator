@@ -194,32 +194,32 @@ Open the `onMessage` callback and add the following steps:
 1. **Declare Variable** — name it `notification`, set the type to `S3Notification`, and set the expression to `check message.cloneWithType(S3Notification)`. Add an **Error Handler** block to handle parse failures.
 
    <ThemedImage
-    alt="Declare the notification variable"
-    sources={{
-        light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
-        dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
-    }}
-/>
+       alt="Declare the notification variable"
+       sources={{
+           light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
+           dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
+       }}
+   />
 
 2. **Foreach** — set the collection to `notification.Records`, the variable name to `eventRecord`, and the variable type to `S3EventRecord`.
 
    <ThemedImage
-    alt="Add a foreach loop over notification Records"
-    sources={{
-        light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
-        dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
-    }}
-/>
+       alt="Add a foreach loop over notification Records"
+       sources={{
+           light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
+           dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
+       }}
+   />
 
 3. **Print** — inside the foreach loop, add an `io:println` node with the value `eventRecord`.
 
    <ThemedImage
-    alt="Print each event record"
-    sources={{
-        light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
-        dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
-    }}
-/>
+       alt="Print each event record"
+       sources={{
+           light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
+           dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
+       }}
+   />
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
