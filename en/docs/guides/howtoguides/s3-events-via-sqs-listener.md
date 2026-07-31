@@ -17,7 +17,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## How it works
 
-```
+```text
 S3 Bucket  ──(ObjectCreated)──►  SQS Queue  ──(poll)──►  sqs:Listener  ──►  onMessage callback
 ```
 
@@ -34,7 +34,7 @@ S3 Bucket  ──(ObjectCreated)──►  SQS Queue  ──(poll)──►  sqs
 - A working WSO2 Integrator environment:
   - [Cloud setup](../../get-started/setup/cloud-setup.md) — browser-based editor in the cloud.
   - [Local setup](../../get-started/setup/local-setup.md) — WSO2 Integrator IDE on your machine.
-- AWS Access Key ID and Secret Access Key for an IAM user that has necessary read and write permissions for `AWS S3` and `AWS SQS`. See the [AWS SQS Setup Guide](../../connectors/catalog/messaging/aws.sqs/setup-guide.md) if you need to create credentials.
+- AWS Access Key ID and Secret Access Key for an IAM user who has the necessary `sqs:ReceiveMessage`, `sqs:DeleteMessage`, and `sqs:GetQueueAttributes` permissions on your SQS queue. See the [AWS SQS Setup Guide](../../connectors/catalog/messaging/aws.sqs/setup-guide.md) if you need to create credentials.
 
 :::
 
@@ -191,7 +191,7 @@ After adding the SQS Trigger artifact and configuring the listener as described 
 
 Open the `onMessage` callback and add the following steps:
 
-1. **Declare Variable** — name it `notification`, set the type to `S3Notification`, and set the expression to `check message.cloneWithType(S3Notification)`. Add an **Error Handler** block to handle parse failures.
+1. **Declare Variable** — name it `notification`, set the type to `S3Notification`, and set the expression to `check message.body.cloneWithType(S3Notification)`. Add an **Error Handler** block to handle parse failures.
 
    <ThemedImage
        alt="Declare the notification variable"
@@ -304,9 +304,9 @@ listener sqs:Listener sqsListener = new (
 service sqs:Service on sqsListener {
     remote function onMessage(sqs:Message message) returns error? {
         do {
-            S3Notification notification = check message.cloneWithType(S3Notification);
+            S3Notification notification = check message.body.cloneWithType(S3Notification);
             foreach S3EventRecord eventRecord in notification.Records {
-                io:println(eventRecord);
+                io:println(string `bucket=${eventRecord.s3.bucket.name} key=${eventRecord.s3.'object.key} size=${eventRecord.s3.'object.size}`);
             }
         } on fail error err {
             // handle error
@@ -328,19 +328,16 @@ service sqs:Service on sqsListener {
 2. Run the integration.
 3. Upload a `.csv` file to your S3 bucket.
 
-Within seconds the terminal should print a log line similar to:
+Within seconds the terminal should print output similar to:
 
-```
-time=2026-07-23T10:15:32.000Z level=INFO message="New CSV file uploaded to S3"
-  event="ObjectCreated:Put" bucket="my-csv-bucket" key="reports/sales_q2.csv"
-  sizeBytes=4096 region="us-east-1" time="2026-07-23T10:15:30.123Z"
-Processing: s3://my-csv-bucket/reports/sales_q2.csv
+```text
+bucket=my-csv-bucket key=reports/sales_q2.csv size=4096
 ```
 
 :::note Troubleshooting
 - **No messages appear** — verify the SQS access policy includes the S3 `SendMessage` permission and the `aws:SourceArn` condition matches your bucket ARN exactly.
-- **Parse error** — print the raw `body` value and compare it against the [S3 Event Message Structure](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html) to check if field names have changed.
-- **Test event not discarded** — the `S3TestEvent` detection relies on the `Event` field being `"s3:TestEvent"`. If the message is being re-queued, confirm that `autoDelete: false` is set and that `caller->delete()` is reached in the test-event branch.
+- **Parse error** — print the raw `message.body` value and compare it against the [S3 Event Message Structure](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html) to check if field names have changed.
+- **Test event causes a parse failure** — S3 sends a one-off `s3:TestEvent` message when you first configure event notifications. This message has a different structure and does not contain a `Records` array. You can safely delete it from the SQS console.
 :::
 
 ---
