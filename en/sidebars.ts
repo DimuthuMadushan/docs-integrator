@@ -2106,6 +2106,7 @@ const sidebars: SidebarsConfig = {
           label: 'How to Guides',
           items: [
             'guides/howtoguides/sap-b1-low-stock-purchase-automation',
+            'guides/howtoguides/s3-events-via-sqs-listener',
           ],
         },
         // Migration Guides
