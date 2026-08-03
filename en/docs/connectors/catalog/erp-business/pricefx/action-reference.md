@@ -21,28 +21,44 @@ The `ballerinax/pricefx` package exposes the following clients:
 
 #### PricefxCredentials
 
-Pricefx account credentials and authentication options, included directly in `ConnectionConfig`. Provide exactly one of the four combinations below.
+`PricefxCredentials` is a union of four records - `BasicCredentials`, `JwtCredentials`, `OAuth2Credentials`, or `ExternalJwtCredentials`. Pick the one matching the credentials you hold and pass it as the `auth` field of `ConnectionConfig`.
+
+**BasicCredentials**
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `username` | <code>string</code> | Optional | Your Pricefx username |
-| `password` | <code>string</code> | Optional | Your Pricefx password |
-| `partition` | <code>string</code> | Optional | Your Pricefx partition name |
-| `jwt` | <code>string</code> | Optional | A Pricefx-issued JWT you already hold, sent directly as the `X-PriceFx-jwt` header, with no exchange. Intended for the non-expiring integration tokens produced by `generateJwtToken` (or the time-limited ones from `generateTimedJwtToken`). Cannot be refreshed by the connector - a rejected token surfaces as an error rather than being retried, so avoid pasting in a short-lived session token here |
-| `oauth2ClientId` | <code>string</code> | Optional | OAuth 2.0 client identifier, as registered in Pricefx's `oauthConfiguration` |
-| `oauth2ClientSecret` | <code>string</code> | Optional | OAuth 2.0 client secret, if one was configured for the client |
-| `oauth2RefreshToken` | <code>string</code> | Optional | A refresh token previously obtained through Pricefx's OAuth 2.0 Authorization Code Grant flow. The connector uses it to fetch (and automatically refresh) access tokens |
-| `csrfToken` | <code>string</code> | Optional | A CSRF token, sent as the `X-PriceFx-Csrf-Token` header on every request. Only required when the partition has CSRF protection enabled |
-| `externalJwtSystemName` | <code>string</code> | Optional | The name of the external system trusted via Pricefx's `externalJWTConfiguration`, used together with `externalJwt` |
-| `externalJwt` | <code>string</code> | Optional | A JWT signed by the external system named in `externalJwtSystemName`, sent as `Authorization: BEARER &#60;externalJwtSystemName&#62;;&#60;externalJwt&#62;` on every request |
+| `username` | <code>string</code> | Required | Your Pricefx username |
+| `password` | <code>string</code> | Required | Your Pricefx password |
+| `partition` | <code>string</code> | Required | Your Pricefx partition name |
+
+**JwtCredentials**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `jwt` | <code>string</code> | Required | A Pricefx-issued JWT you already hold, sent directly as the `X-PriceFx-jwt` header, with no exchange. Intended for the non-expiring integration tokens produced by `generateJwtToken` (or the time-limited ones from `generateTimedJwtToken`). Cannot be refreshed by the connector - a rejected token surfaces as an error rather than being retried, so avoid pasting in a short-lived session token here |
+
+**OAuth2Credentials**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `clientId` | <code>string</code> | Required | The client identifier, as registered in Pricefx's `oauthConfiguration` |
+| `clientSecret` | <code>string</code> | Optional | The client secret, if one was configured for this client |
+| `refreshToken` | <code>string</code> | Required | A refresh token from a completed Authorization Code Grant flow |
+
+**ExternalJwtCredentials**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `systemName` | <code>string</code> | Required | The external system's name, as configured in `externalJWTConfiguration` |
+| `jwt` | <code>string</code> | Required | A JWT signed by that system |
 
 #### ConnectionConfig
 
-Provides a set of configurations for controlling the behaviours when communicating with the Pricefx API. Includes `PricefxCredentials` directly. The client automatically re-authenticates and retries once whenever a request comes back unauthenticated, so a long-lived client instance keeps working without manual re-initialization.
+Provides a set of configurations for controlling the behaviours when communicating with the Pricefx API.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| *(all `PricefxCredentials` fields)* | | | See above |
+| `auth` | <code>PricefxCredentials</code> | Required | How to authenticate - one of the four `PricefxCredentials` records above |
 | `httpVersion` | <code>http:HttpVersion</code> | <code>http:HTTP_2_0</code> | The HTTP version understood by the client |
 | `http1Settings` | <code>oas:ClientHttp1Settings</code> | Optional | Configurations related to HTTP/1.x protocol |
 | `http2Settings` | <code>http:ClientHttp2Settings</code> | Optional | Configurations related to HTTP/2 protocol |
@@ -70,7 +86,7 @@ configurable string password = ?;
 configurable string partition = ?;
 configurable string serviceUrl = ?;
 
-pricefx:Client pricefxClient = check new ({username, password, partition}, serviceUrl);
+pricefx:Client pricefxClient = check new ({auth: {username, password, partition}}, serviceUrl);
 ```
 
 ### Operations
@@ -91,12 +107,12 @@ Add a User
 | `payload` | <code>oas:AddUserRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:userResponse|error`
+**Returns:** `oas:UserResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:userResponse result = check pricefxClient->addUser(payload);
+oas:UserResponse result = check pricefxClient->addUser(payload);
 ```
 
 </div>
@@ -445,12 +461,12 @@ Delete a User
 | `payload` | <code>oas:DeleteUserRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:userResponse|error`
+**Returns:** `oas:UserResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:userResponse result = check pricefxClient->deleteUser(payload);
+oas:UserResponse result = check pricefxClient->deleteUser(payload);
 ```
 
 </div>
@@ -746,12 +762,12 @@ Update a User
 | `payload` | <code>oas:UpdateUserRequest</code> | Yes | Specify the user by `typedId` and define the new value of the field you want to update in the `data` object |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:userResponse|error`
+**Returns:** `oas:UserResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:userResponse result = check pricefxClient->updateUser(payload);
+oas:UserResponse result = check pricefxClient->updateUser(payload);
 ```
 
 </div>
@@ -773,12 +789,12 @@ Add a Product
 | `payload` | <code>oas:AddProductRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:productResponse|error`
+**Returns:** `oas:ProductResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:productResponse result = check pricefxClient->addProduct(payload);
+oas:ProductResponse result = check pricefxClient->addProduct(payload);
 ```
 
 </div>
@@ -798,12 +814,12 @@ Insert Bulk Products
 | `payload` | <code>oas:InsertBulkProductsRequest</code> | Yes | Specify product field names in the `header` object and fields values in the `data` object.&lt;p&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:loaddataResponse|error`
+**Returns:** `oas:LoadDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:loaddataResponse result = check pricefxClient->bulkInsertProducts(payload);
+oas:LoadDataResponse result = check pricefxClient->bulkInsertProducts(payload);
 ```
 
 </div>
@@ -873,12 +889,12 @@ List Products
 | `payload` | <code>oas:ListProductsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:productResponse|error`
+**Returns:** `oas:ProductResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:productResponse result = check pricefxClient->listProducts(payload);
+oas:ProductResponse result = check pricefxClient->listProducts(payload);
 ```
 
 </div>
@@ -973,12 +989,12 @@ Update a Product
 | `payload` | <code>oas:UpdateProductRequest</code> | Yes | Updates specified fields of the record. Only one record can be updated per request (unless batched).&lt;p&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:productResponse|error`
+**Returns:** `oas:ProductResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:productResponse result = check pricefxClient->updateProduct(payload);
+oas:ProductResponse result = check pricefxClient->updateProduct(payload);
 ```
 
 </div>
@@ -998,12 +1014,12 @@ Upsert a Product
 | `payload` | <code>oas:UpsertProductRequest</code> | Yes | Either `sku` or `typedId` must be specified in order to *update* an existing product |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:productResponse|error`
+**Returns:** `oas:ProductResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:productResponse result = check pricefxClient->upsertProduct(payload);
+oas:ProductResponse result = check pricefxClient->upsertProduct(payload);
 ```
 
 </div>
@@ -1127,12 +1143,12 @@ Upsert a Product Extension
 | `payload` | <code>oas:UpsertProductExtensionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:productResponse|error`
+**Returns:** `oas:ProductResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:productResponse result = check pricefxClient->upsertProductExtension(payload);
+oas:ProductResponse result = check pricefxClient->upsertProductExtension(payload);
 ```
 
 </div>
@@ -1335,12 +1351,12 @@ Add a Customer
 | `payload` | <code>oas:AddCustomerRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:customerResponse|error`
+**Returns:** `oas:CustomerResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:customerResponse result = check pricefxClient->addCustomer(payload);
+oas:CustomerResponse result = check pricefxClient->addCustomer(payload);
 ```
 
 </div>
@@ -1360,12 +1376,12 @@ Assign Customers
 | `payload` | <code>oas:AssignCustomersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:assignmentResponse|error`
+**Returns:** `oas:AssignmentResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:assignmentResponse result = check pricefxClient->assignCustomers(payload);
+oas:AssignmentResponse result = check pricefxClient->assignCustomers(payload);
 ```
 
 </div>
@@ -1385,12 +1401,12 @@ Insert Bulk Customers
 | `payload` | <code>oas:InsertBulkCustomersRequest</code> | Yes | Specify customer field names in the `header` object and fields values in the `data` object.&lt;p&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:loaddataResponse|error`
+**Returns:** `oas:LoadDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:loaddataResponse result = check pricefxClient->bulkInsertCustomers(payload);
+oas:LoadDataResponse result = check pricefxClient->bulkInsertCustomers(payload);
 ```
 
 </div>
@@ -1435,12 +1451,12 @@ Get a Customer
 | `id` | <code>string</code> | Yes | The ID of the Customer you want to retrieve details for. The `id` is the `typedId` without the **C** suffix. For example, the `id` parameter of the item with `typedId` = **2147492200.C**  is **2147492200** |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:customerResponse|error`
+**Returns:** `oas:CustomerResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:customerResponse result = check pricefxClient->getCustomer(id);
+oas:CustomerResponse result = check pricefxClient->getCustomer(id);
 ```
 
 </div>
@@ -1461,12 +1477,12 @@ List Customer Assignments
 | `payload` | <code>oas:ListCustomerAssignmentsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:assignmentResponse|error`
+**Returns:** `oas:AssignmentResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:assignmentResponse result = check pricefxClient->listCustomerAssignments(typedId, payload);
+oas:AssignmentResponse result = check pricefxClient->listCustomerAssignments(typedId, payload);
 ```
 
 </div>
@@ -1486,12 +1502,12 @@ List Customers
 | `payload` | <code>oas:ListCustomersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:customerResponse|error`
+**Returns:** `oas:CustomerResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:customerResponse result = check pricefxClient->listCustomers(payload);
+oas:CustomerResponse result = check pricefxClient->listCustomers(payload);
 ```
 
 </div>
@@ -1511,12 +1527,12 @@ Update a Customer + payload -
 | `payload` | <code>oas:UpdateCustomerRequest</code> | Yes |  |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:customerResponse|error`
+**Returns:** `oas:CustomerResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:customerResponse result = check pricefxClient->updateCustomer(payload);
+oas:CustomerResponse result = check pricefxClient->updateCustomer(payload);
 ```
 
 </div>
@@ -1536,12 +1552,12 @@ Upsert a Customer
 | `payload` | <code>oas:UpsertCustomerRequest</code> | Yes | If the customer does not exist yet, at least the `customerId` must be specified in the payload.&lt;p&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:customerResponse|error`
+**Returns:** `oas:CustomerResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:customerResponse result = check pricefxClient->upsertCustomer(payload);
+oas:CustomerResponse result = check pricefxClient->upsertCustomer(payload);
 ```
 
 </div>
@@ -1588,12 +1604,12 @@ Insert Bulk Customer Extensions
 | `payload` | <code>oas:InsertBulkCustomerExtensionsRequest</code> | Yes | Specify customer extension field names in the `header` object and field values in the `data` object.&lt;p&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:loaddataResponse|error`
+**Returns:** `oas:LoadDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:loaddataResponse result = check pricefxClient->insertBulkCustomerExtensions(payload);
+oas:LoadDataResponse result = check pricefxClient->insertBulkCustomerExtensions(payload);
 ```
 
 </div>
@@ -1644,12 +1660,12 @@ Upload a File to PX/CX/SX
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:UploadFileToPxCxSxQueries</code> | Yes | Queries to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->uploadFileToPxCxSx(typeCode, target, uploadSlotId, payload, queries);
+oas:GenericDataResponse result = check pricefxClient->uploadFileToPxCxSx(typeCode, target, uploadSlotId, payload, queries);
 ```
 
 </div>
@@ -2309,12 +2325,12 @@ Create a Revision
 | `payload` | <code>oas:CreateRevisionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:pricelistitemResponse|error`
+**Returns:** `oas:PriceListItemResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:pricelistitemResponse result = check pricefxClient->createPriceListRevision(id, payload);
+oas:PriceListItemResponse result = check pricefxClient->createPriceListRevision(id, payload);
 ```
 
 </div>
@@ -2436,12 +2452,12 @@ List Price List Items
 | `payload` | <code>oas:ListPriceListItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:pricelistitemResponse|error`
+**Returns:** `oas:PriceListItemResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:pricelistitemResponse result = check pricefxClient->listPriceListItems(id, payload);
+oas:PriceListItemResponse result = check pricefxClient->listPriceListItems(id, payload);
 ```
 
 </div>
@@ -2511,12 +2527,12 @@ Revoke a Price List
 | `payload` | <code>oas:PricelistmanagerSubmitidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:pricelistitemResponse|error`
+**Returns:** `oas:PriceListItemResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:pricelistitemResponse result = check pricefxClient->revokePriceList(id, payload);
+oas:PriceListItemResponse result = check pricefxClient->revokePriceList(id, payload);
 ```
 
 </div>
@@ -2537,12 +2553,12 @@ Submit a Price List
 | `payload` | <code>oas:PricelistmanagerSubmitidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:pricelistitemResponse|error`
+**Returns:** `oas:PriceListItemResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:pricelistitemResponse result = check pricefxClient->submitPriceList(id, payload);
+oas:PriceListItemResponse result = check pricefxClient->submitPriceList(id, payload);
 ```
 
 </div>
@@ -2616,12 +2632,12 @@ Add Products to a Manual Pricelist
 | `payload` | <code>oas:AddProductsToManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->addManualPriceListProducts(id, payload);
+oas:GenericDataResponse result = check pricefxClient->addManualPriceListProducts(id, payload);
 ```
 
 </div>
@@ -2692,12 +2708,12 @@ Copy a Manual Price List
 | `id` | <code>string</code> | Yes | The ID of the Manual Price List you want to copy |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:manualpricelistResponse|error`
+**Returns:** `oas:ManualPriceListResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:manualpricelistResponse result = check pricefxClient->copyManualPriceList(id);
+oas:ManualPriceListResponse result = check pricefxClient->copyManualPriceList(id);
 ```
 
 </div>
@@ -2717,12 +2733,12 @@ Create a Manual Price List
 | `payload` | <code>oas:CreateManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:manualpricelistResponse|error`
+**Returns:** `oas:ManualPriceListResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:manualpricelistResponse result = check pricefxClient->createManualPriceList(payload);
+oas:ManualPriceListResponse result = check pricefxClient->createManualPriceList(payload);
 ```
 
 </div>
@@ -2742,12 +2758,12 @@ Delete a Manual Price List
 | `payload` | <code>oas:DeleteManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:manualpricelistResponse|error`
+**Returns:** `oas:ManualPriceListResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:manualpricelistResponse result = check pricefxClient->deleteManualPriceList(payload);
+oas:ManualPriceListResponse result = check pricefxClient->deleteManualPriceList(payload);
 ```
 
 </div>
@@ -2768,12 +2784,12 @@ Delete a Product from a Manual Price List
 | `payload` | <code>oas:DeleteProductFromManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:productResponse|error`
+**Returns:** `oas:ProductResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:productResponse result = check pricefxClient->deleteManualPriceListProduct(id, payload);
+oas:ProductResponse result = check pricefxClient->deleteManualPriceListProduct(id, payload);
 ```
 
 </div>
@@ -2845,12 +2861,12 @@ List Manual Price Lists
 | `payload` | <code>oas:ListManualPriceListsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:manualpricelistResponse|error`
+**Returns:** `oas:ManualPriceListResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:manualpricelistResponse result = check pricefxClient->listManualPriceLists(payload);
+oas:ManualPriceListResponse result = check pricefxClient->listManualPriceLists(payload);
 ```
 
 </div>
@@ -2923,12 +2939,12 @@ Upsert a Product in a Manual Price List + payload -
 | `payload` | <code>oas:UpsertProductManualPriceListRequest</code> | Yes |  |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:productResponse|error`
+**Returns:** `oas:ProductResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:productResponse result = check pricefxClient->upsertManualPriceListProduct(id, payload);
+oas:ProductResponse result = check pricefxClient->upsertManualPriceListProduct(id, payload);
 ```
 
 </div>
@@ -3312,12 +3328,12 @@ Cancel a CFS Calculation
 | `id` | <code>string</code> | Yes | The `id` is the `typedId` without the type suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.PL**  is **2147484837** |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->cancelCfsCalculation(id);
+oas:GenericDataResponse result = check pricefxClient->cancelCfsCalculation(id);
 ```
 
 </div>
@@ -3616,12 +3632,12 @@ Delete a Price Grid Item
 | `payload` | <code>oas:DeletePriceGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:pricegriditemResponse|error`
+**Returns:** `oas:PriceGridItemResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:pricegriditemResponse result = check pricefxClient->deletePriceGridItem(id, payload);
+oas:PriceGridItemResponse result = check pricefxClient->deletePriceGridItem(id, payload);
 ```
 
 </div>
@@ -3668,12 +3684,12 @@ Deny a Live Price Grid Item
 | `payload` | <code>oas:DenyLivePriceGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:pricegriditemResponse|error`
+**Returns:** `oas:PriceGridItemResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:pricegriditemResponse result = check pricefxClient->denyLivePriceGridItem(id, payload);
+oas:PriceGridItemResponse result = check pricefxClient->denyLivePriceGridItem(id, payload);
 ```
 
 </div>
@@ -3910,12 +3926,12 @@ Update a Live Price Grid Item
 | `payload` | <code>oas:UpdateLivePriceGridItemRequest</code> | Yes | We have performed an update action on the `comments` field in our request sample &gt;&gt;&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:pricegriditemResponse|error`
+**Returns:** `oas:PriceGridItemResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:pricegriditemResponse result = check pricefxClient->updateLivePriceGridItem(id, payload);
+oas:PriceGridItemResponse result = check pricefxClient->updateLivePriceGridItem(id, payload);
 ```
 
 </div>
@@ -3936,12 +3952,12 @@ Update a Live Price Grid Item (No Recalculation)
 | `payload` | <code>oas:UpdateLivePriceGridItemNoRecalcRequest</code> | Yes | We have performed an update action on the `comments` field in our request sample &gt;&gt;&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:pricegriditemResponse|error`
+**Returns:** `oas:PriceGridItemResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:pricegriditemResponse result = check pricefxClient->updateLivePriceGridItemNo(id, payload);
+oas:PriceGridItemResponse result = check pricefxClient->updateLivePriceGridItemNo(id, payload);
 ```
 
 </div>
@@ -3988,12 +4004,12 @@ Add Products to a Quote
 | `payload` | <code>oas:AddProductsToQuoteRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:quoteResponse|error`
+**Returns:** `oas:QuoteResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:quoteResponse result = check pricefxClient->addQuoteProducts(payload);
+oas:QuoteResponse result = check pricefxClient->addQuoteProducts(payload);
 ```
 
 </div>
@@ -4013,12 +4029,12 @@ Convert to a Deal
 | `identifier` | <code>string</code> | Yes | Can be either the `uniqueName` or the `typedId` |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:quoteResponse|error`
+**Returns:** `oas:QuoteResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:quoteResponse result = check pricefxClient->convertQuoteToDeal(identifier);
+oas:QuoteResponse result = check pricefxClient->convertQuoteToDeal(identifier);
 ```
 
 </div>
@@ -4090,12 +4106,12 @@ Create a New Revision
 | `identifier` | <code>string</code> | Yes | Can be either the `uniqueName` or the `typedId` |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:quoteResponse|error`
+**Returns:** `oas:QuoteResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:quoteResponse result = check pricefxClient->createQuoteRevision(identifier);
+oas:QuoteResponse result = check pricefxClient->createQuoteRevision(identifier);
 ```
 
 </div>
@@ -4245,12 +4261,12 @@ Get a Quote
 | `typedID` | <code>string</code> | Yes | Enter the quote typed ID. You get the `typedId` in the response when fetching all quotes using the `/quotemanager.fetchlist` endpoint |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:quoteResponse|error`
+**Returns:** `oas:QuoteResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:quoteResponse result = check pricefxClient->getQuote(typedID);
+oas:QuoteResponse result = check pricefxClient->getQuote(typedID);
 ```
 
 </div>
@@ -4321,12 +4337,12 @@ Mark an Offer as Lost
 | `payload` | <code>oas:MarkOfferAsLostRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:quoteResponse|error`
+**Returns:** `oas:QuoteResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:quoteResponse result = check pricefxClient->markQuoteLost(identifier, payload);
+oas:QuoteResponse result = check pricefxClient->markQuoteLost(identifier, payload);
 ```
 
 </div>
@@ -4346,12 +4362,12 @@ Recalculate a Quote
 | `payload` | <code>oas:RecalculateQuoteRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:quoteResponse|error`
+**Returns:** `oas:QuoteResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:quoteResponse result = check pricefxClient->recalculateQuote(payload);
+oas:QuoteResponse result = check pricefxClient->recalculateQuote(payload);
 ```
 
 </div>
@@ -4422,12 +4438,12 @@ Submit a Quote
 | `payload` | <code>oas:SubmitQuoteRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:quoteResponse|error`
+**Returns:** `oas:QuoteResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:quoteResponse result = check pricefxClient->submitQuote(payload);
+oas:QuoteResponse result = check pricefxClient->submitQuote(payload);
 ```
 
 </div>
@@ -4472,12 +4488,12 @@ Upsert a Quote
 | `payload` | <code>oas:UpsertQuoteRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:quoteResponse|error`
+**Returns:** `oas:QuoteResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:quoteResponse result = check pricefxClient->upsertQuote(payload);
+oas:QuoteResponse result = check pricefxClient->upsertQuote(payload);
 ```
 
 </div>
@@ -4499,12 +4515,12 @@ Add Contract Line Items
 | `payload` | <code>oas:AddContractLineItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:contractModelResponse|error`
+**Returns:** `oas:ContractModelResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:contractModelResponse result = check pricefxClient->addContractLineItems(payload);
+oas:ContractModelResponse result = check pricefxClient->addContractLineItems(payload);
 ```
 
 </div>
@@ -4549,12 +4565,12 @@ Get a Contract
 | `uniqueName` | <code>string</code> | Yes | `uniqueName` of the Contract you want to retrieve details for. Alternatively, `typedId` can be also used |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:contractModelResponse|error`
+**Returns:** `oas:ContractModelResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:contractModelResponse result = check pricefxClient->getContract(uniqueName);
+oas:ContractModelResponse result = check pricefxClient->getContract(uniqueName);
 ```
 
 </div>
@@ -4624,12 +4640,12 @@ List Contracts
 | `payload` | <code>oas:ListContractsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:contractResponse|error`
+**Returns:** `oas:ContractResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:contractResponse result = check pricefxClient->listContracts(payload);
+oas:ContractResponse result = check pricefxClient->listContracts(payload);
 ```
 
 </div>
@@ -4649,12 +4665,12 @@ Submit a Contract
 | `payload` | <code>oas:SubmitContractRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:contractModelResponse|error`
+**Returns:** `oas:ContractModelResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:contractModelResponse result = check pricefxClient->submitContract(payload);
+oas:ContractModelResponse result = check pricefxClient->submitContract(payload);
 ```
 
 </div>
@@ -4699,12 +4715,12 @@ Upsert a Contract
 | `payload` | <code>oas:UpsertContractRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:contractModelResponse|error`
+**Returns:** `oas:ContractModelResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:contractModelResponse result = check pricefxClient->upsertContract(payload);
+oas:ContractModelResponse result = check pricefxClient->upsertContract(payload);
 ```
 
 </div>
@@ -4726,12 +4742,12 @@ Add Rebate Agreement Items
 | `payload` | <code>oas:GetCustomerRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:rebateagreementResponse|error`
+**Returns:** `oas:RebateAgreementResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:rebateagreementResponse result = check pricefxClient->addRebateAgreementItems(payload);
+oas:RebateAgreementResponse result = check pricefxClient->addRebateAgreementItems(payload);
 ```
 
 </div>
@@ -4751,12 +4767,12 @@ Delete a Rebate Agreement
 | `payload` | <code>oas:DeleteRebateAgreementRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:rebateagreementResponse|error`
+**Returns:** `oas:RebateAgreementResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:rebateagreementResponse result = check pricefxClient->deleteRebateAgreement(payload);
+oas:RebateAgreementResponse result = check pricefxClient->deleteRebateAgreement(payload);
 ```
 
 </div>
@@ -4776,12 +4792,12 @@ Get a Rebate Agreement
 | `uniqueName` | <code>string</code> | Yes | The `uniqueName` of the Rebate Agreement you want to retrieve details for |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:rebateagreementResponse|error`
+**Returns:** `oas:RebateAgreementResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:rebateagreementResponse result = check pricefxClient->getRebateAgreement(uniqueName);
+oas:RebateAgreementResponse result = check pricefxClient->getRebateAgreement(uniqueName);
 ```
 
 </div>
@@ -4901,12 +4917,12 @@ Upsert a Rebate Agreement
 | `payload` | <code>oas:UpsertRebateAgreementRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:rebateagreementResponse|error`
+**Returns:** `oas:RebateAgreementResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:rebateagreementResponse result = check pricefxClient->upsertRebateAgreement(payload);
+oas:RebateAgreementResponse result = check pricefxClient->upsertRebateAgreement(payload);
 ```
 
 </div>
@@ -5715,12 +5731,12 @@ Revoke a Compensation Record
 | `typedId` | <code>string</code> | Yes | `typedId` of the Compensation Record you want to revoke |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->revokeCompensationRecord(typedId);
+oas:GenericDataResponse result = check pricefxClient->revokeCompensationRecord(typedId);
 ```
 
 </div>
@@ -6458,12 +6474,12 @@ Delete a File
 | `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->deleteFile(typedId, binaryDataId, payload);
+oas:GenericDataResponse result = check pricefxClient->deleteFile(typedId, binaryDataId, payload);
 ```
 
 </div>
@@ -7006,12 +7022,12 @@ Delete a Custom Form
 | `payload` | <code>oas:DeleteCustomFormRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->deleteCustomForm(payload);
+oas:GenericDataResponse result = check pricefxClient->deleteCustomForm(payload);
 ```
 
 </div>
@@ -7574,12 +7590,12 @@ Create a Data Manager Entity
 | `payload` | <code>oas:CreateDataManagerEntityRequest</code> | Yes | Either `uniqueName` or `typedId` must be provided in the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:dmobjectResponse|error`
+**Returns:** `oas:DmObjectResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:dmobjectResponse result = check pricefxClient->createDataManagerEntity(typeCode, payload);
+oas:DmObjectResponse result = check pricefxClient->createDataManagerEntity(typeCode, payload);
 ```
 
 </div>
@@ -8007,12 +8023,12 @@ List Data Manager Entities
 | `payload` | <code>oas:ListDataManagerEntitiesRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:dmobjectResponse|error`
+**Returns:** `oas:DmObjectResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:dmobjectResponse result = check pricefxClient->listDataManagerEntities(typeCode, payload);
+oas:DmObjectResponse result = check pricefxClient->listDataManagerEntities(typeCode, payload);
 ```
 
 </div>
@@ -8235,12 +8251,12 @@ Update a Data Manager Entity
 | `payload` | <code>oas:UpdateDataManagerEntityRequest</code> | Yes | Either `uniqueName` or `typedId` must be provided in the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:dmobjectResponse|error`
+**Returns:** `oas:DmObjectResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:dmobjectResponse result = check pricefxClient->updateDataManagerEntity(typeCode, payload);
+oas:DmObjectResponse result = check pricefxClient->updateDataManagerEntity(typeCode, payload);
 ```
 
 </div>
@@ -8288,12 +8304,12 @@ Delete Import Changes
 | `payload` | <code>oas:ImportmanagerDeletechangesBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->deleteImportChanges(payload);
+oas:GenericDataResponse result = check pricefxClient->deleteImportChanges(payload);
 ```
 
 </div>
@@ -8887,12 +8903,12 @@ Create a KV Table
 | `payload` | <code>oas:CreateKVTableRequest</code> | Yes | The sample request creates a table with four columns: sku, customer, record and payload (TEXT).&lt;br&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->createKvTable(tableName, payload);
+oas:GenericDataResponse result = check pricefxClient->createKvTable(tableName, payload);
 ```
 
 </div>
@@ -9016,12 +9032,12 @@ Insert Bulk KV Data
 | `payload` | <code>oas:InsertBulkKVDataRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->insertBulkKvData(tableName, payload);
+oas:GenericDataResponse result = check pricefxClient->insertBulkKvData(tableName, payload);
 ```
 
 </div>
@@ -9223,12 +9239,12 @@ Execute a Logic Without a Context in a Service + payload -
 | `payload` | <code>record &#123;record &#123;&#125; data?;&#125;</code> | Yes |  |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:logicResponse|error`
+**Returns:** `oas:LogicResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:logicResponse result = check pricefxClient->executeLogicInService(uniqueName, payload);
+oas:LogicResponse result = check pricefxClient->executeLogicInService(uniqueName, payload);
 ```
 
 </div>
@@ -9650,12 +9666,12 @@ Update a Logic
 | `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:logicResponse|error`
+**Returns:** `oas:LogicResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:logicResponse result = check pricefxClient->updateLogic(id, payload);
+oas:LogicResponse result = check pricefxClient->updateLogic(id, payload);
 ```
 
 </div>
@@ -9676,12 +9692,12 @@ Update a Logic (No syntax check)
 | `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:logicResponse|error`
+**Returns:** `oas:LogicResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:logicResponse result = check pricefxClient->updateLogicNo(id, payload);
+oas:LogicResponse result = check pricefxClient->updateLogicNo(id, payload);
 ```
 
 </div>
@@ -9702,12 +9718,12 @@ Update a Logic (Partial)
 | `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:logicResponse|error`
+**Returns:** `oas:LogicResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:logicResponse result = check pricefxClient->updateLogicPartial(id, payload);
+oas:LogicResponse result = check pricefxClient->updateLogicPartial(id, payload);
 ```
 
 </div>
@@ -10297,12 +10313,12 @@ Cancel a Job
 | `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->cancelJob(id, payload);
+oas:GenericDataResponse result = check pricefxClient->cancelJob(id, payload);
 ```
 
 </div>
@@ -10603,12 +10619,12 @@ Update a Review Status
 | `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->updateReviewStatus(typedId, payload);
+oas:GenericDataResponse result = check pricefxClient->updateReviewStatus(typedId, payload);
 ```
 
 </div>
@@ -10857,12 +10873,12 @@ Mark as Read
 | `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->markAsRead(payload);
+oas:GenericDataResponse result = check pricefxClient->markAsRead(payload);
 ```
 
 </div>
@@ -10882,12 +10898,12 @@ Send a Validation Message
 | `payload` | <code>oas:NotificationSendBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->sendValidationMessage(payload);
+oas:GenericDataResponse result = check pricefxClient->sendValidationMessage(payload);
 ```
 
 </div>
@@ -11167,12 +11183,12 @@ Send an Email
 | `payload` | <code>oas:SendEmailRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->sendEmail(payload);
+oas:GenericDataResponse result = check pricefxClient->sendEmail(payload);
 ```
 
 </div>
@@ -11555,7 +11571,7 @@ Create an Object
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>string</code> | Yes | The object's type code. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) |
-| `payload` | <code>oas:createObjectRequest</code> | Yes | Request payload |
+| `payload` | <code>oas:CreateObjectRequest_1</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -11607,15 +11623,15 @@ Delete an Object
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>"ACTT"&#124;"AP"&#124;"APIK"&#124;"BD"&#124;"BPT"&#124;"BR"&#124;"C"&#124;"CA"&#124;"CAM"&#124;"CDESC"&#124;"CF"&#124;"CFS"&#124;"CFT"&#124;"CH"&#124;"CLLI"&#124;"CN"&#124;"CS"&#124;"CT"&#124;"CTAM"&#124;"CTLI"&#124;"CTMU"&#124;"CTMUI"&#124;"CTT"&#124;"CTTAM"&#124;"CTTREE"&#124;"CW"&#124;"CX"&#124;"CXAM"&#124;"DA"&#124;"DB"&#124;"DCR"&#124;"DCRAM"&#124;"DCRI"&#124;"DCRL"&#124;"DCRMC"&#124;"DCRT"&#124;"DE"&#124;"DI"&#124;"DM"&#124;"DMDC"&#124;"DMDL"&#124;"DMDS"&#124;"DMF"&#124;"DMM"&#124;"DMR"&#124;"DMT"&#124;"DREG"&#124;"DWT"&#124;"ET"&#124;"EVT"&#124;"F"&#124;"FE"&#124;"FN"&#124;"IDC"&#124;"IE"&#124;"ISH"&#124;"JST"&#124;"JLTV"&#124;"JLTVM"&#124;"LAT"&#124;"LT"&#124;"LTT"&#124;"LTV"&#124;"M"&#124;"MLTV"&#124;"MLTV2"&#124;"MLTV3"&#124;"MLTV4"&#124;"MLTV5"&#124;"MLTV6"&#124;"MLTVM"&#124;"MPL"&#124;"MPLAM"&#124;"MPLI"&#124;"MPLIT"&#124;"MPLT"&#124;"MR"&#124;"MRAM"&#124;"MT"&#124;"P"&#124;"PAM"&#124;"PAPIJ"&#124;"PBOME"&#124;"PCOMP"&#124;"PCW"&#124;"PDESC"&#124;"PG"&#124;"PGI"&#124;"PGIM"&#124;"PGT"&#124;"PH"&#124;"PL"&#124;"PLI"&#124;"PLIM"&#124;"PLT"&#124;"PR"&#124;"PRAM"&#124;"PREF"&#124;"PT"&#124;"PWH"&#124;"PX"&#124;"PXAM"&#124;"PXREF"&#124;"PYR"&#124;"PYRAM"&#124;"Q"&#124;"QAM"&#124;"QLI"&#124;"QMU"&#124;"QMUI"&#124;"QT"&#124;"QTT"&#124;"QTTAM"&#124;"R"&#124;"RAT"&#124;"RATM"&#124;"RBA"&#124;"RBAAM"&#124;"RBALI"&#124;"RBAT"&#124;"RBT"&#124;"RBTAM"&#124;"RR"&#124;"RRAM"&#124;"RRS"&#124;"RRSC"&#124;"RT"&#124;"SAT"&#124;"SC"&#124;"SCN"&#124;"SCNAM"&#124;"SCT"&#124;"SIAM"&#124;"SIM"&#124;"SIMI"&#124;"TFA"&#124;"TODO"&#124;"U"&#124;"UG"&#124;"US"&#124;"W"&#124;"WD"&#124;"WF"&#124;"WFE"&#124;"XPGI"&#124;"XPLI"&#124;"XSIMI"</code> | Yes | Enter the type code of the entity you want to delete the object from. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) in the Pricefx Knowledge Base article |
-| `payload` | <code>oas:deleteObjectRequest</code> | Yes | Request payload |
+| `payload` | <code>oas:DeleteObjectRequest_1</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:deleteObjectResponse|error`
+**Returns:** `oas:DeleteObjectResponse_1|error`
 
 **Sample code:**
 
 ```ballerina
-oas:deleteObjectResponse result = check pricefxClient->deleteObject(typeCode, payload);
+oas:DeleteObjectResponse_1 result = check pricefxClient->deleteObject(typeCode, payload);
 ```
 
 </div>
@@ -11662,12 +11678,12 @@ Get an Object
 | `id` | <code>string</code> | Yes | The ID of the object you want to retrieve details for |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:getObjectResponse|error`
+**Returns:** `oas:GetObjectResponse_1|error`
 
 **Sample code:**
 
 ```ballerina
-oas:getObjectResponse result = check pricefxClient->getObject(typeCode, id);
+oas:GetObjectResponse_1 result = check pricefxClient->getObject(typeCode, id);
 ```
 
 </div>
@@ -11713,12 +11729,12 @@ Insert Bulk Data
 | `payload` | <code>oas:InsertBulkDataRequest</code> | Yes | The **`/loaddata/P`** endpoint (Insert Bulk Products) is used in our example.&lt;p&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:loaddataResponse|error`
+**Returns:** `oas:LoadDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:loaddataResponse result = check pricefxClient->insertBulkData(typeCode, payload);
+oas:LoadDataResponse result = check pricefxClient->insertBulkData(typeCode, payload);
 ```
 
 </div>
@@ -11790,15 +11806,15 @@ List Objects
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>string</code> | Yes | The object's type code. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) |
-| `payload` | <code>oas:fetch_typeCode_body</code> | Yes | Request payload |
+| `payload` | <code>oas:ListObjectsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->listObjects(typeCode, payload);
+oas:GenericDataResponse result = check pricefxClient->listObjects(typeCode, payload);
 ```
 
 </div>
@@ -11817,12 +11833,12 @@ List Type Codes
 |------|------|----------|--------------|
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:typecodesResponse|error?`
+**Returns:** `oas:TypeCodesResponse|error?`
 
 **Sample code:**
 
 ```ballerina
-oas:typecodesResponse|error? result = check pricefxClient->listTypeCodes();
+oas:TypeCodesResponse|error? result = check pricefxClient->listTypeCodes();
 ```
 
 </div>
@@ -11947,12 +11963,12 @@ Upsert an Object
 | `payload` | <code>oas:UpsertObjectRequest</code> | Yes | The **`/integrate/P`** endpoint (Upsert a Product) is used in our example.&lt;p&gt; |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:productResponse|error`
+**Returns:** `oas:ProductResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:productResponse result = check pricefxClient->upsertObject(typeCode, payload);
+oas:ProductResponse result = check pricefxClient->upsertObject(typeCode, payload);
 ```
 
 </div>
@@ -12600,12 +12616,12 @@ List Tasks
 |------|------|----------|--------------|
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
-**Returns:** `oas:generalResponse|error`
+**Returns:** `oas:GenericDataResponse|error`
 
 **Sample code:**
 
 ```ballerina
-oas:generalResponse result = check pricefxClient->listTasks();
+oas:GenericDataResponse result = check pricefxClient->listTasks();
 ```
 
 </div>

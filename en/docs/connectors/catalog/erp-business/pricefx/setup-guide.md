@@ -27,17 +27,9 @@ Provide `jwt` on its own - no username, password, or partition needed.
 
 Pricefx's `generateJwtToken` operation mints a non-expiring JWT meant for integrations like this one. Call it once (using any of the other authentication methods), save the resulting token in your configuration, and hand it to the connector as `jwt`. It's the cheapest option available: the token is sent as-is, so creating the client makes no network call at all.
 
-```ballerina
-configurable string jwt = ?;
-
-pricefx:Client pricefxClient = check new ({jwt}, serviceUrl);
-```
-
-Only use a non-expiring token here - the connector has no credentials to re-authenticate with, so it can't refresh or retry a token supplied this way. A short-lived session token will eventually stop working.
-
 ### 3. OAuth 2.0 Authentication
 
-Provide `oauth2ClientId`, `oauth2RefreshToken`, and optionally `oauth2ClientSecret`.
+Provide `clientId`, `refreshToken`, and optionally `clientSecret`.
 
 #### Registering an OAuth client
 
@@ -55,13 +47,13 @@ On the Pricefx side, go to **Administration > Configuration > System Configurati
 }
 ```
 
-- The key you choose under `knownClients` (`<yourClientName>` above) is the value you set as `oauth2ClientId`.
-- `client_secret`, if you set one, is the value you set as `oauth2ClientSecret`.
+- The key you choose under `knownClients` (`<yourClientName>` above) is the value you set as `clientId`.
+- `client_secret`, if you set one, is the value you set as `clientSecret`.
 - `redirect_uri` must match wherever your integration is set up to receive the sign-in redirect.
 
 #### Getting a refresh token
 
-`oauth2RefreshToken` comes from signing in once through Pricefx's OAuth 2.0 consent screen for the client you just registered, and approving access. That sign-in step is interactive (it happens in a browser) and can't be automated by this connector, but it's a one-time setup step - the consent screen hands back a refresh token as part of the exchange, and that's the value you configure here.
+`refreshToken` comes from signing in once through Pricefx's OAuth 2.0 consent screen for the client you just registered, and approving access. That sign-in step is interactive (it happens in a browser) and can't be automated by this connector, but it's a one-time setup step - the consent screen hands back a refresh token as part of the exchange, and that's the value you configure here.
 
 Once you have a refresh token, the connector fetches and refreshes access tokens automatically - you never need to repeat that step.
 
@@ -84,33 +76,15 @@ On the Pricefx side, go to **Administration > Configuration > System Configurati
 }
 ```
 
-- **`externalSystemName`** - a JSON-safe name for the external system (letters, digits only - no whitespace). This is the same name you pass as `externalJwtSystemName` to the connector. You can register as many external systems as you like, each under its own name.
-- **`publicKey`** - the external system's public key, as a PEM-formatted string. Pricefx only supports RSA keys. For example:
-
-  ```
-  -----BEGIN PUBLIC KEY-----
-  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0E9Zp0JNbDaOMqhZd1C+
-  /FdBTCjza0qXcjTYCbDUeY89qPpwN19QovmehCVGBSFzLOkltx0YmlCkaKLtzqfS
-  ...
-  fXr4+6SBmEOVa7RSzoXr3whpdMdKsIvnDCCmT++aJvHBw63ZKGKb8+ZTAXv0z3sm
-  LDRyhifUmEoJPGWHV6/oxZQiVRapEFe7SiVTbr2IW7OfrdE3DVrioJmATEKgVr5i
-  zwIDAQAB
-  -----END PUBLIC KEY-----
-  ```
-
+- **`externalSystemName`** - a JSON-safe name for the external system (letters, digits only - no whitespace). This is the same name you pass as `systemName` to the connector. You can register as many external systems as you like, each under its own name.
+- **`publicKey`** - the external system's public key, as a PEM-formatted string. Pricefx only supports RSA keys.
 - **`permissions`** - leave `null` (or omit it) to not further restrict permissions beyond what the authenticated user already has. If you provide a list of permission-name strings instead, a token issued under this configuration can only call endpoints whose required permission is in that list.
 
   :::caution
   The `permissions` list is only an additional filter, on top of the authenticated user's own permissions - it can't grant a user something they couldn't otherwise do. Use it to restrict a given trust relationship to a narrower set of API calls than the user would normally have access to.
   :::
 
-Once the trust relationship is configured, give the connector two values: `externalJwtSystemName`, set to the name you registered above, and `externalJwt`, set to a JWT signed by that external system.
-
-## Optional settings
-
-Independently of the authentication method you choose, you can also set:
-
-- `csrfToken` - a CSRF token, if your partition has CSRF protection enabled
+Once the trust relationship is configured, give the connector two values: `systemName`, set to the name you registered above, and `jwt`, set to a JWT signed by that external system.
 
 The connector automatically re-authenticates and retries once whenever a request comes back unauthenticated, so a long-lived client instance keeps working without manual re-initialization.
 
