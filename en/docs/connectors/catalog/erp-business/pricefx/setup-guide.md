@@ -19,11 +19,21 @@ The most common setup, and the one to reach for first.
 
 Your user name, password, and partition are provisioned when your Pricefx account is created - ask your Pricefx administrator if you don't already have them. The partition name also appears in your instance's login URL, in the form `https://<your-node>.pricefx.com/pricefx/<your-partition>`.
 
+You only pay for a Basic authenticated request once: the connector uses your username, password, and partition to bootstrap a session token when the client is created, then reuses that token for every request afterward instead of sending your credentials again.
+
 ### 2. JWT Token Authentication
 
-Provide `username`, `password`, `partition`, and `pricefxKey`.
+Provide `jwt` on its own - no username, password, or partition needed.
 
-Contact Pricefx Support to request an API key (`pricefxKey`) for your partition. With a `pricefxKey` set alongside your username, password, and partition, the connector exchanges your credentials for a token automatically and authenticates with that token instead of sending your username and password on every call - recommended over Basic Auth for production, server-to-server use.
+Pricefx's `generateJwtToken` operation mints a non-expiring JWT meant for integrations like this one. Call it once (using any of the other authentication methods), save the resulting token in your configuration, and hand it to the connector as `jwt`. It's the cheapest option available: the token is sent as-is, so creating the client makes no network call at all.
+
+```ballerina
+configurable string jwt = ?;
+
+pricefx:Client pricefxClient = check new ({jwt}, serviceUrl);
+```
+
+Only use a non-expiring token here - the connector has no credentials to re-authenticate with, so it can't refresh or retry a token supplied this way. A short-lived session token will eventually stop working.
 
 ### 3. OAuth 2.0 Authentication
 

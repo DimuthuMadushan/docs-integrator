@@ -21,14 +21,14 @@ The `ballerinax/pricefx` package exposes the following clients:
 
 #### PricefxCredentials
 
-Pricefx account credentials and authentication options, included directly in `ConnectionConfig`. Provide exactly one of the three combinations below.
+Pricefx account credentials and authentication options, included directly in `ConnectionConfig`. Provide exactly one of the four combinations below.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `username` | <code>string</code> | Optional | Your Pricefx username |
 | `password` | <code>string</code> | Optional | Your Pricefx password |
 | `partition` | <code>string</code> | Optional | Your Pricefx partition name |
-| `pricefxKey` | <code>string</code> | Optional | A Pricefx API key (contact Pricefx Support to obtain one). When set, authentication uses `POST /token`, which is faster and recommended for server-to-server integrations. When absent, authentication falls back to HTTP Basic auth (`&#60;partition&#62;/&#60;username&#62;:&#60;password&#62;`), which needs no separate API key but is slower per request |
+| `jwt` | <code>string</code> | Optional | A Pricefx-issued JWT you already hold, sent directly as the `X-PriceFx-jwt` header, with no exchange. Intended for the non-expiring integration tokens produced by `generateJwtToken` (or the time-limited ones from `generateTimedJwtToken`). Cannot be refreshed by the connector - a rejected token surfaces as an error rather than being retried, so avoid pasting in a short-lived session token here |
 | `oauth2ClientId` | <code>string</code> | Optional | OAuth 2.0 client identifier, as registered in Pricefx's `oauthConfiguration` |
 | `oauth2ClientSecret` | <code>string</code> | Optional | OAuth 2.0 client secret, if one was configured for the client |
 | `oauth2RefreshToken` | <code>string</code> | Optional | A refresh token previously obtained through Pricefx's OAuth 2.0 Authorization Code Grant flow. The connector uses it to fetch (and automatically refresh) access tokens |
@@ -75,181 +75,6 @@ pricefx:Client pricefxClient = check new ({username, password, partition}, servi
 
 ### Operations
 
-#### Authentication
-
-<details>
-<summary>createAuthToken</summary>
-
-<div>
-
-Get an Authentication Token (API V2 only)
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|--------------|
-| `headers` | <code>oas:CreateAuthTokenHeaders</code> | Yes | Headers to be sent with the request |
-| `payload` | <code>oas:GetAuthenticationTokenAPIv2Request</code> | Yes |  |
-
-**Returns:** `oas:tokenResponse|error`
-
-**Sample code:**
-
-```ballerina
-oas:tokenResponse result = check pricefxClient->createAuthToken(headers, payload);
-```
-
-</div>
-</details>
-
-<details>
-<summary>deleteAuthToken</summary>
-
-<div>
-
-Delete an Authentication Token (API V2 only)
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|--------------|
-| `headers` | <code>oas:DeleteAuthTokenHeaders</code> | No | Headers to be sent with the request |
-
-**Returns:** `http:Response|error`
-
-**Sample code:**
-
-```ballerina
-http:Response result = check pricefxClient->deleteAuthToken();
-```
-
-</div>
-</details>
-
-<details>
-<summary>login</summary>
-
-<div>
-
-User Login (V1)
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|--------------|
-| `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
-
-**Returns:** `oas:UserLoginResponse|error`
-
-**Sample code:**
-
-```ballerina
-oas:UserLoginResponse result = check pricefxClient->login();
-```
-
-</div>
-</details>
-
-<details>
-<summary>oauthAuthorize</summary>
-
-<div>
-
-OAuth Authorization Request
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|--------------|
-| `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
-| `queries` | <code>*oas:OauthAuthorizeQueries</code> | Yes | Queries to be sent with the request |
-
-**Returns:** `error?`
-
-**Sample code:**
-
-```ballerina
-error? result = check pricefxClient->oauthAuthorize(queries);
-```
-
-</div>
-</details>
-
-<details>
-<summary>oauthToken</summary>
-
-<div>
-
-Access Token Request
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|--------------|
-| `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
-| `queries` | <code>*oas:OauthTokenQueries</code> | Yes | Queries to be sent with the request |
-
-**Returns:** `oas:OAuthTokenResponse|error`
-
-**Sample code:**
-
-```ballerina
-oas:OAuthTokenResponse result = check pricefxClient->oauthToken(queries);
-```
-
-</div>
-</details>
-
-<details>
-<summary>refreshAuthToken</summary>
-
-<div>
-
-Refresh an Authentication Token (API V2 only)
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|--------------|
-| `headers` | <code>oas:RefreshAuthTokenHeaders</code> | Yes | Headers to be sent with the request |
-| `payload` | <code>oas:TokenRefreshBody</code> | Yes | Provide the referesh token |
-
-**Returns:** `oas:tokenResponse|error`
-
-**Sample code:**
-
-```ballerina
-oas:tokenResponse result = check pricefxClient->refreshAuthToken(headers, payload);
-```
-
-</div>
-</details>
-
-<details>
-<summary>samlSignOn</summary>
-
-<div>
-
-Authenticate with SAML
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|--------------|
-| `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
-| `queries` | <code>*oas:SamlSignOnQueries</code> | Yes | Queries to be sent with the request |
-
-**Returns:** `error?`
-
-**Sample code:**
-
-```ballerina
-error? result = check pricefxClient->samlSignOn(queries);
-```
-
-</div>
-</details>
-
 #### User Admin
 
 <details>
@@ -263,7 +88,7 @@ Add a User
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddUserRequest</code> | Yes |  |
+| `payload` | <code>oas:AddUserRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:userResponse|error`
@@ -288,7 +113,7 @@ Assign a Business Role
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AssignBusinessRoleRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignBusinessRoleRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AssignBusinessRoleResponse|error`
@@ -314,7 +139,7 @@ Assign a Business Role to a User
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `userId` | <code>string</code> | Yes | The ID of the user you want to assign a role to. The `userId` is the `typedId` without the `U` suffix. For example, `userId` of the **2147490806.U** is **2147490806** |
-| `payload` | <code>oas:AssignBusinessRoleToUserRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignBusinessRoleToUserRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AssignBusinessRoleToUserResponse|error`
@@ -339,7 +164,7 @@ Assign a Group to a Business Role
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AssignGroupToBusinessRoleRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignGroupToBusinessRoleRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AssignGroupToBusinessRoleResponse|error`
@@ -364,7 +189,7 @@ Assign a Role to a Business Role
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AssignRoleToBusinessRoleRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignRoleToBusinessRoleRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AssignRoleToBusinessRoleResponse|error`
@@ -390,7 +215,7 @@ Assign a Role to a User
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `userId` | <code>string</code> | Yes | The ID of the user you want to assign a role to. The `userId` is the `typedId` without the `U` suffix. For example, `userId` of the **2147490806.U** is **2147490806** |
-| `payload` | <code>oas:AssignRoleToUserRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignRoleToUserRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AssignRoleToUserResponse|error`
@@ -415,7 +240,7 @@ Assign a Role to Users
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AssignRoleToUsersRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignRoleToUsersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AssignRoleToUsersResponse|error`
@@ -440,7 +265,7 @@ Assign a User Group to Users
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AssignUserGroupToUsersRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignUserGroupToUsersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AssignUserGroupToUsersResponse|error`
@@ -466,7 +291,7 @@ Assign a User to a User Group
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `userId` | <code>string</code> | Yes | The ID of the user you want to add to the group. The `userId` is the `typedId` without the `U` suffix. For example, `userId` of the **2147490806.U** is **2147490806** |
-| `payload` | <code>oas:AssignUserToUserGroupRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignUserToUserGroupRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AssignUserToUserGroupResponse|error`
@@ -491,7 +316,7 @@ Change a Current User Password
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ChangeCurrentUserPasswordRequest</code> | Yes |  |
+| `payload` | <code>oas:ChangeCurrentUserPasswordRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ChangeCurrentUserPasswordResponse|error`
@@ -517,7 +342,7 @@ Change a User Password
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `userId` | <code>string</code> | Yes | Enter the ID of the user whose password you want to change. The `userId` is the `typedId` without the `U` suffix. For example, `userId` of the **2147490806.U** is **2147490806** |
-| `payload` | <code>oas:ChangeUserPasswordRequest</code> | Yes |  |
+| `payload` | <code>oas:ChangeUserPasswordRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ChangeUserPasswordResponse|error`
@@ -592,7 +417,7 @@ Delete a Business Role
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteBusinessRoleRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteBusinessRoleRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteBusinessRoleResponse|error`
@@ -617,7 +442,7 @@ Delete a User
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteUserRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteUserRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:userResponse|error`
@@ -642,7 +467,7 @@ Delete a User Group
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteUserGroupRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteUserGroupRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteUserGroupResponse|error`
@@ -667,7 +492,7 @@ Generate a JWT Token
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:GenerateJWTTokenRequest</code> | Yes |  |
+| `payload` | <code>oas:GenerateJWTTokenRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GenerateJWTTokenResponse|error`
@@ -743,7 +568,7 @@ Get a User Audit Report
 |------|------|----------|--------------|
 | `typeCode` | <code>"R"&#124;"UG"&#124;"BR"</code> | Yes | Specify whether you want to retrieve a report based on user roles (`R`), user groups (`UG`), or business roles (`BR`) |
 | `id` | <code>string</code> | Yes | Specify the `id`of the user role, user group, or business role for which you want to retrieve users. Call the `/fetch/R`, `/fetch/UG`, or `/fetch/BR` endpoint to retrieve a list with corresponding user roles, user groups, or business roles |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UserAuditReportEnvelope|error`
@@ -893,7 +718,7 @@ List Users
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListUsersRequest</code> | Yes |  |
+| `payload` | <code>oas:ListUsersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListUsersResponse|error`
@@ -945,7 +770,7 @@ Add a Product
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddProductRequest</code> | Yes |  |
+| `payload` | <code>oas:AddProductRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:productResponse|error`
@@ -995,7 +820,7 @@ Delete a Product
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteProductRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteProductRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteProductResponse|error`
@@ -1045,7 +870,7 @@ List Products
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListProductsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListProductsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:productResponse|error`
@@ -1070,7 +895,7 @@ List Recommendations
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListRecommendationsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListRecommendationsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListRecommendationsEnvelope|error`
@@ -1095,7 +920,7 @@ Search a Product
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:SearchProductRequest</code> | Yes |  |
+| `payload` | <code>oas:SearchProductRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SearchProductResponse|error`
@@ -1120,7 +945,7 @@ Search a Product (URL)
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `query` | <code>string</code> | Yes |  |
+| `query` | <code>string</code> | Yes | The query to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SearchProductURLResponse|error`
@@ -1197,7 +1022,7 @@ Delete a Product Extension
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteProductExtensionRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteProductExtensionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteProductExtensionResponse|error`
@@ -1222,7 +1047,7 @@ Get Product Attribute Meta
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ProductAttributeMetaEnvelope|error`
@@ -1273,7 +1098,7 @@ List Product Extension Objects
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `productMasterExtensionName` | <code>string</code> | Yes | Enter the name of Product Extension you want to retrieve objects from. You can find the name in **Administration** &gt; **Configuration** &gt; **Master Data** &gt; **Product Master Extension** or using the **/configurationmanager.get/productextension** endpoint |
-| `payload` | <code>oas:ListProductExtensionObjectsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListProductExtensionObjectsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:ListProductExtensionObjectsQueries</code> | Yes | Queries to be sent with the request |
 
@@ -1299,7 +1124,7 @@ Upsert a Product Extension
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpsertProductExtensionRequest</code> | Yes |  |
+| `payload` | <code>oas:UpsertProductExtensionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:productResponse|error`
@@ -1369,7 +1194,7 @@ oas:CreateUploadSlotResponse result = check pricefxClient->getNewUploadSlot();
 
 <div>
 
-2. Upload a File + request -
+2. Upload a File
 
 **Parameters:**
 
@@ -1377,7 +1202,7 @@ oas:CreateUploadSlotResponse result = check pricefxClient->getNewUploadSlot();
 |------|------|----------|--------------|
 | `slotId` | <code>string</code> | Yes | Enter the ID of the slot you want to use for the upload |
 | `sku` | <code>string</code> | Yes | Enter the `sku` of the product you want to add the product image to |
-| `payload` | <code>oas:TypedIdslotIdBody</code> | Yes |  |
+| `payload` | <code>oas:TypedIdslotIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -1404,7 +1229,7 @@ Get Competition Data
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:GetCompetitionDataRequest</code> | Yes |  |
+| `payload` | <code>oas:GetCompetitionDataRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetCompetitionDataResponse|error`
@@ -1430,7 +1255,7 @@ Get a Product Set
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `label` | <code>string</code> | Yes | Enter the name of the product set you want to retrieve |
-| `payload` | <code>oas:GetProductSetRequest</code> | Yes |  |
+| `payload` | <code>oas:GetProductSetRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetProductSetResponse|error`
@@ -1480,7 +1305,7 @@ List Product Sets
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListProductSetsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListProductSetsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListProductSetsResponse|error`
@@ -1507,7 +1332,7 @@ Add a Customer
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddCustomerRequest</code> | Yes |  |
+| `payload` | <code>oas:AddCustomerRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:customerResponse|error`
@@ -1532,7 +1357,7 @@ Assign Customers
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AssignCustomersRequest</code> | Yes |  |
+| `payload` | <code>oas:AssignCustomersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:assignmentResponse|error`
@@ -1582,7 +1407,7 @@ Delete a Customer
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCustomerRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCustomerRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCustomerResponse|error`
@@ -1633,7 +1458,7 @@ List Customer Assignments
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the entity you want to retrieve assignments for |
-| `payload` | <code>oas:ListCustomerAssignmentsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCustomerAssignmentsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:assignmentResponse|error`
@@ -1658,7 +1483,7 @@ List Customers
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListCustomersRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCustomersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:customerResponse|error`
@@ -1735,7 +1560,7 @@ Delete a Customer Extension
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCustomerExtensionRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCustomerExtensionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCustomerExtensionResponse|error`
@@ -1786,7 +1611,7 @@ List Customer Extension Objects
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `customerMasterExtensionName` | <code>string</code> | Yes | Enter the name of Customer Extension you want to retrieve objects from. You can find the name in **Administration** &gt; **Configuration** &gt; **Master Data** &gt; **Customer Master Extension** or using the **/configurationmanager.get/customerextension** endpoint |
-| `payload` | <code>oas:ListCustomerExtensionObjectsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCustomerExtensionObjectsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:ListCustomerExtensionObjectsQueries</code> | Yes | Queries to be sent with the request |
 
@@ -1806,7 +1631,7 @@ oas:ListCustomerExtensionObjectsResponse result = check pricefxClient->listCusto
 
 <div>
 
-Upload a File to PX/CX/SX + request -
+Upload a File to PX/CX/SX
 
 **Parameters:**
 
@@ -1815,7 +1640,7 @@ Upload a File to PX/CX/SX + request -
 | `typeCode` | <code>"PX"&#124;"CX"&#124;"SX"</code> | Yes | Type code of the table you want to upload the file to |
 | `target` | <code>string</code> | Yes | The name of the PX/CX/SX table |
 | `uploadSlotId` | <code>string</code> | Yes | `id` of the upload slot. Use the **uploadslotmanager.newuploadslot** endpoint to retrieve the `id` |
-| `payload` | <code>oas:TargetuploadSlotIdBody</code> | Yes |  |
+| `payload` | <code>oas:TargetuploadSlotIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:UploadFileToPxCxSxQueries</code> | Yes | Queries to be sent with the request |
 
@@ -1868,7 +1693,7 @@ Add a Seller
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddSellerRequest</code> | Yes |  |
+| `payload` | <code>oas:AddSellerRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddSellerEnvelope|error`
@@ -1893,7 +1718,7 @@ Delete a Seller
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteSellerRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteSellerRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteSellerEnvelope|error`
@@ -1918,7 +1743,7 @@ List Sellers
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListSellersRequest</code> | Yes |  |
+| `payload` | <code>oas:ListSellersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListSellersEnvelope|error`
@@ -1943,7 +1768,7 @@ Update a Seller
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateSellerRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateSellerRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateSellerEnvelope|error`
@@ -1970,7 +1795,7 @@ Add a Seller Extension
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddSellerExtensionRequest</code> | Yes |  |
+| `payload` | <code>oas:AddSellerExtensionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddSellerExtensionResponse|error`
@@ -1995,7 +1820,7 @@ Delete a Seller Extension
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteSellerExtensionRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteSellerExtensionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteSellerExtensionResponse|error`
@@ -2048,7 +1873,7 @@ Import a File
 |------|------|----------|--------------|
 | `sXCategory` | <code>string</code> | Yes | The Seller Extension category (the `Name` from the *Seller Master Extension* table) |
 | `slotId` | <code>string</code> | Yes | The ID that is returned by the **/uploadmanager.newuploadslot** (Create an Upload Slot) endpoint |
-| `payload` | <code>oas:ImportSXFileRequest</code> | Yes |  |
+| `payload` | <code>oas:ImportSXFileRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:ImportSellerExtensionFileQueries</code> | Yes | Queries to be sent with the request |
 
@@ -2124,7 +1949,7 @@ Update a Seller Extension
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateSXBody</code> | Yes |  |
+| `payload` | <code>oas:UpdateSXBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateSellerExtensionEnvelope|error`
@@ -2151,7 +1976,7 @@ Add a Condition Record Item Attribute Meta
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddCRCIMBody</code> | Yes |  |
+| `payload` | <code>oas:AddCRCIMBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConditionRecordItemMetaOperationEnvelope|error`
@@ -2176,7 +2001,7 @@ Add a Condition Record Set
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddCRCSBody</code> | Yes |  |
+| `payload` | <code>oas:AddCRCSBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConditionRecordSetOperationEnvelope|error`
@@ -2201,7 +2026,7 @@ Delete a Condition Record Item Attribute Meta
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCRCIMBody</code> | Yes |  |
+| `payload` | <code>oas:DeleteCRCIMBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConditionRecordItemMetaOperationEnvelope|error`
@@ -2226,7 +2051,7 @@ Delete a Condition Records Set
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DcrmanagerDeletemassopidBody</code> | Yes |  |
+| `payload` | <code>oas:DcrmanagerDeletemassopidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConditionRecordSetOperationEnvelope|error`
@@ -2251,7 +2076,7 @@ Get a Condition Record Item
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConditionRecordItemEnvelope|error`
@@ -2276,7 +2101,7 @@ Get a Condition Record Item Attribute Meta
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:FetchCRCIMBody</code> | Yes |  |
+| `payload` | <code>oas:FetchCRCIMBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConditionRecordItemMetaEnvelope|error`
@@ -2301,7 +2126,7 @@ Get Condition Record Set Items With Set Id Validation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ConditionrecordsetFetchCRCI3Body</code> | Yes |  |
+| `payload` | <code>oas:ConditionrecordsetFetchCRCI3Body</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConditionRecordSetItemsEnvelope|error`
@@ -2326,7 +2151,7 @@ List Condition Record Sets
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListConditionRecordSetsEnvelope|error`
@@ -2377,7 +2202,7 @@ Update a Condition Record Set
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the ConditionRecordSet object you want to update |
-| `payload` | <code>oas:ConditionrecordsetUpdateidBody</code> | Yes |  |
+| `payload` | <code>oas:ConditionrecordsetUpdateidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConditionRecordSetOperationEnvelope|error`
@@ -2430,7 +2255,7 @@ Calculate a Pricelist
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Price List you want to calculate. The `id` is the `typedId` without the suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.PL**  is **2147484837** |
-| `payload` | <code>oas:PricelistmanagerCalculateidBody</code> | Yes |  |
+| `payload` | <code>oas:PricelistmanagerCalculateidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CalculatePricelistResponse|error`
@@ -2455,7 +2280,7 @@ Create a Price List
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:CreatePriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:CreatePriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CreatePriceListResponse|error`
@@ -2481,7 +2306,7 @@ Create a Revision
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Price List you want to create a revision for. The `id` is the `typedId` without the suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.PL**  is **2147484837** |
-| `payload` | <code>oas:CreateRevisionRequest</code> | Yes |  |
+| `payload` | <code>oas:CreateRevisionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:pricelistitemResponse|error`
@@ -2506,7 +2331,7 @@ Delete a Price List
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeletePriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:DeletePriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeletePriceListResponse|error`
@@ -2532,7 +2357,7 @@ Delete a Price List Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | Enter the ID of the Price List where you want to delete an item from |
-| `payload` | <code>oas:DeletePriceListItemRequest</code> | Yes |  |
+| `payload` | <code>oas:DeletePriceListItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeletePriceListItemResponse|error`
@@ -2557,7 +2382,7 @@ Delete a Price List Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeletePLTTBody</code> | Yes |  |
+| `payload` | <code>oas:DeletePLTTBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:PriceListTypeOperationEnvelope|error`
@@ -2608,7 +2433,7 @@ List Price List Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Price List you want to retrieve items for. The `id` is the `typedId` without the suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.PL**  is **2147484837** |
-| `payload` | <code>oas:ListPriceListItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListPriceListItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:pricelistitemResponse|error`
@@ -2657,7 +2482,7 @@ List Price Lists
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListPriceListsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListPriceListsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListPriceListsResponse|error`
@@ -2682,8 +2507,8 @@ Revoke a Price List
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `id` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:PricelistmanagerSubmitidBody</code> | Yes |  |
+| `id` | <code>string</code> | Yes | The id to be sent with the request |
+| `payload` | <code>oas:PricelistmanagerSubmitidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:pricelistitemResponse|error`
@@ -2709,7 +2534,7 @@ Submit a Price List
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Price List you want to submit. The `id` is the `typedId` without the suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.PL**  is **2147484837** |
-| `payload` | <code>oas:PricelistmanagerSubmitidBody</code> | Yes |  |
+| `payload` | <code>oas:PricelistmanagerSubmitidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:pricelistitemResponse|error`
@@ -2735,7 +2560,7 @@ Update a Pricelist Detail
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Price List whose Item you want to update. The `id` is the `typedId` without the suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.PL**  is **2147484837** |
-| `payload` | <code>oas:UpdatePricelistDetailRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdatePricelistDetailRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdatePricelistDetailResponse|error`
@@ -2760,7 +2585,7 @@ Update a Price List Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdatePLTTBody</code> | Yes |  |
+| `payload` | <code>oas:UpdatePLTTBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:PriceListTypeOperationEnvelope|error`
@@ -2788,7 +2613,7 @@ Add Products to a Manual Pricelist
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Manual Price List where you want to add products to |
-| `payload` | <code>oas:AddProductsToManualPriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:AddProductsToManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -2814,7 +2639,7 @@ Add Products to a Manual Price List (No Recalculation)
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Manual Price List where you want to add products to |
-| `payload` | <code>oas:AddProductsToManualPriceListNoRecalcRequest</code> | Yes |  |
+| `payload` | <code>oas:AddProductsToManualPriceListNoRecalcRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddProductsToManualPriceListNoRecalcResponse|error`
@@ -2889,7 +2714,7 @@ Create a Manual Price List
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:CreateManualPriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:CreateManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:manualpricelistResponse|error`
@@ -2914,7 +2739,7 @@ Delete a Manual Price List
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteManualPriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:manualpricelistResponse|error`
@@ -2940,7 +2765,7 @@ Delete a Product from a Manual Price List
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Manual Price List whose product you want to delete |
-| `payload` | <code>oas:DeleteProductFromManualPriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteProductFromManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:productResponse|error`
@@ -2966,7 +2791,7 @@ Delete Products from a Manual Price List
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Manual Price List whose products you want to delete |
-| `payload` | <code>oas:DeleteProductsFromManualPriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteProductsFromManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteProductsFromManualPriceListResponse|error`
@@ -2992,7 +2817,7 @@ List Products From a Manual Price List
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Manual Price List you want to retrieve products from |
-| `payload` | <code>oas:ListProductsFromManualPriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:ListProductsFromManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListProductsFromManualPriceListResponse|error`
@@ -3017,7 +2842,7 @@ List Manual Price Lists
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListManualPriceListsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListManualPriceListsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:manualpricelistResponse|error`
@@ -3043,7 +2868,7 @@ Mass Edit a Manual Price List Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Manual Price List whose products you want to update |
-| `payload` | <code>oas:MassEditMPLRequest</code> | Yes |  |
+| `payload` | <code>oas:MassEditMPLRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassEditManualPriceListResponse|error`
@@ -3069,7 +2894,7 @@ Update a Manual Price List Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Manual Price List whose item you want to update |
-| `payload` | <code>oas:UpdateManualPriceListRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateManualPriceListRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateManualPriceListResponse|error`
@@ -3123,7 +2948,7 @@ Submit a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The `id` of the Calculation Grid you want to submit items for. You can retrieve the `id` of the CG, for example, by calling the `/fetch/CG` endpoint |
-| `payload` | <code>oas:SubmitCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:SubmitCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SubmitCalculationGridItemResponse|error`
@@ -3148,7 +2973,7 @@ Add a Calculation Grid
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddCalculationGridRequest</code> | Yes |  |
+| `payload` | <code>oas:AddCalculationGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddCalculationGridResponse|error`
@@ -3174,7 +2999,7 @@ Add a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `keyNumber` | <code>"1"&#124;"2"&#124;"3"&#124;"4"&#124;"5"&#124;"6"</code> | Yes | Use CGI1..CGI6 in the path, where numbers from 1 to 6 refer to Calculation Grid Item keys |
-| `payload` | <code>oas:AddCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:AddCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddCalculationGridItemResponse|error`
@@ -3200,7 +3025,7 @@ Calculate a Calculation Grid
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Calculation Grid you want to calculate |
-| `payload` | <code>oas:CalculateCalculationGridRequest</code> | Yes |  |
+| `payload` | <code>oas:CalculateCalculationGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CalculateCalculationGridResponse|error`
@@ -3225,7 +3050,7 @@ Delete a Calculation Grid
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCalculationGridRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCalculationGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCalculationGridResponse|error`
@@ -3251,7 +3076,7 @@ Delete a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `keyNumber` | <code>"1"&#124;"2"&#124;"3"&#124;"4"&#124;"5"&#124;"6"</code> | Yes | Use CGI1..CGI6 in the path, where numbers from 1 to 6 refer to Calculation Grid Item keys |
-| `payload` | <code>oas:DeleteCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCalculationGridItemResponse|error`
@@ -3277,7 +3102,7 @@ Get a Calculation Grid
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | ID of the Calculation Grid you want to retrieve |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetCalculationGridResponse|error`
@@ -3304,7 +3129,7 @@ Get a Calculation Grid Item
 |------|------|----------|--------------|
 | `keyNumber` | <code>"1"&#124;"2"&#124;"3"&#124;"4"&#124;"5"&#124;"6"</code> | Yes | Use CGI1..CGI6 in the path, where numbers from 1 to 6 refer to Calculation Grid Item keys |
 | `id` | <code>string</code> | Yes | `id` of the Calculation Grid Item you want to fetch |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetCalculationGridItemResponse|error`
@@ -3330,7 +3155,7 @@ List Calculation Grid Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `keyNumber` | <code>"1"&#124;"2"&#124;"3"&#124;"4"&#124;"5"&#124;"6"</code> | Yes | Use CGI1..CGI6 in the path, where numbers from 1 to 6 refer to Calculation Grid Item keys |
-| `payload` | <code>oas:ListCalculationGridItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCalculationGridItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCalculationGridItemsResponse|error`
@@ -3355,7 +3180,7 @@ List Calculation Grids
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCalculationGridsResponse|error`
@@ -3381,7 +3206,7 @@ Deny a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The `id` of the Calculation Grid you want to deny items for. You can retrieve the `id` of the CG, for example, by calling the `/fetch/CG` endpoint |
-| `payload` | <code>oas:DenyCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:DenyCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DenyCalculationGridItemResponse|error`
@@ -3406,7 +3231,7 @@ Update a Calculation Grid
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateCalculationGridRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCalculationGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateCalculationGridResponse|error`
@@ -3432,7 +3257,7 @@ Update a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Calculation Grid Item you want to update |
-| `payload` | <code>oas:UpdateCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateCalculationGridItemResponse|error`
@@ -3509,7 +3334,7 @@ Delete a Calculated Field Set
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCalculatedFieldSetRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCalculatedFieldSetRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -3560,7 +3385,7 @@ Add a Live Price Grid Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddPGTTBody</code> | Yes |  |
+| `payload` | <code>oas:AddPGTTBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:LivePriceGridTypeOperationEnvelope|error`
@@ -3586,7 +3411,7 @@ Add Price Grid Items to a Price Grid
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Live Price Grid where you want to add Price Grid Items to. `id`  is the `typedId` without **PG** suffix. For example, the `id` attribute of the item with `typedId` = **649.PG** is **649**. You can retrieve the `id` of the LPG, for example, by calling the `/fetch/PG` endpoint |
-| `payload` | <code>oas:AddPriceGridItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:AddPriceGridItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddPriceGridItemsToPriceGridResponse|error`
@@ -3611,7 +3436,7 @@ Calculate a Price Grid
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `id` | <code>string</code> | Yes |  |
+| `id` | <code>string</code> | Yes | The id to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CalculatePriceGridResponse|error`
@@ -3661,7 +3486,7 @@ Convert to Price List
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `id` | <code>string</code> | Yes |  |
+| `id` | <code>string</code> | Yes | The id to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConvertPriceListResponse|error`
@@ -3711,8 +3536,8 @@ Count Mass Action Items
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `id` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:CountMassActionItemsRequest</code> | Yes |  |
+| `id` | <code>string</code> | Yes | The id to be sent with the request |
+| `payload` | <code>oas:CountMassActionItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CountMassActionItemsResponse|error`
@@ -3737,7 +3562,7 @@ Delete a Live Price Grid
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteLivePriceGridRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteLivePriceGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteLivePriceGridResponse|error`
@@ -3788,7 +3613,7 @@ Delete a Price Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Price Grid you want to delete the Price Grid Item from |
-| `payload` | <code>oas:DeletePriceGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:DeletePriceGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:pricegriditemResponse|error`
@@ -3840,7 +3665,7 @@ Deny a Live Price Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Price Grid that contains the Price Grid Item you want to deny |
-| `payload` | <code>oas:DenyLivePriceGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:DenyLivePriceGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:pricegriditemResponse|error`
@@ -3865,18 +3690,18 @@ Download a Live Price Grid Excel File
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `id1` | <code>string</code> | Yes |  |
-| `id2` | <code>string</code> | Yes |  |
-| `id3` | <code>string</code> | Yes |  |
-| `id4` | <code>string</code> | Yes |  |
-| `id5` | <code>string</code> | Yes |  |
-| `id6` | <code>string</code> | Yes |  |
-| `id7` | <code>string</code> | Yes |  |
-| `id8` | <code>string</code> | Yes |  |
-| `id9` | <code>string</code> | Yes |  |
-| `id10` | <code>string</code> | Yes |  |
-| `id11` | <code>string</code> | Yes |  |
-| `id12` | <code>string</code> | Yes |  |
+| `id1` | <code>string</code> | Yes | The id1 to be sent with the request |
+| `id2` | <code>string</code> | Yes | The id2 to be sent with the request |
+| `id3` | <code>string</code> | Yes | The id3 to be sent with the request |
+| `id4` | <code>string</code> | Yes | The id4 to be sent with the request |
+| `id5` | <code>string</code> | Yes | The id5 to be sent with the request |
+| `id6` | <code>string</code> | Yes | The id6 to be sent with the request |
+| `id7` | <code>string</code> | Yes | The id7 to be sent with the request |
+| `id8` | <code>string</code> | Yes | The id8 to be sent with the request |
+| `id9` | <code>string</code> | Yes | The id9 to be sent with the request |
+| `id10` | <code>string</code> | Yes | The id10 to be sent with the request |
+| `id11` | <code>string</code> | Yes | The id11 to be sent with the request |
+| `id12` | <code>string</code> | Yes | The id12 to be sent with the request |
 | `id13` | <code>string</code> | Yes | IDs of the Price Grids you want to download |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:DownloadLivePriceGridExcelFileQueries</code> | Yes | Queries to be sent with the request |
@@ -3929,7 +3754,7 @@ List Live Price Grid Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The `id` of the Live Price Grid you want to retrieve items for. You can retrieve the `id` of the LPG, for example, by calling the `/fetch/PG` endpoint |
-| `payload` | <code>oas:ListLivePriceGridItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListLivePriceGridItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListLivePriceGridItemsResponse|error`
@@ -3978,7 +3803,7 @@ List Live Price Grids
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListLivePriceGridsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListLivePriceGridsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListLivePriceGridsResponse|error`
@@ -4004,7 +3829,7 @@ Mass Edit Price Grid Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The `id` of the Live Price Grid whose items you want to edit. You can retrieve the `id` of the LPG, for example, by calling the `/fetch/PG` endpoint |
-| `payload` | <code>oas:MassEditPriceGridItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:MassEditPriceGridItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassEditPriceGridItemsResponse|error`
@@ -4030,7 +3855,7 @@ Perform a Mass Action
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the Price Grid that contains items you want to apply workflow actions to |
-| `payload` | <code>oas:PerformMassActionRequest</code> | Yes |  |
+| `payload` | <code>oas:PerformMassActionRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:PerformMassActionResponse|error`
@@ -4056,7 +3881,7 @@ Submit Products
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The `id` of the Live Price Grid you want to submit items for. You can retrieve the `id` of the LPG, for example, by calling the `/fetch/PG` endpoint |
-| `payload` | <code>oas:SubmitProductsRequest</code> | Yes |  |
+| `payload` | <code>oas:SubmitProductsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SubmitProductsResponse|error`
@@ -4133,7 +3958,7 @@ Update a Live Price Grid Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdatePGTTBody</code> | Yes |  |
+| `payload` | <code>oas:UpdatePGTTBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:LivePriceGridTypeOperationEnvelope|error`
@@ -4160,7 +3985,7 @@ Add Products to a Quote
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddProductsToQuoteRequest</code> | Yes |  |
+| `payload` | <code>oas:AddProductsToQuoteRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:quoteResponse|error`
@@ -4210,8 +4035,8 @@ Copy a Quote
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CopyQuoteEnvelope|error`
@@ -4237,7 +4062,7 @@ Create a Quote
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>"Q"&#124;"QTMP"</code> | Yes | Enter the type code of the entity you want to create |
-| `payload` | <code>oas:ClicmanagerCreateTypeCodeBody</code> | Yes |  |
+| `payload` | <code>oas:ClicmanagerCreateTypeCodeBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ClicOperationEnvelope|error`
@@ -4366,7 +4191,7 @@ Get a Temporary Data
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Quote you want to retrieve the temporary data from |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ClicDraftHeaderEnvelope|error`
@@ -4442,7 +4267,7 @@ List Products
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListProductsRequest1</code> | Yes |  |
+| `payload` | <code>oas:ListProductsRequest1</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -4467,7 +4292,7 @@ List Quotes
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListQuotesRequest</code> | Yes |  |
+| `payload` | <code>oas:ListQuotesRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListQuotesResponse|error`
@@ -4493,7 +4318,7 @@ Mark an Offer as Lost
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `identifier` | <code>string</code> | Yes | Can be either the `uniqueName` or the `typedId` |
-| `payload` | <code>oas:MarkOfferAsLostRequest</code> | Yes |  |
+| `payload` | <code>oas:MarkOfferAsLostRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:quoteResponse|error`
@@ -4518,7 +4343,7 @@ Recalculate a Quote
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:RecalculateQuoteRequest</code> | Yes |  |
+| `payload` | <code>oas:RecalculateQuoteRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:quoteResponse|error`
@@ -4569,7 +4394,7 @@ Save a Temporary Data
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Temporary Quote you want to save |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ClicOperationEnvelope|error`
@@ -4594,7 +4419,7 @@ Submit a Quote
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:SubmitQuoteRequest</code> | Yes |  |
+| `payload` | <code>oas:SubmitQuoteRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:quoteResponse|error`
@@ -4619,7 +4444,7 @@ Undo Quote Revocation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -4644,7 +4469,7 @@ Upsert a Quote
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpsertQuoteRequest</code> | Yes |  |
+| `payload` | <code>oas:UpsertQuoteRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:quoteResponse|error`
@@ -4671,7 +4496,7 @@ Add Contract Line Items
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddContractLineItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:AddContractLineItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:contractModelResponse|error`
@@ -4746,7 +4571,7 @@ List Contract Calculations
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListContractCalculationsEnvelope|error`
@@ -4771,7 +4596,7 @@ List Contract Price Records
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:FetchCPRBody</code> | Yes |  |
+| `payload` | <code>oas:FetchCPRBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListContractPriceRecords|error`
@@ -4796,7 +4621,7 @@ List Contracts
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListContractsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListContractsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:contractResponse|error`
@@ -4821,7 +4646,7 @@ Submit a Contract
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:SubmitContractRequest</code> | Yes |  |
+| `payload` | <code>oas:SubmitContractRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:contractModelResponse|error`
@@ -4846,7 +4671,7 @@ Undo Agreement & Promotion Revocation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -4871,7 +4696,7 @@ Upsert a Contract
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpsertContractRequest</code> | Yes |  |
+| `payload` | <code>oas:UpsertContractRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:contractModelResponse|error`
@@ -4898,7 +4723,7 @@ Add Rebate Agreement Items
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:GetCustomerRequest</code> | Yes |  |
+| `payload` | <code>oas:GetCustomerRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:rebateagreementResponse|error`
@@ -4923,7 +4748,7 @@ Delete a Rebate Agreement
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteRebateAgreementRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteRebateAgreementRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:rebateagreementResponse|error`
@@ -4973,7 +4798,7 @@ List Rebate Agreement Items
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListRebateAgreementItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListRebateAgreementItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListRebateAgreementItemsResponse|error`
@@ -4998,7 +4823,7 @@ List Rebate Agreements
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListRebateAgreementsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListRebateAgreementsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListRebateAgreementsResponse|error`
@@ -5023,7 +4848,7 @@ Undo Rebate Agreement Revocation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -5048,7 +4873,7 @@ Undo Rebate Record Revocation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -5073,7 +4898,7 @@ Upsert a Rebate Agreement
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpsertRebateAgreementRequest</code> | Yes |  |
+| `payload` | <code>oas:UpsertRebateAgreementRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:rebateagreementResponse|error`
@@ -5100,7 +4925,7 @@ Add a Rebate Calculation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddRRSCBody</code> | Yes |  |
+| `payload` | <code>oas:AddRRSCBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddRebateCalculationResponse|error`
@@ -5125,7 +4950,7 @@ Delete a Rebate Calculation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteRebateCalculationRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteRebateCalculationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteRebateCalculationResponse|error`
@@ -5150,7 +4975,7 @@ List Rebate Calculations
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:FetchRRSCBody</code> | Yes |  |
+| `payload` | <code>oas:FetchRRSCBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListRebateCalculationsResponse|error`
@@ -5175,7 +5000,7 @@ Run a Rebate Calculation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:RebaterecordCalculatesetBody</code> | Yes |  |
+| `payload` | <code>oas:RebaterecordCalculatesetBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:RunRebateCalculationResponse|error`
@@ -5200,7 +5025,7 @@ Save a Rebate Calculation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:SaveRebateCalculationRequest</code> | Yes |  |
+| `payload` | <code>oas:SaveRebateCalculationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SaveRebateCalculationResponse|error`
@@ -5228,7 +5053,7 @@ Calculate a Rebate Record Group
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Rebate Record Group you want to calculate |
-| `payload` | <code>oas:RebaterecordgroupCalculatetypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:RebaterecordgroupCalculatetypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CalculateRebateRecordGroupEnvelope|error`
@@ -5253,7 +5078,7 @@ Get a Rebate Record Group
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -5278,8 +5103,8 @@ Mass Submit Rebate Record Groups
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:RebaterecordgroupMasssubmittypedIdBody</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>oas:RebaterecordgroupMasssubmittypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassSubmitRRGResponse|error`
@@ -5304,7 +5129,7 @@ Mass Submit Rebate Record Groups
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:RebaterecordgroupMasssubmittypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:RebaterecordgroupMasssubmittypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassSubmitRebateRecordGroupsEnvelope|error`
@@ -5329,8 +5154,8 @@ Preview a Rebate Record Group Workflow
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:RebaterecordgroupPreviewtypedIdBody</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>oas:RebaterecordgroupPreviewtypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:RebateRecordGroupWorkflowEnvelope|error`
@@ -5381,7 +5206,7 @@ Should Submit a RRG Asynchronously
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Rebate Record Group you want to return the async threshold boolean for |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CheckFileExistsEnvelope|error`
@@ -5407,7 +5232,7 @@ Submit a Rebate Record Group
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Rebate Record Group you want to submit |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SubmitRebateRecordGroup|error`
@@ -5432,7 +5257,7 @@ Undo Rebate Record Group Revocation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -5459,7 +5284,7 @@ Add a Calculation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddCalculationRequest</code> | Yes |  |
+| `payload` | <code>oas:AddCalculationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddCalculationResponse|error`
@@ -5484,7 +5309,7 @@ Add a Compensation Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddCompensationTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:AddCompensationTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddCompensationTypeEnvelope|error`
@@ -5534,7 +5359,7 @@ Delete a Calculation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCalculationRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCalculationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCalculationResponse|error`
@@ -5559,7 +5384,7 @@ Delete a Compensation Plan
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCompensationPlanRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCompensationPlanRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCompensationPlanResponse|error`
@@ -5584,7 +5409,7 @@ Delete a Compensation Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCOHTBody</code> | Yes |  |
+| `payload` | <code>oas:DeleteCOHTBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCompensationTypeEnvelope|error`
@@ -5609,7 +5434,7 @@ Delete a Condition Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteConditionTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteConditionTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteConditionTypeEnvelope|error`
@@ -5660,7 +5485,7 @@ Get a Signature Status
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Compensation document you want to retrieve the signature status for |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetSignatureStatusResponse|error`
@@ -5710,7 +5535,7 @@ List Accrual Records
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListAccrualRecordsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListAccrualRecordsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListAccrualRecordsResponse|error`
@@ -5735,7 +5560,7 @@ List Calculations
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListCalculationsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCalculationsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCalculationsResponse|error`
@@ -5760,7 +5585,7 @@ List Compensation Plans
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListCompensationPlansRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCompensationPlansRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCompensationPlansResponse|error`
@@ -5786,7 +5611,7 @@ List Compensation Records
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `compensationRecordSetId` | <code>string</code> | Yes | ID of the CompensationRecordSet into which this Compensation Record belongs. By default it belongs to "Default" CompensationRecordSet, but you can change it when you create the Compensation Record. This can be useful if you create different "kinds" of Compensation Records which will be used to calculate different results at different times |
-| `payload` | <code>oas:ListCompensationRecordsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCompensationRecordsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCompensationRecordsResponse|error`
@@ -5811,7 +5636,7 @@ List Compensation Types
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListCompensationTypesRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCompensationTypesRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCompensationTypesEnvelope|error`
@@ -5836,7 +5661,7 @@ List Condition Types
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListConditionTypesRequest</code> | Yes |  |
+| `payload` | <code>oas:ListConditionTypesRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListConditionTypesEnvelope|error`
@@ -5912,7 +5737,7 @@ Run a Calculation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:RunCalculationRequest</code> | Yes |  |
+| `payload` | <code>oas:RunCalculationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:RunCalculationResponse|error`
@@ -5937,7 +5762,7 @@ Save Calculation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:SaveCalculationRequest</code> | Yes |  |
+| `payload` | <code>oas:SaveCalculationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SaveCalculationResponse|error`
@@ -5962,7 +5787,7 @@ Save a Compensation Record
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:SaveCompensationRecordRequest</code> | Yes |  |
+| `payload` | <code>oas:SaveCompensationRecordRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SaveCompensationRecordResponse|error`
@@ -5988,7 +5813,7 @@ Send a Document to Sign
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Compensation whose data you want to send via the e-signature system |
-| `payload` | <code>oas:CreateSignatureRequest</code> | Yes |  |
+| `payload` | <code>oas:CreateSignatureRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CreateSignatureResponse|error`
@@ -6013,7 +5838,7 @@ Undo Compensation Plan Revocation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -6038,7 +5863,7 @@ Undo Compensation Record Revocation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -6063,7 +5888,7 @@ Update a Compensation Record
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateCompensationRecordRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCompensationRecordRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateCompensationRecordResponse|error`
@@ -6088,7 +5913,7 @@ Update a Compensation Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateCompensationTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCompensationTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateCompensationTypeEnvelope|error`
@@ -6113,7 +5938,7 @@ Update a Condition Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateConditionTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateConditionTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateConditionTypeEnvelope|error`
@@ -6139,7 +5964,7 @@ Update a Quote/Contract/Rebate Agreement/Compensation Plan
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Compensation Plan you want to update |
-| `payload` | <code>oas:ClicmanagerUpdatetypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:ClicmanagerUpdatetypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateClicEnvelope|error`
@@ -6164,7 +5989,7 @@ Upsert a Compensation Plan
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpsertCompensationPlanRequest</code> | Yes |  |
+| `payload` | <code>oas:UpsertCompensationPlanRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpsertCompensationPlanResponse|error`
@@ -6191,7 +6016,7 @@ Add a Claim
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddClaimRequest</code> | Yes |  |
+| `payload` | <code>oas:AddClaimRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddClaimResponse|error`
@@ -6217,7 +6042,7 @@ Calculate a Claim
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the claim whose items you want to calculate |
-| `payload` | <code>oas:CalculateClaimRequest</code> | Yes |  |
+| `payload` | <code>oas:CalculateClaimRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CalculateClaimResponse|error`
@@ -6243,7 +6068,7 @@ Cancel a Calculation
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the claim whose item calculation you want to cancel |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CancelClaimCalculationResponse|error`
@@ -6268,8 +6093,8 @@ Get a Summary
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetClaimItemsSummaryResponse|error`
@@ -6319,8 +6144,8 @@ List Items
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListClaimItemsResponse|error`
@@ -6346,7 +6171,7 @@ Reject Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Claim whose items you want to reject |
-| `payload` | <code>oas:RejectClaimItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:RejectClaimItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:RejectClaimItemsResponse|error`
@@ -6372,7 +6197,7 @@ Remove Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Claim whose items you want to remove |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:RemoveClaimItemsResponse|error`
@@ -6398,7 +6223,7 @@ Submit a Claim
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Claim you want to submit |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SubmitClaimResponse|error`
@@ -6449,7 +6274,7 @@ Validate Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Claim whose items you want to validate |
-| `payload` | <code>oas:ValidateClaimItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:ValidateClaimItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ValidateClaimItemsResponse|error`
@@ -6476,7 +6301,7 @@ Add a Claim Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddClaimTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:AddClaimTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddClaimTypeResponse|error`
@@ -6501,7 +6326,7 @@ Delete a Claim Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteClaimTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteClaimTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteClaimTypeResponse|error`
@@ -6551,7 +6376,7 @@ Update a Claim Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateClaimTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateClaimTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateClaimTypeResponse|error`
@@ -6630,7 +6455,7 @@ Delete a File
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the document whose attachment you want to delete |
 | `binaryDataId` | <code>string</code> | Yes | If the `typedId` is, for example, 1145.BD then the binaryDataId is **1145** |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -6763,7 +6588,7 @@ http:Response result = check pricefxClient->downloadFileViaPost(typedId, binaryD
 | `ownerTypedId` | <code>string</code> | Yes | The `TypedId` of the document owning the attachment |
 | `binaryDataId` | <code>string</code> | Yes | The `binaryDataId` of the attachment to replace |
 | `slotId` | <code>string</code> | Yes | The upload `slot_id` containing the new file |
-| `payload` | <code>oas:BinaryDataIdslotIdBody</code> | Yes |  |
+| `payload` | <code>oas:BinaryDataIdslotIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:FileDownloadEnvelope|error`
@@ -6814,7 +6639,7 @@ List Files
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the document you want to list attachments for |
-| `payload` | <code>oas:BdmanagerListtypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:BdmanagerListtypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListFilesEnvelope|error`
@@ -6840,7 +6665,7 @@ Update a File
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the document whose attachment's metadata you want to update |
-| `payload` | <code>oas:BdmanagerUpdatetypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:BdmanagerUpdatetypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateFileEnvelope|error`
@@ -6867,7 +6692,7 @@ oas:UpdateFileEnvelope result = check pricefxClient->updateFile(typedId, payload
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the document you want to attach the file to |
 | `slotId` | <code>string</code> | Yes | The ID of the slot you want to use for the upload. retrieve the slot ID using the `/uploadmanager.newuploadslot` (Create an Upload Slot) endpoint |
-| `payload` | <code>oas:TypedIdslotIdBody</code> | Yes |  |
+| `payload` | <code>oas:TypedIdslotIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:FileOperationEnvelope|error`
@@ -6894,7 +6719,7 @@ Add a Comment
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:CommentmanagerAddBody</code> | Yes |  |
+| `payload` | <code>oas:CommentmanagerAddBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CommentOperationEnvelope|error`
@@ -6945,7 +6770,7 @@ Edit a Comment
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | typedId of the comment you want to edit |
-| `payload` | <code>oas:CommentmanagerEdittypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:CommentmanagerEdittypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CommentOperationEnvelope|error`
@@ -6971,7 +6796,7 @@ List Comment Threads
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | typedId of the object you want to fetch comments for |
-| `payload` | <code>oas:CommentmanagerFetchthreadstypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:CommentmanagerFetchthreadstypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:ListCommentThreadsQueries</code> | Yes | Queries to be sent with the request |
 
@@ -6997,7 +6822,7 @@ Reply To a Comment
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:CommentmanagerReplyBody</code> | Yes |  |
+| `payload` | <code>oas:CommentmanagerReplyBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CommentOperationEnvelope|error`
@@ -7023,7 +6848,7 @@ Resolve a Comment
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The typedId of the comment thread |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ResolveCommentEnvelope|error`
@@ -7049,7 +6874,7 @@ Unresolve a Comment
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The typedId of the comment thread |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ResolveCommentEnvelope|error`
@@ -7077,7 +6902,7 @@ Change a Custom Form Status
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Custom Form whose status you want to change |
-| `payload` | <code>oas:ChangeCustomFormStatusRequest</code> | Yes |  |
+| `payload` | <code>oas:ChangeCustomFormStatusRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ChangeCustomFormStatusResponse|error`
@@ -7128,7 +6953,7 @@ Create a Custom Form Revision
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Custom Form you want to create a revision from |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CustomFormRevisionEnvelope|error`
@@ -7153,7 +6978,7 @@ Create a Custom Form Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:CreateCustomFormTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:CreateCustomFormTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CreateCustomFormTypeResponse|error`
@@ -7178,7 +7003,7 @@ Delete a Custom Form
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCustomFormRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCustomFormRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -7203,7 +7028,7 @@ Delete a Custom Form Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCFOTBody</code> | Yes |  |
+| `payload` | <code>oas:DeleteCFOTBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCustomFormTypeEnvelope|error`
@@ -7229,7 +7054,7 @@ Duplicate a Custom Form
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Custom Form you want to duplicate |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CustomFormRevisionEnvelope|error`
@@ -7279,7 +7104,7 @@ List Custom Form Types
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListCustomFormTypesRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCustomFormTypesRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCustomFormTypesResponse|error`
@@ -7304,7 +7129,7 @@ List Custom Forms
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListCustomFormsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCustomFormsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCustomFormsEnvelope|error`
@@ -7329,7 +7154,7 @@ Preview a Custom Form Workflow
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:PreviewCustomFormWorkflowResponse|error`
@@ -7354,7 +7179,7 @@ Update a Custom Form
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateCustomFormRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCustomFormRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateCustomFormEnvelope|error`
@@ -7379,7 +7204,7 @@ Update a Custom Form Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateCustomFormTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCustomFormTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateCustomFormTypeResponse|error`
@@ -7406,7 +7231,7 @@ Add a Data Change Request
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddDCRRequest</code> | Yes |  |
+| `payload` | <code>oas:AddDCRRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddDCRResponse|error`
@@ -7432,7 +7257,7 @@ Add a Data Change Request Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request you want to add the Data Change Request Item to |
-| `payload` | <code>oas:AddDCRIRequest</code> | Yes |  |
+| `payload` | <code>oas:AddDCRIRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddDCRIResponse|error`
@@ -7458,7 +7283,7 @@ Delete a Data Change Request Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request whose item you want to delete |
-| `payload` | <code>oas:DeleteDCRIRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteDCRIRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteDCRIResponse|error`
@@ -7484,7 +7309,7 @@ Delete a Data Change Request Mass Change
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request |
-| `payload` | <code>oas:DcrmanagerDeletemassopidBody</code> | Yes |  |
+| `payload` | <code>oas:DcrmanagerDeletemassopidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DataChangeRequestMassChangeEnvelope|error`
@@ -7510,7 +7335,7 @@ Get a Data Change Request
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request you want to retrieve |
-| `payload` | <code>oas:GetDCRRequest</code> | Yes |  |
+| `payload` | <code>oas:GetDCRRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetDCRResponse|error`
@@ -7536,7 +7361,7 @@ Get a Data Change Request (changes only)
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request you want to retrieve changed items for |
-| `payload` | <code>oas:GetDCRRequestChangeOnly</code> | Yes |  |
+| `payload` | <code>oas:GetDCRRequestChangeOnly</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetDCRResponseChangeOnly|error`
@@ -7562,7 +7387,7 @@ Get Data Change Request Mass Changes
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request |
-| `payload` | <code>oas:DcrmanagerFetchmassopidBody</code> | Yes |  |
+| `payload` | <code>oas:DcrmanagerFetchmassopidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DataChangeRequestMassChangeEnvelope|error`
@@ -7588,7 +7413,7 @@ Mass Edit Data Change Request Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request |
-| `payload` | <code>oas:DcrmanagerAddmassopidBody</code> | Yes |  |
+| `payload` | <code>oas:DcrmanagerAddmassopidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DataChangeRequestMassChangeEnvelope|error`
@@ -7614,7 +7439,7 @@ Submit a Data Change Request
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the DCR to be submitted |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SubmitDCRResponse|error`
@@ -7640,7 +7465,7 @@ Submit a Data Change Request (async)
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the DCR to be submitted |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SubmitDCRAsyncResponse|error`
@@ -7666,7 +7491,7 @@ Update a Data Change Request Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request whose item you want to update |
-| `payload` | <code>oas:UpdateDCRIRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateDCRIRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateDCRIResponse|error`
@@ -7692,7 +7517,7 @@ Update Data Change Request Mass Changes
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Data Change Request |
-| `payload` | <code>oas:DcrmanagerUpdatemassopidBody</code> | Yes |  |
+| `payload` | <code>oas:DcrmanagerUpdatemassopidBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DataChangeRequestMassChangeEnvelope|error`
@@ -7720,7 +7545,7 @@ Create a DMFieldCollection
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `fcType` | <code>"DMDS"&#124;"DMT"</code> | Yes | The type of FC (FieldCollection) you want to create |
-| `payload` | <code>oas:DatamartCreatefcfcTypeBody</code> | Yes |  |
+| `payload` | <code>oas:DatamartCreatefcfcTypeBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -7772,7 +7597,7 @@ Delete a Data Manager Entity
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>"DM"&#124;"DMF"&#124;"DMDS"</code> | Yes | The type code of the **Field Collection** you want to delete |
-| `payload` | <code>oas:DeleteDataManagerEntityRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteDataManagerEntityRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteDataManagerEntityResponse|error`
@@ -7847,7 +7672,7 @@ Export a CSV File
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ExportCSVFileRequest</code> | Yes |  |
+| `payload` | <code>oas:ExportCSVFileRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:ExportCsvFileQueries</code> | Yes | Queries to be sent with the request |
 
@@ -7874,7 +7699,7 @@ Export Datamart
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `fcTypedIdOrSourceName` | <code>string</code> | Yes | Restricts the export to a specific source, identified by either the 'typedId' or 'sourceName'. |
-| `payload` | <code>oas:ExportDatamartRequest</code> | Yes |  |
+| `payload` | <code>oas:ExportDatamartRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:ExportDatamartQueries</code> | Yes | Queries to be sent with the request |
 
@@ -7900,7 +7725,7 @@ Export an Excel File (XLSX)
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ExportExcelFileRequest</code> | Yes |  |
+| `payload` | <code>oas:ExportExcelFileRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:ExportExcelFileXlsxQueries</code> | Yes | Queries to be sent with the request |
 
@@ -7927,7 +7752,7 @@ Get a DM Object - **typedUniquename** – Format: "*&lt;typeCode&gt;.&lt;uniqueN
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `objectId` | <code>string</code> | Yes | Use one of the following object identifiers: |
-| `payload` | <code>oas:GetDMObjectRequest</code> | Yes |  |
+| `payload` | <code>oas:GetDMObjectRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:FetchDataMartObjectQueries</code> | Yes | Queries to be sent with the request |
 
@@ -7953,7 +7778,7 @@ Get Action Status
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `actionUUID` | <code>string</code> | Yes |  |
+| `actionUUID` | <code>string</code> | Yes | The actionUUID to be sent with the request |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetActionStatusResponse|error`
@@ -8030,7 +7855,7 @@ Get a DM Object (no count) - **typedUniquename** – Format: "*&lt;typeCode&gt;.
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `objectId` | <code>string</code> | Yes | Use one of the following object identifiers: |
-| `payload` | <code>oas:GetDMObjectNoCountRequest</code> | Yes |  |
+| `payload` | <code>oas:GetDMObjectNoCountRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetDMObjectNoCountResponse|error`
@@ -8055,7 +7880,7 @@ Import a Data Load
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ImportDataLoadRequest</code> | Yes |  |
+| `payload` | <code>oas:ImportDataLoadRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -8179,7 +8004,7 @@ List Data Manager Entities
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>"DM"&#124;"DMDS"&#124;"DMF"&#124;"DMT"</code> | Yes | The type code of the **Field Collection** |
-| `payload` | <code>oas:ListDataManagerEntitiesRequest</code> | Yes |  |
+| `payload` | <code>oas:ListDataManagerEntitiesRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:dmobjectResponse|error`
@@ -8228,7 +8053,7 @@ List Rollups
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListRollupsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListRollupsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListRollupsResponse|error`
@@ -8254,7 +8079,7 @@ Mass Edit
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the object you want to perform the mass edit action for |
-| `payload` | <code>oas:MassEditRequest1</code> | Yes |  |
+| `payload` | <code>oas:MassEditRequest1</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassEditDatamartResponse|error`
@@ -8279,7 +8104,7 @@ Query a Data Manager Object
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:QueryDataManagerObjectRequest</code> | Yes |  |
+| `payload` | <code>oas:QueryDataManagerObjectRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:QueryDataManagerObjectQueries</code> | Yes | Queries to be sent with the request |
 
@@ -8330,7 +8155,7 @@ Run a Data Load
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:RunDataLoadRequest</code> | Yes |  |
+| `payload` | <code>oas:RunDataLoadRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:RunDataLoadResponse|error`
@@ -8355,7 +8180,7 @@ Save a Data Load
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DatamartUpdatedataloadBody</code> | Yes |  |
+| `payload` | <code>oas:DatamartUpdatedataloadBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DataLoadEnvelope|error`
@@ -8433,7 +8258,7 @@ Upload a Bulk Data to Data Source
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `datasourceUniqueName` | <code>string</code> | Yes | The unique name of the Data Source where you want to upload the data to. You can also use `typedId` or the source name |
-| `payload` | <code>oas:UploadBulkDataToDataSourceRequest</code> | Yes |  |
+| `payload` | <code>oas:UploadBulkDataToDataSourceRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:BulkDataUploadEnvelope|error`
@@ -8460,7 +8285,7 @@ Delete Import Changes
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ImportmanagerDeletechangesBody</code> | Yes |  |
+| `payload` | <code>oas:ImportmanagerDeletechangesBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -8485,8 +8310,8 @@ List ImportManager Changes
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `uniqueName` | <code>string</code> | Yes |  |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `uniqueName` | <code>string</code> | Yes | The uniqueName to be sent with the request |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListImportManagerChangesEnvelope|error`
@@ -8511,8 +8336,8 @@ Mass Delete Imports
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:ImportmanagerMassdeletetypedIdBody</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>oas:ImportmanagerMassdeletetypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassDeleteImportsEnvelope|error`
@@ -8537,8 +8362,8 @@ Mass Edit Imports
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:ImportmanagerMassedittypedIdBody</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>oas:ImportmanagerMassedittypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassEditImportsEnvelope|error`
@@ -8563,7 +8388,7 @@ Save Import Change
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SaveImportChangeEnvelope|error`
@@ -8589,7 +8414,7 @@ Submit Changes
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | typedId of the import |
-| `payload` | <code>oas:ImportmanagerSubmittypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:ImportmanagerSubmittypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ImportManagerUploadEnvelope|error`
@@ -8617,7 +8442,7 @@ Upload Excel to Import Manager
 | `typeCode` | <code>"P"&#124;"PX"</code> | Yes | Target object type code |
 | `target` | <code>string</code> | Yes | Provides additional details about the target object, such as specifying a PX name if required |
 | `slotId` | <code>string</code> | Yes | ID of the Upload Slot |
-| `payload` | <code>oas:TypeCodetargetBody</code> | Yes |  |
+| `payload` | <code>oas:TypeCodetargetBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:UploadExcelToImportManagerQueries</code> | Yes | Queries to be sent with the request |
 
@@ -8671,7 +8496,7 @@ Add a Lookup Table Value
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `tableId` | <code>string</code> | Yes | Enter the ID of the table. The ID can be retrieved using the `/lookuptablemanager.fetch` method |
-| `payload` | <code>oas:AddLookupTableValueRequest</code> | Yes |  |
+| `payload` | <code>oas:AddLookupTableValueRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddLookupTableValueResponse|error`
@@ -8929,7 +8754,7 @@ Mass Edit
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `tableId` | <code>string</code> | Yes | The ID of the Lookup Table whose values you want to update |
-| `payload` | <code>oas:MassEditRequest</code> | Yes |  |
+| `payload` | <code>oas:MassEditRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassEditResponse|error`
@@ -8980,7 +8805,7 @@ Update a Lookup Table Value
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `tableId` | <code>string</code> | Yes | Enter the ID of the table. The ID can be retrieved using the `/lookuptablemanager.fetch` method |
-| `payload` | <code>oas:UpdateLookupTableValueRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateLookupTableValueRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateLookupTableValueResponse|error`
@@ -9006,7 +8831,7 @@ Upsert a Lookup Table Value
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `tableId` | <code>string</code> | Yes | Enter the ID of the table. The ID can be retrieved using the `/lookuptablemanager.fetch` method |
-| `payload` | <code>oas:UpsertLookupTableValueRequest</code> | Yes |  |
+| `payload` | <code>oas:UpsertLookupTableValueRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpsertLookupTableValueResponse|error`
@@ -9084,8 +8909,8 @@ Delete a Key
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `tableName` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:DeleteKVKeyRequest</code> | Yes |  |
+| `tableName` | <code>string</code> | Yes | The tableName to be sent with the request |
+| `payload` | <code>oas:DeleteKVKeyRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -9111,7 +8936,7 @@ Drop a KV Table
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `tableName` | <code>string</code> | Yes | A name of the table you want drop. Only lower case letters, numbers and underscores are allowed. Do not use special characters |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `record`
@@ -9137,7 +8962,7 @@ Get a Key
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `tableName` | <code>string</code> | Yes | A name of the table you want to retrieve the "payload" from |
-| `payload` | <code>oas:GetKVKeyRequest</code> | Yes |  |
+| `payload` | <code>oas:GetKVKeyRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -9188,7 +9013,7 @@ Insert Bulk KV Data
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `tableName` | <code>string</code> | Yes | A name of the table you want upload data to |
-| `payload` | <code>oas:InsertBulkKVDataRequest</code> | Yes |  |
+| `payload` | <code>oas:InsertBulkKVDataRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -9369,7 +9194,7 @@ Execute Library Function
 | `formulaName` | <code>string</code> | Yes | Name of the formula library containing the function |
 | `elementName` | <code>string</code> | Yes | Name of the library element containing the function |
 | `functionName` | <code>string</code> | Yes | Name of the function to execute |
-| `payload` | <code>oas:ElementNamefunctionNameBody</code> | Yes |  |
+| `payload` | <code>oas:ElementNamefunctionNameBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `http:Response|error`
@@ -9550,7 +9375,7 @@ Generate Parameters
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:GenerateParametersRequest</code> | Yes |  |
+| `payload` | <code>oas:GenerateParametersRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GenerateParametersResponse|error`
@@ -9771,7 +9596,7 @@ Syntax Check
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:SyntaxCheckRequest</code> | Yes |  |
+| `payload` | <code>oas:SyntaxCheckRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `error?`
@@ -9796,7 +9621,7 @@ Test a Logic
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:TestLogicRequest</code> | Yes |  |
+| `payload` | <code>oas:TestLogicRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:TestLogicEnvelope|error`
@@ -9822,7 +9647,7 @@ Update a Logic
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the logic. The `id` is the `typedId` without the **F** suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.F**  is **2147484837** |
-| `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:logicResponse|error`
@@ -9848,7 +9673,7 @@ Update a Logic (No syntax check)
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the logic. The `id` is the `typedId` without the **F** suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.F**  is **2147484837** |
-| `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:logicResponse|error`
@@ -9874,7 +9699,7 @@ Update a Logic (Partial)
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The ID of the logic. The `id` is the `typedId` without the **F** suffix. For example, the `id` attribute of the item with `typedId` = **2147484837.F**  is **2147484837** |
-| `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;record &#123;decimal version?; string typedId?; string uniqueName?; string label?; string validAfter?; string status?; anydata simulationSet?; anydata userGroupEdit?; anydata userGroupViewDetails?; anydata formulaNature?; string lastUpdateByName?; record &#123;decimal version?; string typedId?; string elementName?; string elementLabel?; anydata elementDescription?; string[] elementGroups?; anydata conditionElementName?; boolean hideWarnings?; boolean excludeFromExport?; boolean protectedExpression?; decimal elementTimeout?; decimal displayOptions?; string? formatType?; anydata elementSuffix?; boolean allowOverride?; boolean summarize?; boolean hideOnNull?; anydata userGroup?; anydata cssProperties?; anydata resultGroup?; string combinationType?; boolean storeInAttributeExtension?; anydata criticalAlert?; anydata redAlert?; anydata yellowAlert?; anydata labelTranslations?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?; string formulaExpression?;&#125;[] elements?; record &#123;&#125;[] inputDescriptors?; string formulaType?; anydata createdByName?; string createDate?; decimal createdBy?; string lastUpdateDate?; decimal lastUpdateBy?;&#125; data?;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:logicResponse|error`
@@ -9902,7 +9727,7 @@ Submit a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The `id` of the Calculation Grid you want to submit items for. You can retrieve the `id` of the CG, for example, by calling the `/fetch/CG` endpoint |
-| `payload` | <code>oas:SubmitCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:SubmitCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SubmitCalculationGridItemResponse|error`
@@ -9927,7 +9752,7 @@ Add a Calculation Grid
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddCalculationGridRequest</code> | Yes |  |
+| `payload` | <code>oas:AddCalculationGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddCalculationGridResponse|error`
@@ -9953,7 +9778,7 @@ Add a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `keyNumber` | <code>"1"&#124;"2"&#124;"3"&#124;"4"&#124;"5"&#124;"6"</code> | Yes | Use CGI1..CGI6 in the path, where numbers from 1 to 6 refer to Calculation Grid Item keys |
-| `payload` | <code>oas:AddCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:AddCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddCalculationGridItemResponse|error`
@@ -9979,7 +9804,7 @@ Calculate a Calculation Grid
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Calculation Grid you want to calculate |
-| `payload` | <code>oas:CalculateCalculationGridRequest</code> | Yes |  |
+| `payload` | <code>oas:CalculateCalculationGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CalculateCalculationGridResponse|error`
@@ -10004,7 +9829,7 @@ Delete a Calculation Grid
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteCalculationGridRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCalculationGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCalculationGridResponse|error`
@@ -10030,7 +9855,7 @@ Delete a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `keyNumber` | <code>"1"&#124;"2"&#124;"3"&#124;"4"&#124;"5"&#124;"6"</code> | Yes | Use CGI1..CGI6 in the path, where numbers from 1 to 6 refer to Calculation Grid Item keys |
-| `payload` | <code>oas:DeleteCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteCalculationGridItemResponse|error`
@@ -10056,7 +9881,7 @@ Get a Calculation Grid
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | ID of the Calculation Grid you want to retrieve |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetCalculationGridResponse|error`
@@ -10083,7 +9908,7 @@ Get a Calculation Grid Item
 |------|------|----------|--------------|
 | `keyNumber` | <code>"1"&#124;"2"&#124;"3"&#124;"4"&#124;"5"&#124;"6"</code> | Yes | Use CGI1..CGI6 in the path, where numbers from 1 to 6 refer to Calculation Grid Item keys |
 | `id` | <code>string</code> | Yes | `id` of the Calculation Grid Item you want to fetch |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetCalculationGridItemResponse|error`
@@ -10109,7 +9934,7 @@ List Calculation Grid Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `keyNumber` | <code>"1"&#124;"2"&#124;"3"&#124;"4"&#124;"5"&#124;"6"</code> | Yes | Use CGI1..CGI6 in the path, where numbers from 1 to 6 refer to Calculation Grid Item keys |
-| `payload` | <code>oas:ListCalculationGridItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListCalculationGridItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCalculationGridItemsResponse|error`
@@ -10134,7 +9959,7 @@ List Calculation Grids
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListCalculationGridsResponse|error`
@@ -10160,7 +9985,7 @@ Deny a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | The `id` of the Calculation Grid you want to deny items for. You can retrieve the `id` of the CG, for example, by calling the `/fetch/CG` endpoint |
-| `payload` | <code>oas:DenyCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:DenyCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DenyCalculationGridItemResponse|error`
@@ -10185,7 +10010,7 @@ Update a Calculation Grid
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateCalculationGridRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCalculationGridRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateCalculationGridResponse|error`
@@ -10211,7 +10036,7 @@ Update a Calculation Grid Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Calculation Grid Item you want to update |
-| `payload` | <code>oas:UpdateCalculationGridItemRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCalculationGridItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateCalculationGridItemResponse|error`
@@ -10238,7 +10063,7 @@ Add an Action Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddActionTypeRequest</code> | Yes |  |
+| `payload` | <code>oas:AddActionTypeRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddActionTypeResponse|error`
@@ -10313,7 +10138,7 @@ Update an Action Type
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateAITBody</code> | Yes |  |
+| `payload` | <code>oas:UpdateAITBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateActionTypeResponse|error`
@@ -10365,7 +10190,7 @@ Delete an Action Item
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteActionItemRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteActionItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteActionItemResponse|error`
@@ -10391,7 +10216,7 @@ Execute a Logic
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>string</code> | Yes | The `typeCode` of the Action Item you want to execute the calculation for |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ExecuteActionItemLogicResponse|error`
@@ -10416,7 +10241,7 @@ List Action Items
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:FetchAIBody</code> | Yes |  |
+| `payload` | <code>oas:FetchAIBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListActionItemsResponse|error`
@@ -10441,7 +10266,7 @@ Update an Action Item
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateActionItemRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateActionItemRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateActionItemResponse|error`
@@ -10469,7 +10294,7 @@ Cancel a Job
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` if the job you want to cancel |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -10522,7 +10347,7 @@ Add an Approver Step
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `currentStepId` | <code>string</code> | Yes | The ID of the workflow step. It can be retrieved using the `/workflowsmanager.fetch/active` (**List Pending Approvals**) endpoint |
-| `payload` | <code>oas:AddApproverStepRequest</code> | Yes |  |
+| `payload` | <code>oas:AddApproverStepRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddApproverStepResponse|error`
@@ -10548,7 +10373,7 @@ Add a Watcher Step
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `currentStepId` | <code>string</code> | Yes | The ID of the workflow step. It can be retrieved using the `/workflowsmanager.fetch/active` (**List Pending Approvals**) endpoint |
-| `payload` | <code>oas:AddWatcherStepRequest</code> | Yes |  |
+| `payload` | <code>oas:AddWatcherStepRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:AddWatcherStepResponse|error`
@@ -10574,7 +10399,7 @@ Approve a Document
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `currentStepId` | <code>string</code> | Yes | The ID of the workflow step. It can be retrieved using the `/workflowsmanager.fetch/active` (**List Pending Approvals**) endpoint |
-| `payload` | <code>oas:ApproveDocumentRequest</code> | Yes |  |
+| `payload` | <code>oas:ApproveDocumentRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ApproveDocumentResponse|error`
@@ -10600,7 +10425,7 @@ Deny a Document
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `currentStepId` | <code>string</code> | Yes | The ID of the workflow step. It can be retrieved using the `/workflowsmanager.fetch/active` (**List Pending Approvals**) endpoint |
-| `payload` | <code>oas:DenyDocumentRequest</code> | Yes |  |
+| `payload` | <code>oas:DenyDocumentRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DenyDocumentResponse|error`
@@ -10723,7 +10548,7 @@ List Workflows
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListWorkflowsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListWorkflowsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListWorkflowsResponse|error`
@@ -10749,7 +10574,7 @@ Set a Review as Done
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | typedId of the object to mark as reviewed |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `http:Response|error`
@@ -10775,7 +10600,7 @@ Update a Review Status
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | typedId of the object to update |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -10827,7 +10652,7 @@ Create a Workflow Delegation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:CreateWorkflowDelegationRequest</code> | Yes |  |
+| `payload` | <code>oas:CreateWorkflowDelegationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:CreateWorkflowDelegationResponse|error`
@@ -10852,7 +10677,7 @@ Deactivate a Workflow Delegation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeactivateWorkflowDelegationRequest</code> | Yes |  |
+| `payload` | <code>oas:DeactivateWorkflowDelegationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeactivateWorkflowDelegationResponse|error`
@@ -10877,7 +10702,7 @@ Delete a Workflow Delegation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:DeleteWorkflowDelegationRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteWorkflowDelegationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteWorkflowDelegationResponse|error`
@@ -10902,7 +10727,7 @@ List Delegated Workflows
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListDelegatedWorkflowsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListDelegatedWorkflowsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListDelegatedWorkflowsResponse|error`
@@ -10927,7 +10752,7 @@ Update a Workflow Delegation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateWorkflowDelegationRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateWorkflowDelegationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateWorkflowDelegationResponse|error`
@@ -10952,7 +10777,7 @@ Validate a Workflow Delegation
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ValidateWorkflowDelegationRequest</code> | Yes |  |
+| `payload` | <code>oas:ValidateWorkflowDelegationRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ValidateWorkflowDelegationResponse|error`
@@ -10979,7 +10804,7 @@ Delete a Notification
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:NotificationSetreadBody</code> | Yes |  |
+| `payload` | <code>oas:NotificationSetreadBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteNotificationEnvelope|error`
@@ -11004,7 +10829,7 @@ List Notifications
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:NotificationListBody</code> | Yes |  |
+| `payload` | <code>oas:NotificationListBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListNotificationsEnvelope|error`
@@ -11029,7 +10854,7 @@ Mark as Read
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -11054,7 +10879,7 @@ Send a Validation Message
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:NotificationSendBody</code> | Yes |  |
+| `payload` | <code>oas:NotificationSendBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -11106,7 +10931,7 @@ Delete Internationalization Messages
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:I18nmanagerDeleteKeysBody</code> | Yes |  |
+| `payload` | <code>oas:I18nmanagerDeleteKeysBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `http:Response|error`
@@ -11131,7 +10956,7 @@ List Internationalization Messages
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:I18nmanagerFetchWithExtraDataBody</code> | Yes |  |
+| `payload` | <code>oas:I18nmanagerFetchWithExtraDataBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListInternationalizationMessagesEnvelope|error`
@@ -11159,7 +10984,7 @@ Add Line Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | typed ID of the target CLIC document |
-| `payload` | <code>oas:ClicmanagerAdditemstypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:ClicmanagerAdditemstypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `record`
@@ -11184,7 +11009,7 @@ Fetch Activities
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ActivitylogFetchBody</code> | Yes |  |
+| `payload` | <code>oas:ActivitylogFetchBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `record`
@@ -11234,8 +11059,8 @@ Import Line Items (w/o Input Types)
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:ClicmanagerImportlineitemstypedIdBody</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>oas:ClicmanagerImportlineitemstypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ClicOperationEnvelope|error`
@@ -11261,7 +11086,7 @@ List CLIC Objects
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Quote/Contract/Rebate Agreement/Compensation Plan you want to retrieve line items for |
-| `payload` | <code>oas:GetCLICrequest</code> | Yes |  |
+| `payload` | <code>oas:GetCLICrequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:ListClicObjectsQueries</code> | Yes | Queries to be sent with the request |
 
@@ -11287,8 +11112,8 @@ List Unique CLIC Items
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListUniqueCLICItemsResponse|error`
@@ -11314,7 +11139,7 @@ Delete All Line Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the object you want to remove all line items from |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ClicOperationEnvelope|error`
@@ -11339,7 +11164,7 @@ Send an Email
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:SendEmailRequest</code> | Yes |  |
+| `payload` | <code>oas:SendEmailRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:generalResponse|error`
@@ -11365,7 +11190,7 @@ Mark an Offer as Lost (with reason)
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the Quote you want set as lost |
-| `payload` | <code>oas:MarkOfferLostWithReasonRequest</code> | Yes |  |
+| `payload` | <code>oas:MarkOfferLostWithReasonRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SetClicLostReasonEnvelope|error`
@@ -11391,7 +11216,7 @@ Submit a Quote/Contract/Rebate Agreement
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Contract, Quote, or Rebate Agreement you want to submit |
-| `payload` | <code>oas:SubmitQuoteContractRebateAgreementRequest</code> | Yes |  |
+| `payload` | <code>oas:SubmitQuoteContractRebateAgreementRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SubmitQuoteContractRebateAgreementResponse|error`
@@ -11417,7 +11242,7 @@ Update CLIC Line Items
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the CLIC object (e.g., a Quote) you want to update line items for |
-| `payload` | <code>oas:UpdateCLICLineItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:UpdateCLICLineItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:UpdateClicLineItemsEnvelope|error`
@@ -11548,7 +11373,7 @@ Add a Configuration Storage
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:AddJCSBody</code> | Yes |  |
+| `payload` | <code>oas:AddJCSBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConfigurationStorageOperationEnvelope|error`
@@ -11573,7 +11398,7 @@ Delete a Configuration Storage
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConfigurationStorageOperationEnvelope|error`
@@ -11598,7 +11423,7 @@ Deploy a Configuration Storage
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:JcsmanagerDeployBody</code> | Yes |  |
+| `payload` | <code>oas:JcsmanagerDeployBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConfigurationStorageOperationEnvelope|error`
@@ -11623,7 +11448,7 @@ Get a Configuration Storage
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:FetchJCSBody</code> | Yes |  |
+| `payload` | <code>oas:FetchJCSBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetConfigurationStorageEnvelope|error`
@@ -11648,7 +11473,7 @@ Update a Configuration Storage
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:UpdateJCSBody</code> | Yes |  |
+| `payload` | <code>oas:UpdateJCSBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ConfigurationStorageOperationEnvelope|error`
@@ -11719,6 +11544,32 @@ oas:ListEntityFieldsResponse result = check pricefxClient->listEntityFields(type
 #### General
 
 <details>
+<summary>createObject</summary>
+
+<div>
+
+Create an Object
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|--------------|
+| `typeCode` | <code>string</code> | Yes | The object's type code. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) |
+| `payload` | <code>oas:createObjectRequest</code> | Yes | Request payload |
+| `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
+
+**Returns:** `error?`
+
+**Sample code:**
+
+```ballerina
+error? result = check pricefxClient->createObject(typeCode, payload);
+```
+
+</div>
+</details>
+
+<details>
 <summary>deleteColumnValues</summary>
 
 <div>
@@ -11745,6 +11596,32 @@ oas:DeleteColumnValuesResponse result = check pricefxClient->deleteColumnValues(
 </details>
 
 <details>
+<summary>deleteObject</summary>
+
+<div>
+
+Delete an Object
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|--------------|
+| `typeCode` | <code>"ACTT"&#124;"AP"&#124;"APIK"&#124;"BD"&#124;"BPT"&#124;"BR"&#124;"C"&#124;"CA"&#124;"CAM"&#124;"CDESC"&#124;"CF"&#124;"CFS"&#124;"CFT"&#124;"CH"&#124;"CLLI"&#124;"CN"&#124;"CS"&#124;"CT"&#124;"CTAM"&#124;"CTLI"&#124;"CTMU"&#124;"CTMUI"&#124;"CTT"&#124;"CTTAM"&#124;"CTTREE"&#124;"CW"&#124;"CX"&#124;"CXAM"&#124;"DA"&#124;"DB"&#124;"DCR"&#124;"DCRAM"&#124;"DCRI"&#124;"DCRL"&#124;"DCRMC"&#124;"DCRT"&#124;"DE"&#124;"DI"&#124;"DM"&#124;"DMDC"&#124;"DMDL"&#124;"DMDS"&#124;"DMF"&#124;"DMM"&#124;"DMR"&#124;"DMT"&#124;"DREG"&#124;"DWT"&#124;"ET"&#124;"EVT"&#124;"F"&#124;"FE"&#124;"FN"&#124;"IDC"&#124;"IE"&#124;"ISH"&#124;"JST"&#124;"JLTV"&#124;"JLTVM"&#124;"LAT"&#124;"LT"&#124;"LTT"&#124;"LTV"&#124;"M"&#124;"MLTV"&#124;"MLTV2"&#124;"MLTV3"&#124;"MLTV4"&#124;"MLTV5"&#124;"MLTV6"&#124;"MLTVM"&#124;"MPL"&#124;"MPLAM"&#124;"MPLI"&#124;"MPLIT"&#124;"MPLT"&#124;"MR"&#124;"MRAM"&#124;"MT"&#124;"P"&#124;"PAM"&#124;"PAPIJ"&#124;"PBOME"&#124;"PCOMP"&#124;"PCW"&#124;"PDESC"&#124;"PG"&#124;"PGI"&#124;"PGIM"&#124;"PGT"&#124;"PH"&#124;"PL"&#124;"PLI"&#124;"PLIM"&#124;"PLT"&#124;"PR"&#124;"PRAM"&#124;"PREF"&#124;"PT"&#124;"PWH"&#124;"PX"&#124;"PXAM"&#124;"PXREF"&#124;"PYR"&#124;"PYRAM"&#124;"Q"&#124;"QAM"&#124;"QLI"&#124;"QMU"&#124;"QMUI"&#124;"QT"&#124;"QTT"&#124;"QTTAM"&#124;"R"&#124;"RAT"&#124;"RATM"&#124;"RBA"&#124;"RBAAM"&#124;"RBALI"&#124;"RBAT"&#124;"RBT"&#124;"RBTAM"&#124;"RR"&#124;"RRAM"&#124;"RRS"&#124;"RRSC"&#124;"RT"&#124;"SAT"&#124;"SC"&#124;"SCN"&#124;"SCNAM"&#124;"SCT"&#124;"SIAM"&#124;"SIM"&#124;"SIMI"&#124;"TFA"&#124;"TODO"&#124;"U"&#124;"UG"&#124;"US"&#124;"W"&#124;"WD"&#124;"WF"&#124;"WFE"&#124;"XPGI"&#124;"XPLI"&#124;"XSIMI"</code> | Yes | Enter the type code of the entity you want to delete the object from. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) in the Pricefx Knowledge Base article |
+| `payload` | <code>oas:deleteObjectRequest</code> | Yes | Request payload |
+| `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
+
+**Returns:** `oas:deleteObjectResponse|error`
+
+**Sample code:**
+
+```ballerina
+oas:deleteObjectResponse result = check pricefxClient->deleteObject(typeCode, payload);
+```
+
+</div>
+</details>
+
+<details>
 <summary>deleteObjects</summary>
 
 <div>
@@ -11756,7 +11633,7 @@ Delete Objects
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>string</code> | Yes | The object's type code. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) |
-| `payload` | <code>oas:DeleteObjectsForceFilterRequest</code> | Yes |  |
+| `payload` | <code>oas:DeleteObjectsForceFilterRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:DeleteObjectsResponse|error`
@@ -11765,6 +11642,32 @@ Delete Objects
 
 ```ballerina
 oas:DeleteObjectsResponse result = check pricefxClient->deleteObjects(typeCode, payload);
+```
+
+</div>
+</details>
+
+<details>
+<summary>getObject</summary>
+
+<div>
+
+Get an Object
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|--------------|
+| `typeCode` | <code>string</code> | Yes | The object's type code. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) |
+| `id` | <code>string</code> | Yes | The ID of the object you want to retrieve details for |
+| `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
+
+**Returns:** `oas:getObjectResponse|error`
+
+**Sample code:**
+
+```ballerina
+oas:getObjectResponse result = check pricefxClient->getObject(typeCode, id);
 ```
 
 </div>
@@ -11781,7 +11684,7 @@ Get Query API Metadata
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:QueryapiExecuteBody</code> | Yes |  |
+| `payload` | <code>oas:QueryapiExecuteBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:QueryApiMetadataEnvelope|error`
@@ -11833,7 +11736,7 @@ Insert Bulk Data From a File
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>"C"&#124;"CDESC"&#124;"CX"&#124;"JLTV"&#124;"LTV"&#124;"MLTV"&#124;"P"&#124;"PBOME"&#124;"PCOMP"&#124;"PDESC"&#124;"PR"&#124;"PX"&#124;"PXREF"&#124;"SL"&#124;"SX"&#124;"TODO"&#124;"UG"</code> | Yes | Enter the type code of the entity you want to insert a data to. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) in the Pricefx Knowledge Base article |
-| `payload` | <code>oas:InsertBulkDataFromFileRequest</code> | Yes |  |
+| `payload` | <code>oas:InsertBulkDataFromFileRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:InsertBulkDataFromFileQueries</code> | Yes | Queries to be sent with the request |
 
@@ -11860,7 +11763,7 @@ Insert Bulk Data From a File (async)
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>"C"&#124;"CDESC"&#124;"CX"&#124;"JLTV"&#124;"LTV"&#124;"MLTV"&#124;"P"&#124;"PBOME"&#124;"PCOMP"&#124;"PDESC"&#124;"PR"&#124;"PX"&#124;"PXREF"&#124;"SL"&#124;"SX"&#124;"TODO"&#124;"UG"</code> | Yes | Enter the type code of the entity you want to insert a data to. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) in the Pricefx Knowledge Base article |
-| `payload` | <code>oas:InsertBulkDataFromFileAsyncRequest</code> | Yes |  |
+| `payload` | <code>oas:InsertBulkDataFromFileAsyncRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:InsertBulkDataFromFileAsyncQueries</code> | Yes | Queries to be sent with the request |
 
@@ -11870,6 +11773,32 @@ Insert Bulk Data From a File (async)
 
 ```ballerina
 oas:InsertBulkDataFromFileAsyncResponse result = check pricefxClient->insertBulkDataFromFileAsync(typeCode, payload, queries);
+```
+
+</div>
+</details>
+
+<details>
+<summary>listObjects</summary>
+
+<div>
+
+List Objects
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|--------------|
+| `typeCode` | <code>string</code> | Yes | The object's type code. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) |
+| `payload` | <code>oas:fetch_typeCode_body</code> | Yes | Request payload |
+| `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
+
+**Returns:** `oas:generalResponse|error`
+
+**Sample code:**
+
+```ballerina
+oas:generalResponse result = check pricefxClient->listObjects(typeCode, payload);
 ```
 
 </div>
@@ -11911,7 +11840,7 @@ Mass Update
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typeCode` | <code>string</code> | Yes | The object's type code. See [the list of Type Codes](https://pricefx.atlassian.net/wiki/spaces/KB/pages/99570616/Type+Codes) |
-| `payload` | <code>oas:MassUpdateRequest</code> | Yes |  |
+| `payload` | <code>oas:MassUpdateRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:MassUpdateResponse|error`
@@ -11936,7 +11865,7 @@ Query API Execute
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:QueryapiExecuteBody</code> | Yes |  |
+| `payload` | <code>oas:QueryapiExecuteBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 | `queries` | <code>*oas:QueryApiExecuteQueries</code> | Yes | Queries to be sent with the request |
 
@@ -12121,8 +12050,8 @@ Duplicate a Model
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `typedId` | <code>string</code> | Yes |  |
-| `payload` | <code>oas:OptimizationModelduplicatetypedIdBody</code> | Yes |  |
+| `typedId` | <code>string</code> | Yes | The typedId to be sent with the request |
+| `payload` | <code>oas:OptimizationModelduplicatetypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ModelDuplicationEnvelope|error`
@@ -12150,7 +12079,7 @@ Execute a Model Logic
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Model Object you want to execute the logic for |
 | `stepName` | <code>string</code> | Yes | The name of the step you want to execute the logic for |
 | `formulaName` | <code>string</code> | Yes | The name of the logic you want to execute |
-| `payload` | <code>oas:ExecuteModelLogicRequest</code> | Yes |  |
+| `payload` | <code>oas:ExecuteModelLogicRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ExecuteModelLogicResponse|error`
@@ -12175,7 +12104,7 @@ Export Models
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:OptimizationModelexportBody</code> | Yes |  |
+| `payload` | <code>oas:OptimizationModelexportBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `http:Response|error`
@@ -12226,7 +12155,7 @@ Get a Parallel Calculation Item
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `id` | <code>string</code> | Yes | `id` of the Parallel Calculation Item (PCI) you want to retrieve |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:GetParallelCalculationItemResponse|error`
@@ -12277,7 +12206,7 @@ Import Models
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:OptimizationModelimportBody</code> | Yes |  |
+| `payload` | <code>oas:OptimizationModelimportBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ModelDuplicationEnvelope|error`
@@ -12329,7 +12258,7 @@ List Parallel Calculation Items
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:ListParallelCalculationItemsRequest</code> | Yes |  |
+| `payload` | <code>oas:ListParallelCalculationItemsRequest</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListParallelCalculationItemsResponse|error`
@@ -12355,7 +12284,7 @@ Load Data Into FieldCollection
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | Specifies the typedId (format: `&#123;id&#125;.&#123;type&#125;`) of the FieldCollection to load data into. Type must be either `DMDS` or `DMT` |
-| `payload` | <code>oas:DatamartLoadfctypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:DatamartLoadfctypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `http:Response|error`
@@ -12383,7 +12312,7 @@ Recalculate a Calculation of a Step
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Model Object you want to recalculate the step for |
 | `stepName` | <code>"definition"&#124;"configuration"&#124;"results"&#124;"projections"&#124;"parallel"</code> | Yes | Enter the name of the step you want to calculate |
 | `calcName` | <code>string</code> | Yes | The name of the calculation you want to recalculate |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:RecalculateCalculationOfStepResponse|error`
@@ -12411,7 +12340,7 @@ Recalculate Items of a Parallel Calculation
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Model Object you want to recalculate the step for |
 | `stepName` | <code>"definition"&#124;"configuration"&#124;"results"&#124;"projections"&#124;"parallel"</code> | Yes | Enter the name of the step you want to calculate |
 | `calcName` | <code>string</code> | Yes | The name of the calculation you want to recalculate |
-| `payload` | <code>oas:CalcNameItemBody</code> | Yes |  |
+| `payload` | <code>oas:CalcNameItemBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ParallelCalculationEnvelope|error`
@@ -12437,7 +12366,7 @@ Revoke a Model
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | `typedId` of the model you want to revoke |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:RevokeModelResponse|error`
@@ -12490,7 +12419,7 @@ Submit a Model
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
 | `typedId` | <code>string</code> | Yes | The `typedId` of the Model Object you want to submit |
-| `payload` | <code>record &#123;&#125;</code> | Yes |  |
+| `payload` | <code>record &#123;&#125;</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:SaveModelResponse|error`
@@ -12515,7 +12444,7 @@ Update Job Status Tracker Entry
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:OptimizationUpdatejstBody</code> | Yes |  |
+| `payload` | <code>oas:OptimizationUpdatejstBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:JobStatusTrackerUpdateEnvelope|error`
@@ -12567,7 +12496,7 @@ List Email Tasks
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:NotificationListBody</code> | Yes |  |
+| `payload` | <code>oas:NotificationListBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListEmailTasksEnvelope|error`
@@ -12592,7 +12521,7 @@ List Event Tasks
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:NotificationListBody</code> | Yes |  |
+| `payload` | <code>oas:NotificationListBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListEventTasksEnvelope|error`
@@ -12617,7 +12546,7 @@ List Logins
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:BdmanagerListtypedIdBody</code> | Yes |  |
+| `payload` | <code>oas:BdmanagerListtypedIdBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListLoginsEnvelope|error`
@@ -12642,7 +12571,7 @@ List Security & Configuration Events
 
 | Name | Type | Required | Description |
 |------|------|----------|--------------|
-| `payload` | <code>oas:NotificationListBody</code> | Yes |  |
+| `payload` | <code>oas:NotificationListBody</code> | Yes | Request payload |
 | `headers` | <code>map&lt;string&#124;string[]&gt;</code> | No | Headers to be sent with the request |
 
 **Returns:** `oas:ListSecurityConfigEventsEnvelope|error`
