@@ -19,7 +19,7 @@ description: "Overview of the ballerinax/pricefx connector for WSO2 Integrator."
 - Manage users, business roles, and workflow delegations
 - Work with the Data Manager, lookup tables, and key-value stores
 - Authenticate with username/password, an API key, OAuth 2.0, or a pre-signed external JWT
-- Transparent re-authentication — the client automatically refreshes a short-lived token and retries once whenever a request comes back unauthenticated
+- Transparent re-authentication - the client automatically refreshes a short-lived token and retries once whenever a request comes back unauthenticated
 
 ## Actions
 
@@ -32,7 +32,7 @@ The connector exposes a single client for interacting with the Pricefx API.
 ## Documentation
 
 - [Setup Guide](setup-guide.md) - Get Pricefx credentials
-- [Action Reference](action-reference.md) - Available operations
+- [Actions](action-reference.md) - Available operations
 
 ## How to contribute
 

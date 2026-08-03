@@ -1,15 +1,21 @@
 ---
 connector: true
 connector_name: "pricefx"
-title: "Action Reference"
+title: "Actions"
 description: "Available operations in the ballerinax/pricefx connector."
 ---
 
-# Action Reference
+# Actions
+
+The `ballerinax/pricefx` package exposes the following clients:
+
+| Client | Purpose |
+|--------|---------|
+| [`Client`](#client) | Provides access to the Pricefx Backend API for managing products, customers, sellers, price lists, calculation grids, quotes, contracts, rebate agreements, sales compensations, attachments, and more. |
+
+---
 
 ## Client
-
-The `Client` wraps the generated `oas` client and adds the customization Pricefx's API needs on top: turning the credentials in `ConnectionConfig` into the right kind of authentication (JWT, HTTP Basic, OAuth 2.0, or a pre-signed external JWT), merging in any static headers (a two-factor authentication code, a CSRF token), and transparently re-authenticating and retrying once whenever a request comes back unauthenticated. Import `ballerinax/pricefx.oas` alongside `ballerinax/pricefx` — every operation's payload and response types live in the `oas` module.
 
 ### Configuration
 
@@ -26,7 +32,6 @@ Pricefx account credentials and authentication options, included directly in `Co
 | `oauth2ClientId` | <code>string</code> | Optional | OAuth 2.0 client identifier, as registered in Pricefx's `oauthConfiguration` |
 | `oauth2ClientSecret` | <code>string</code> | Optional | OAuth 2.0 client secret, if one was configured for the client |
 | `oauth2RefreshToken` | <code>string</code> | Optional | A refresh token previously obtained through Pricefx's OAuth 2.0 Authorization Code Grant flow. The connector uses it to fetch (and automatically refresh) access tokens |
-| `tfaCode` | <code>string</code> | Optional | A cleartext two-factor authentication code, sent as the `PriceFx-TFA` header on every request. Only required when the calling user has TFA enabled and no session cookie exists |
 | `csrfToken` | <code>string</code> | Optional | A CSRF token, sent as the `X-PriceFx-Csrf-Token` header on every request. Only required when the partition has CSRF protection enabled |
 | `externalJwtSystemName` | <code>string</code> | Optional | The name of the external system trusted via Pricefx's `externalJWTConfiguration`, used together with `externalJwt` |
 | `externalJwt` | <code>string</code> | Optional | A JWT signed by the external system named in `externalJwtSystemName`, sent as `Authorization: BEARER &#60;externalJwtSystemName&#62;;&#60;externalJwt&#62;` on every request |
