@@ -25,7 +25,7 @@ You only pay for a Basic authenticated request once: the connector uses your use
 
 Provide `jwt` on its own - no username, password, or partition needed.
 
-Pricefx's `generateJwtToken` operation mints a non-expiring JWT meant for integrations like this one. Call it once (using any of the other authentication methods), save the resulting token in your configuration, and hand it to the connector as `jwt`. It's the cheapest option available: the token is sent as-is, so creating the client makes no network call at all.
+If you already have a non-expiring Pricefx JWT, you can use it directly by setting it as `jwt`.
 
 ### 3. OAuth 2.0 Authentication
 
