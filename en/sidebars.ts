@@ -1400,6 +1400,16 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Pricefx',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/pricefx/overview' },
+          items: [
+            'connectors/catalog/erp-business/pricefx/setup-guide',
+            'connectors/catalog/erp-business/pricefx/action-reference',
+            'connectors/catalog/erp-business/pricefx/example',
+          ],
+        },
+        {
+          type: 'category',
 
           label: 'PostgreSQL',
           link: { type: 'doc', id: 'connectors/catalog/database/postgresql/connector-overview' },
