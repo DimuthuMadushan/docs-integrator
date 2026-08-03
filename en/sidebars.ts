@@ -1394,6 +1394,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/erp-business/pricefx/setup-guide',
             'connectors/catalog/erp-business/pricefx/action-reference',
+            'connectors/catalog/erp-business/pricefx/example',
           ],
         },
         {
