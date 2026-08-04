@@ -12,7 +12,7 @@ This guide walks you through setting up your AWS account and obtaining the crede
 ## Prerequisites
 
 - An active AWS account registered as a seller in the [AWS Marketplace Management Portal](https://aws.amazon.com/marketplace/management/)
-- At least one published product in AWS Marketplace with an entitlement-based pricing model (SaaS Contract, SaaS Subscriptions, or AMI/container with contract pricing) and active customer subscriptions
+- At least one published product in AWS Marketplace with an entitlement-based pricing model (SaaS Contract) and active customer subscriptions
 
 ## Step 1: Create an IAM user
 
@@ -21,7 +21,7 @@ This guide walks you through setting up your AWS account and obtaining the crede
 3. Select **Users** in the left sidebar, then select **Create user**.
 4. Enter a user name (for example, `ballerina-mpe-connector`) and select **Next**.
 5. Select **Attach policies directly**.
-6. Search for and attach the **AWSMarketplaceEntitlementServiceFullAccess** managed policy, or create a custom policy granting `aws-marketplace:GetEntitlements`.
+6. Search for and attach the **AWSMarketplaceGetEntitlements** managed policy, or create a custom policy granting `aws-marketplace:GetEntitlements`.
 7. Select **Next**, review the settings, and select **Create user**.
 
 :::note
@@ -47,14 +47,12 @@ The secret access key is shown only once at creation time. Store it securely and
 
 ## Step 3: Identify your AWS region
 
-Determine the AWS region where your Marketplace product is registered. Common regions include:
+Determine the AWS region where your Marketplace product is registered. Common region include:
 
 - `aws:US_EAST_1` (US East: N. Virginia)
-- `aws:US_WEST_2` (US West: Oregon)
-- `aws:EU_WEST_1` (Europe: Ireland)
 
 :::note
-AWS Marketplace Entitlement Service is available in most AWS regions. Use the region that matches your product's registration.
+AWS Marketplace Entitlement Service is available in most AWS regions.
 :::
 
 ## Step 4: Obtain your product code

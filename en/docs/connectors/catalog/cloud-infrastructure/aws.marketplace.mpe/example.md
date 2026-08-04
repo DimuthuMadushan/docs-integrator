@@ -19,14 +19,14 @@ flowchart LR
 ## Prerequisites
 
 - An AWS account registered as a seller in the AWS Marketplace Management Portal.
-- A published product on an entitlement-based pricing model, such as a SaaS contract or a SaaS subscription.
+- A published product on an entitlement-based pricing model, such as a SaaS contract.
 - At least one customer subscription against that product.
 - An IAM user with an access key ID and a secret access key.
 - The product code that identifies your product in AWS Marketplace.
 
 ## Setting up the AWS Marketplace Entitlement Service integration
 
-> **New to WSO2 Integrator?** Follow the [Create a New Integration](../../../../develop/create-integrations/create-new-integration.md) guide to set up your integration first, then return here to add the connector.
+> **New to WSO2 Integrator?** Follow the [Create a New Integration](../../../../develop/create-integrations/create-a-new-integration.md) guide to set up your integration first, then return here to add the connector.
 
 ## Adding the AWS Marketplace Entitlement Service connector
 
@@ -65,7 +65,7 @@ Select **Save Connection** and verify that the connection appears in the **Conne
 1. Select **Configurations** at the bottom of the project tree under **Data Mappers**.
 2. Enter a value for each configurable variable listed below before you run the integration.
 
-- **region** (`string`) : AWS region for the Entitlement Service endpoint, such as `us-east-1`
+- **region** (`string`) : AWS region for the Entitlement Service endpoint
 - **accessKeyId** (`string`) : Access key ID of the IAM user
 - **secretAccessKey** (`string`) : Secret access key of the IAM user
 - **productCode** (`string`) : Product code of your AWS Marketplace product, added with the operation in Step 7

@@ -34,7 +34,7 @@ import ballerinax/aws.sns;
 configurable string accessKeyId = ?;
 configurable string secretAccessKey = ?;
 
-sns:Client sqsClient = check new ({
+sns:Client snsClient = check new ({
    region: aws:US_EAST_1,
    auth: {
       accessKeyId,

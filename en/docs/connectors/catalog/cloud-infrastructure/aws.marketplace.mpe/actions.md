@@ -153,7 +153,7 @@ Sample response:
 
 </details>
 
-#### Client Lifecycle
+#### Client lifecycle
 
 <details>
 <summary>close</summary>

@@ -24,7 +24,7 @@ flowchart LR
 
 ## Setting up the SQS integration
 
-> **New to WSO2 Integrator?** Follow the [Create a New Integration](../../../../develop/create-integrations/create-new-integration.md) guide to set up your integration first, then return here to add the connector.
+> **New to WSO2 Integrator?** Follow the [Create a New Integration](../../../../develop/create-integrations/create-a-new-integration.md) guide to set up your integration first, then return here to add the connector.
 
 ## Adding the SQS connector
 
@@ -66,7 +66,6 @@ Select **Save Connection** and verify that the connection appears in the **Conne
 - **region** (`string`) : AWS region that hosts the queue, such as `us-east-1`
 - **accessKeyId** (`string`) : Access key ID of the IAM user
 - **secretAccessKey** (`string`) : Secret access key of the IAM user
-- **queueUrl** (`string`) : URL of the target queue, added with the operation in Step 7
 
 ## Configuring the SQS Send Message operation
 

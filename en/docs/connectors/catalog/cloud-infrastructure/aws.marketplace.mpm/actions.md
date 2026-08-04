@@ -22,7 +22,7 @@ Interacts with the AWS Marketplace Metering Service for customer resolution and 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `auth` | `auth:AuthConfig` | Required | Authentication configuration: Any standard credential source supported by `aws.auth` package: `StaticAuthConfig`, `ProfileAuthConfig`, `AssumeRoleConfig`, `WebIdentityConfig`, `SsoAuthConfig`, `ProcessAuthConfig`, `DEFAULT_CREDENTIALS` |
-| `region` | `aws:Region\|string` | Required | AWS region for the SNS service (e.g., `aws:US_EAST_1`). |
+| `region` | `aws:Region\|string` | Required | AWS region for the Marketplace Metering Service (e.g., `aws:US_EAST_1`). |
 | `endpoint` | `aws:EndpointConfig` | Optional | Optional endpoint options: FIPS/dualstack variants, or a custom endpoint override (e.g. LocalStack, VPC interface endpoints). |
 
 ### Initializing the client

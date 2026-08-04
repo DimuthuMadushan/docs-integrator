@@ -155,7 +155,7 @@ You can set `autoDelete: false` in `@sqs:ServiceConfig` to manually control mess
 
 ---
 
-## Supporting Types
+## Supporting types
 
 ### `Message`
 
