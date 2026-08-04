@@ -1,6 +1,10 @@
 ---
-title: Setup Guide
+connector: true
+connector_name: "aws.sqs"
+title: "Setup Guide"
+description: "How to set up and configure the ballerinax/aws.sqs connector."
 ---
+
 # Setup Guide
 
 This guide walks you through creating an AWS account and obtaining the credentials required to use the AWS SQS connector.
