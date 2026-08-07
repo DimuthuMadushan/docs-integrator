@@ -1241,7 +1241,7 @@ Point-in-time, read-only copies of the share. Snapshot contents are read through
 
 <div>
 
-Creates a point-in-time, read-only snapshot of the bound share; unlike the other snapshot operations, it works under a share-scoped SAS.
+Creates a point-in-time, read-only snapshot of the bound share. Like the other snapshot operations, it needs account-level credentials; a share- or file-scoped SAS fails.
 
 **Parameters:**
 
@@ -2244,6 +2244,8 @@ Account-level administration: share lifecycle and existence checks, file-service
 ### Configuration
 
 The `AdminClient` takes the same `ClientConfiguration` as the `Client`; see the [Client configuration](#configuration) tables above.
+
+Under Microsoft Entra ID credentials, the `AdminClient` operations authorize against the storage account's management permissions (the `Microsoft.Storage/storageAccounts/fileServices/shares/` actions, carried by roles such as Contributor); the Storage File Data Privileged roles alone do not cover them. See the [Setup Guide](setup-guide.md) for the role split.
 
 ### Initializing the client
 

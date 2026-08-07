@@ -40,7 +40,7 @@ The connector accepts any one of the following credential types. An access key i
 2. Select the allowed services, resource types, permissions, and an expiry window, then select **Generate SAS and connection string**.
 3. Copy the **SAS token**, or the **File service SAS URL** if you prefer a single value that carries both the endpoint and the token.
 
-A SAS credential is limited to the permissions and expiry it was minted with. It cannot perform share-level administrative operations, and it cannot mint further SAS tokens.
+A SAS credential is limited to the services, resource types, permissions, and expiry it was minted with. The portal's **Shared access signature** page mints an account SAS; minted with the File service and the container resource type, it can also perform share-level administrative operations. A share- or file-scoped SAS cannot. No SAS credential can mint further SAS tokens.
 
 ### Connection string
 
@@ -55,12 +55,13 @@ To use a service principal:
 1. In the Azure portal, open **Microsoft Entra ID** > **App registrations** and select **+ New registration**. After registering, note the **Directory (tenant) ID** and **Application (client) ID** from the app's overview page.
 2. Under the app's **Certificates & secrets**, create a client secret (or upload a certificate) and copy its value.
 
-Two role requirements apply regardless of which Entra ID credential kind you use:
+The role requirements apply regardless of which Entra ID credential kind you use, and they split by operation family:
 
-- The identity must hold the **Storage File Data Privileged Reader** or **Storage File Data Privileged Contributor** role on the storage account. The connector sends the backup intent on every request; this requires the privileged roles and bypasses file and directory ACLs.
+- For file and directory data operations, the identity must hold the **Storage File Data Privileged Reader** or **Storage File Data Privileged Contributor** role on the storage account. The connector sends the backup intent on every request; this requires the privileged roles and bypasses file and directory ACLs.
+- Share-level and account-level management operations (the admin operations, and the operations on the share itself) authorize against the storage account's management permissions instead: the identity needs a role carrying the `Microsoft.Storage/storageAccounts/fileServices/shares/` read, write, and delete actions, such as **Contributor** on the storage account. The privileged data roles alone do not cover these operations.
 - Generating user delegation SAS tokens additionally requires the **Storage File Delegator** role.
 
-Assign the roles in the storage account under **Access control (IAM)** > **Add** > **Add role assignment**.
+An identity covering the full connector surface holds a privileged data role and a management role together. Assign the roles in the storage account under **Access control (IAM)** > **Add** > **Add role assignment**.
 
 ## Next steps
 
