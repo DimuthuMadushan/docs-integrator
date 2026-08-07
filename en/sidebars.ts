@@ -529,6 +529,17 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Azure Files',
+          link: { type: 'doc', id: 'connectors/catalog/storage-file/azure.storage.files/overview' },
+          items: [
+            'connectors/catalog/storage-file/azure.storage.files/setup-guide',
+            'connectors/catalog/storage-file/azure.storage.files/action-reference',
+            'connectors/catalog/storage-file/azure.storage.files/trigger-reference',
+            'connectors/catalog/storage-file/azure.storage.files/example',
+          ],
+        },
+        {
+          type: 'category',
 
           label: 'Azure Service Bus',
           link: { type: 'doc', id: 'connectors/catalog/messaging/asb/azure-service-bus-connector-overview' },
