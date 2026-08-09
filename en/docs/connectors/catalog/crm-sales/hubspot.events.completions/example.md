@@ -103,4 +103,4 @@ Try this sample in WSO2 Integration Platform.
 
 The `hubspot.events.completions` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-hubspot.events.completions/tree/main/examples/), covering the following use cases:
 
-1. [Track customer purchase events](../examples/track_customer_purchase_events/track_customer_purchase_events.md) — Send a single purchase event in real time, then batch-report a set of accumulated page-view events.
+1. [Track customer purchase events](https://github.com/ballerina-platform/module-ballerinax-hubspot.events.completions/blob/main/examples/track_customer_purchase_events/track_customer_purchase_events.md) — Send a single purchase event in real time, then batch-report a set of accumulated page-view events.
