@@ -7,7 +7,7 @@ description: "Overview of the ballerinax/hubspot.events.completions connector fo
 
 The HubSpot Events Completions connector provides Ballerina bindings for the HubSpot Events Send API v3, enabling external systems to report custom behavioral event occurrences directly to HubSpot. Using this connector, applications can keep HubSpot workflows, reporting dashboards, and CRM contact timelines synchronized with real-world activity that happens outside of HubSpot — such as purchases, sign-ups, or page views recorded in your own backend.
 
-## Key Features
+## Key features
 
 - Send a single custom event occurrence to HubSpot in real time
 - Send a batch of up to 500 event occurrences in a single API call

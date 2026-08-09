@@ -46,6 +46,7 @@ Sends single and batched custom behavioral event occurrences to HubSpot for exis
 ### Initializing the client
 
 ```ballerina
+import ballerina/http;
 import ballerinax/hubspot.events.completions;
 
 completions:ConnectionConfig config = {
@@ -56,7 +57,7 @@ completions:Client client = check new (config);
 
 ### Operations
 
-#### Event Reporting
+#### Event reporting
 
 <details>
 <summary>sendEvent</summary>
@@ -91,7 +92,7 @@ http:Response response = check client->sendEvent(payload);
 
 **Sample response:**
 
-```
+```bash
 HTTP/1.1 204 No Content
 ```
 
@@ -138,7 +139,7 @@ http:Response response = check client->sendEventBatch(payload);
 
 **Sample response:**
 
-```
+```bash
 HTTP/1.1 204 No Content
 ```
 

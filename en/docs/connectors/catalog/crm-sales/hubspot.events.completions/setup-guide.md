@@ -13,7 +13,7 @@ To use this connector you need a HubSpot Service Key (or access token) authorize
 
 - A HubSpot **Professional** or **Enterprise** account (required to access the `analytics.behavioral_events.send` scope), or a [HubSpot developer test account](https://developers.hubspot.com/get-started) for testing
 
-## Create a Service Key
+## Create a service key
 
 HubSpot Service Keys are the recommended way to authorize single-account API access. To create one:
 
@@ -35,7 +35,7 @@ All your service keys are listed under **Service Keys** for future reference.
 Service Keys are currently in **public beta** and are subject to change. They are HubSpot's recommended replacement for legacy Private App tokens for single-account access.
 :::
 
-## Create a Custom Event Definition
+## Create a custom event definition
 
 The Send Event Completions API reports occurrences of events that **already exist** in your account — it does not create the event definition itself. Before sending any events, create one in HubSpot:
 
@@ -47,6 +47,8 @@ The Send Event Completions API reports occurrences of events that **already exis
 :::note
 One custom event definition can be reused across many `sendEvent` and `sendEventBatch` calls. You only need to create it once per event type.
 :::
+
+The UI wizard above is available on both **Professional** and **Enterprise** accounts. HubSpot's event-definitions API (for creating event definitions programmatically, as opposed to reporting occurrences with this connector) requires an **Enterprise** subscription and the `behavioral_events.event_definitions.read_write` scope — use the UI wizard on a Professional account instead.
 
 ## Next steps
 
