@@ -1,7 +1,7 @@
 ---
 connector: true
 connector_name: "hubspot.events.completions"
-title: "Setup Guide"
+title: "HubSpot Events Completions Setup Guide"
 description: "How to set up and configure the ballerinax/hubspot.events.completions connector."
 ---
 

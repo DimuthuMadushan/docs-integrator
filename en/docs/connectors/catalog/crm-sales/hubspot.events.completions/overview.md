@@ -1,7 +1,7 @@
 ---
 connector: true
 connector_name: "hubspot.events.completions"
-title: "HubSpot Events Completions"
+title: "HubSpot Events Completions Overview"
 description: "Overview of the ballerinax/hubspot.events.completions connector for WSO2 Integrator."
 ---
 
