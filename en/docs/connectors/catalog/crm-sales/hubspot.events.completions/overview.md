@@ -5,6 +5,8 @@ title: "HubSpot Events Completions Overview"
 description: "Overview of the ballerinax/hubspot.events.completions connector for WSO2 Integrator."
 ---
 
+# HubSpot Events Completions
+
 The HubSpot Events Completions connector provides Ballerina bindings for the HubSpot Events Send API v3, enabling external systems to report custom behavioral event occurrences directly to HubSpot. Using this connector, applications can keep HubSpot workflows, reporting dashboards, and CRM contact timelines synchronized with real-world activity that happens outside of HubSpot — such as purchases, sign-ups, or page views recorded in your own backend.
 
 ## Key features
