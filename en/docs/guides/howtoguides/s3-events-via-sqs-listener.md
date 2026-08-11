@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
-title: "Process S3 File Events with the SQS Listener"
-sidebar_label: "Process S3 File Events with the SQS Listener"
+title: "File Integrations on S3 File Events"
+sidebar_label: "File Integrations on S3 File Events"
 description: Configure AWS S3 to push object-created notifications to an SQS queue, then consume and parse those events in a Ballerina integration using the aws.sqs listener.
 keywords: [wso2 integrator, aws, s3, sqs, event-driven, csv, file processing, ballerina, listener, trigger, object notification, cloud]
 ---
@@ -11,7 +11,9 @@ import TabItem from '@theme/TabItem';
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-# Process S3 File Events with the SQS Listener
+# File Integrations on S3 File Events
+
+This integration triggers an action each time a file is uploaded to an Amazon S3 bucket. AWS does not have a built-in trigger for S3, and one of the recommended approaches is to publish these events to an AWS SQS queue. S3 publishes an object-created notification to the queue, and the AWS SQS trigger consumes it — so your service reacts within seconds of the upload without polling S3.
 
 **What you'll build:** A Ballerina integration that reacts every time a file is uploaded to an S3 bucket. S3 pushes a notification to an SQS queue; the `aws.sqs` listener picks it up and your service logs the bucket name, object key, and file size without polling S3 directly.
 
