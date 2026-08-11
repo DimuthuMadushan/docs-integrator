@@ -1047,6 +1047,16 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'HubSpot Events Completions',
+          link: { type: 'doc', id: 'connectors/catalog/crm-sales/hubspot.events.completions/overview' },
+          items: [
+            'connectors/catalog/crm-sales/hubspot.events.completions/setup-guide',
+            'connectors/catalog/crm-sales/hubspot.events.completions/action-reference',
+            'connectors/catalog/crm-sales/hubspot.events.completions/example',
+          ],
+        },
+        {
+          type: 'category',
           label: 'HubSpot Marketing Campaigns',
           link: { type: 'doc', id: 'connectors/catalog/marketing-social/hubspot.marketing.campaigns/hubspot-marketing-campaigns' },
           items: [
