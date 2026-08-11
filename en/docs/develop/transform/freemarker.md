@@ -15,9 +15,6 @@ Generate emails, configuration files, reports, API responses, and any other text
 
 Use `freemarker:renderFromFile` when templates are stored on disk as `.ftl` files. This keeps templates out of source code and makes it easy to swap templates at deployment time. Pair it with a JSON data file to separate input data from the template. Since FreeMarker templates execute as server-side code, treat them as trusted operator-managed content and never load templates from user-supplied input.
 
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
-
 Create the following files in your Ballerina project:
 
 `templates/sample.ftl`:
@@ -44,6 +41,9 @@ You have ${count} new messages.
     ]
 }
 ```
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
 
 1. **Read the JSON data**: In the flow designer, click **+** and select **Call Function**. Search for `fileReadJson` under **io** and configure:
    - **path\***: `"resources/sample.json"`
@@ -104,7 +104,7 @@ Use `freemarker:render` when the template is short, lives in code, or is assembl
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-1. **Declare a variable for JSON content**: In the flow designer, click **+** and select **Declare Variable**. Set the type to `map<json>` and name it `jsonValue`.
+1. **Declare a variable for JSON content**: In the flow designer, click **+** and select **Declare Variable**. Set the type to `map<json>` and name it `jsonValue`. And set the expression value as `{name: "Alice", count: 5}`.
 
    ![The Declare Variable step with map of json type for jsonValue](/img/develop/transform/freemarker/freemarker-json-variable.png)
 
@@ -131,8 +131,9 @@ import ballerinax/freemarker;
 public function main() returns error? {
     do {
         map<json> jsonValue = {name: "Alice", count: 5};
-        string stringResult = check freemarker:render("Hello, ${name}! You have ${count} new messages.", jsonValue);
-        io:println(stringResult);
+        string output = check freemarker:render("Hello, ${name}! You have ${count} new messages.", jsonValue);
+        io:println(output);
+
     } on fail error e {
         log:printError("Error occurred", 'error = e);
         return e;
