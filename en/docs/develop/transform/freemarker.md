@@ -13,7 +13,7 @@ Generate emails, configuration files, reports, API responses, and any other text
 
 ## Rendering from a file
 
-Use `freemarker:renderFromFile` when templates are stored on disk as `.ftl` files. This keeps templates out of source code and makes it easy to swap templates at deployment time. Pair it with a JSON data file to separate content from logic entirely. Since FreeMarker templates execute as server-side code, treat them as trusted operator-managed content and never load templates from user-supplied input.
+Use `freemarker:renderFromFile` when templates are stored on disk as `.ftl` files. This keeps templates out of source code and makes it easy to swap templates at deployment time. Pair it with a JSON data file to separate input data from the template. Since FreeMarker templates execute as server-side code, treat them as trusted operator-managed content and never load templates from user-supplied input.
 
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
