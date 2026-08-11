@@ -1,15 +1,15 @@
 ---
 sidebar_position: 7
-title: FreeMarker Templates
+title: Template Rendering
 description: Render text, HTML, YAML, and other formats from FreeMarker templates in Ballerina integrations.
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# FreeMarker Templates
+# Template Rendering
 
-Generate emails, configuration files, reports, API responses, and any other text output by combining FreeMarker `.ftl` templates with structured Ballerina data. The `ballerinax/freemarker` module wraps Apache FreeMarker 2.3.33 and exposes two functions: `render` for inline template strings and `renderFromFile` for `.ftl` files on disk. Both functions are isolated and safe for concurrent use.
+Generate emails, configuration files, reports, API responses, and any other text output by combining templates with structured Ballerina data. WSO2 Integrator uses Apache FreeMarker as its template engine. This library exposes two functions: `render` for inline template strings and `renderFromFile` for `.ftl` files on disk.
 
 ## Rendering from a file
 
