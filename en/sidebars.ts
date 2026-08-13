@@ -2092,6 +2092,7 @@ const sidebars: SidebarsConfig = {
           label: 'How to Guides',
           items: [
             'guides/howtoguides/sap-b1-low-stock-purchase-automation',
+            'guides/howtoguides/azure-files-change-tracker',
           ],
         },
         // Migration Guides

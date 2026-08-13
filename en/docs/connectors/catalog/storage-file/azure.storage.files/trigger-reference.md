@@ -39,15 +39,6 @@ The `files:Listener` holds the connection credentials and the polling schedule. 
 | `retryConfig` | <code>RetryConfig</code> | <code>()</code> | Retry behavior for service requests; omit for the service defaults. |
 | `transportConfig` | <code>TransportConfig</code> | <code>()</code> | HTTP transport settings (proxy, connection pool, TLS); omit for the defaults. |
 | `laxDataBinding` | <code>boolean</code> | <code>false</code> | Relaxed data binding for the typed content handlers: JSON, XML, and CSV record binding treat a null value as an optional field and an absent field as a nilable field. |
-| `csvFailSafe` | <code>FailSafeOptions</code> | <code>()</code> | Fail-safe CSV processing for `onFileCsv`. When set, a malformed CSV record is skipped and appended to an error log file instead of failing the whole binding. |
-
-**`FailSafeOptions` fields:**
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `contentType` | <code>ErrorLogContentType</code> | <code>METADATA</code> | What each skipped CSV record's error log entry carries: `METADATA`, `RAW`, or `RAW_AND_METADATA`. |
-
-Fail-safe mode applies to the materialized CSV forms only, not the stream forms. The listener appends skipped rows to a file named `<sourceBaseName>_error.log` in the process working directory, and a fail-safe skip does not notify `onError`.
 
 ### Initializing the listener
 

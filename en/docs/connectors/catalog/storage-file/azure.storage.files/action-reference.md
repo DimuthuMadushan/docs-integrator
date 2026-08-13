@@ -762,22 +762,22 @@ check fileShare->uploadFile("./reports/q1.pdf", "/2026/q1/report.pdf");
 
 <div>
 
-Uploads in-memory content to the bound share, serialized by the value's runtime type: a `byte[]` is written as-is, an `xml` value as its textual form, a `map<json>` as a JSON document, and a `string[][]` as CSV rows. A `string` is written verbatim as raw UTF-8 text, never JSON-quoted; call `toJsonString()` first to store a JSON encoding of a string.
+Uploads in-memory content to the bound share. A `byte[]` is written as-is, an `xml` value as its textual form, and a `string[][]` as CSV rows. A `string` is written verbatim as raw UTF-8 text, never JSON-quoted; call `toJsonString()` first to store a JSON encoding of a string. A record (which includes any map of `anydata` members) or a record array is serialized per the format resolved from `UploadContentOptions.fileFormat` when set, else from the destination path's extension (`.json`, `.xml`, `.csv`): a record becomes a JSON or an XML document (never CSV), and a record array becomes CSV rows headed by the first record's field names, with nil members as empty cells. An unresolvable format, a record directed to CSV, or a record array directed to a non-CSV format fails with a client-side `Error`.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `content` | <code>byte[]&#124;string&#124;xml&#124;map&lt;json&gt;&#124;string[][]</code> | Yes | The content to upload. |
+| `content` | <code>UploadContent</code> | Yes | The content to upload: <code>byte[]&#124;string&#124;xml&#124;string[][]&#124;record {}&#124;record {}[]</code>. |
 | `destinationPath` | <code>string</code> | Yes | The share-relative path the content is written to, including the file name. |
-| `options` | <code>UploadOptions</code> | No | Optional upload options (headers, metadata, permission, SMB properties). See [UploadOptions](#uploadoptions). |
+| `options` | <code>UploadContentOptions</code> | No | Every [UploadOptions](#uploadoptions) field plus `fileFormat` (`JSON`, `XML`, or `CSV`), the record serialization format override. |
 
 **Returns:** `Error?`
 
 **Sample code:**
 
 ```ballerina
-check fileShare->uploadContent({revenue: 1250000, growth: 0.12}, "/2026/q1/metrics.json");
+check fileShare->uploadContent({"revenue": 1250000, "growth": 0.12}, "/2026/q1/metrics.json");
 ```
 
 </div>
@@ -789,7 +789,7 @@ check fileShare->uploadContent({revenue: 1250000, growth: 0.12}, "/2026/q1/metri
 
 <div>
 
-Uploads a byte stream to the bound share. `contentLength` is required up front because Azure Files pre-allocates the file, so a stream of unknown length cannot be uploaded; a length mismatch or a failure of the source stream is a client-side `Error`.
+Uploads a byte stream to the bound share. `contentLength` is required up front, and must not be negative, because Azure Files pre-allocates the file, so a stream of unknown length cannot be uploaded. A length mismatch or a failure of the source stream is a client-side `Error`, and every failure closes the source stream.
 
 **Parameters:**
 
@@ -903,7 +903,7 @@ string text = check fileShare->getFileText("/2026/q1/notes.txt");
 
 <div>
 
-Reads a file's full content and binds it as JSON to the target type, a `json` form or a record. Binding is strict: the content must match the target type exactly.
+Reads a file's full content and binds it as JSON to the target type, a `json` form, a record, or a record array. Binding is strict: the content must match the target type exactly.
 
 **Parameters:**
 
@@ -911,7 +911,7 @@ Reads a file's full content and binds it as JSON to the target type, a `json` fo
 |------|------|----------|-------------|
 | `path` | <code>string</code> | Yes | The source share-relative path. |
 | `options` | <code>DownloadOptions</code> | No | Optional download options (range, snapshot). See [DownloadOptions](#downloadoptions). |
-| `targetType` | <code>typedesc&lt;json&#124;record &#123;&#125;&gt;</code> | No | The type to bind the content to, inferred from the assignment target. |
+| `targetType` | <code>typedesc&lt;json&#124;record &#123;&#125;&#124;record &#123;&#125;[]&gt;</code> | No | The type to bind the content to, inferred from the assignment target. |
 
 **Returns:** `targetType|Error`
 
@@ -2661,7 +2661,7 @@ Options for `Client.createFile` (creating an empty file of a given size).
 
 ### UploadOptions
 
-Options for the upload operations (`uploadFile`, `uploadContent`, `uploadFromStream`).
+Options for the upload operations (`uploadFile` and `uploadFromStream`; `uploadContent` takes [UploadContentOptions](#uploadcontentoptions)).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2670,6 +2670,14 @@ Options for the upload operations (`uploadFile`, `uploadContent`, `uploadFromStr
 | `filePermission` | <code>string</code> | <code>()</code> | An SDDL permission string to apply. |
 | `smbProperties` | <code>SmbProperties</code> | <code>()</code> | SMB properties to apply. |
 | `posixProperties` | <code>PosixProperties</code> | <code>()</code> | POSIX owner, group, and mode to apply (NFS shares only). |
+
+### UploadContentOptions
+
+Options for `uploadContent`: every [UploadOptions](#uploadoptions) field, plus the record serialization format override.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `fileFormat` | <code>FileFormat</code> | <code>()</code> | The serialization format for record and record array content: `JSON`, `XML`, or `CSV`. When absent, the format is inferred from the destination path's extension (`.json`, `.xml`, `.csv`). |
 
 ### DownloadOptions
 
