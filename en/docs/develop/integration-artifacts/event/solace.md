@@ -1,6 +1,6 @@
 ---
 title: Solace
-description: Consume messages from Solace PubSub+ queues and topics with configurable acknowledgment modes, authentication, and connection settings.
+description: Consume messages from Solace PubSub+ queues and topics with configurable acknowledgement modes, authentication, and connection settings.
 ---
 
 import Tabs from '@theme/Tabs';
@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 # Solace
 
-Solace event integrations consume messages from a Solace PubSub+ queue or topic and trigger event handlers as each message arrives. Use them for high-performance event streaming in financial services, IoT, and real-time analytics workloads that require guaranteed or direct message delivery.
+Solace event integrations consume messages from a Solace PubSub+ queue or topic and trigger event handlers as each message arrives. The listener is built on the Solace JCSMP API. Use it for high-performance event streaming in financial services, IoT, and real-time analytics workloads that require guaranteed or direct message delivery.
 
 ## Creating a Solace events service
 
@@ -23,32 +23,12 @@ Solace event integrations consume messages from a Solace PubSub+ queue or topic 
 
    | Field | Description | Default |
    |---|---|---|
-   | **Broker URL** | The Solace broker URL. | `smf://localhost:55554` |
-   | **Message VPN** | The message VPN to connect to. | `default` |
-   | **Destination** | Whether to consume from a **Queue** or a **Topic**. | `Queue` |
-
-   **When Destination is Queue:**
-
-   | Field | Description | Default |
-   |---|---|---|
-   | **Queue Name** | Queue to listen for incoming messages. | `test-queue` |
-   | **Session Acknowledgment Mode** | How received messages are acknowledged. Options: `AUTO_ACKNOWLEDGE`, `CLIENT_ACKNOWLEDGE`, `DUPS_OK_ACKNOWLEDGE`, `SESSION_TRANSACTED`. | `AUTO_ACKNOWLEDGE` |
-
-   **When Destination is Topic:**
-
-   | Field | Description | Default |
-   |---|---|---|
-   | **Topic Name** | Topic to listen for incoming messages. | `test/topic` |
-   | **Subscriber Name** | Name to use for the subscription. | `default` |
-   | **Durable Subscriber** | When enabled, persists the subscription when the client disconnects. | — |
-   | **Session Acknowledgment Mode** | How received messages are acknowledged. Options: `AUTO_ACKNOWLEDGE`, `CLIENT_ACKNOWLEDGE`, `DUPS_OK_ACKNOWLEDGE`, `SESSION_TRANSACTED`. | `AUTO_ACKNOWLEDGE` |
-
-   Expand **Advanced Configurations** to set the listener name and authentication method.
-
-   | Field | Description | Default |
-   |---|---|---|
    | **Listener Name** | Identifier for the listener created with this service. | `solaceListener` |
-   | **Authentication method** | How to authenticate with the Solace broker. Select **Basic Authentication**, **Kerberos Authentication**, or **OAuth 2.0 Authentication**. | `Basic Authentication` |
+   | **Broker URL** | The Solace broker URL in the format `[protocol:]host[:port]`. | `tcp://localhost:55554` |
+   | **Message VPN** | The message VPN to connect to. | `default` |
+   | **Authentication configuration** | How to authenticate with the broker. Select **Basic Authentication**, **Kerberos Authentication**, or **OAuth 2.0 Authentication**. | `Basic Authentication` |
+   | **Destination** | Whether to consume from a **Queue** or a **Topic**. | `Queue` |
+   | **Acknowledgement Mode** | The JCSMP message acknowledgement mode. Options: **Auto Ack**, **Client Ack**. | **Auto Ack** |
 
    **Basic Authentication fields:**
 
@@ -56,7 +36,6 @@ Solace event integrations consume messages from a Solace PubSub+ queue or topic 
    |---|---|
    | **Username** | Username for broker authentication. |
    | **Password** | Password for broker authentication. |
-   | **Secure Socket** | SSL/TLS configuration for a secure connection. |
 
    **Kerberos Authentication fields:**
 
@@ -64,22 +43,36 @@ Solace event integrations consume messages from a Solace PubSub+ queue or topic 
    |---|---|---|
    | **Service Name** | Kerberos service name. | `solace` |
    | **JAAS Login Context** | JAAS login context name. | `SolaceGSS` |
-   | **Mutual Authentication** | Enable Kerberos mutual authentication. | Enabled |
-   | **JAAS Config Reload** | Enable automatic JAAS configuration reload. | — |
-   | **Secure Socket** | SSL/TLS configuration for a secure connection. | — |
+   | **Mutual Authentication** | Enable Kerberos mutual authentication. | Disabled |
+   | **JAAS Config File Reload Enabled** | Enable automatic reload of the JAAS configuration file. | Disabled |
 
    **OAuth 2.0 Authentication fields:**
 
+   | Field | Description |
+   |---|---|
+   | **Issuer** | OAuth 2.0 issuer identifier URI. |
+   | **Access Token** | OAuth 2.0 access token. Provide this or an OIDC token. |
+   | **OIDC Token** | OpenID Connect ID token. Provide this or an access token. |
+
+   **When Destination is Queue:**
+
+   | Field | Description |
+   |---|---|
+   | **Queue Name** | The durable queue to consume messages from. The queue must already exist on the broker; it isn't created automatically. |
+
+   **When Destination is Topic:**
+
    | Field | Description | Default |
    |---|---|---|
-   | **Issuer** | OAuth 2.0 issuer identifier URI. | `https://auth.example.com` |
-   | **Access Token** | OAuth 2.0 access token for authentication. | — |
-   | **OIDC Token** | OpenID Connect ID token for authentication. | — |
-   | **Secure Socket** | SSL/TLS configuration for a secure connection. | — |
+   | **Topic Name** | The topic to subscribe to. | Required |
+   | **Durability** | `Temporary` for a direct, at-most-once subscription, or `Durable` for a durable topic endpoint. | `Temporary` |
+   | **Endpoint Name** | The durable topic endpoint name. Required when **Durability** is `Durable`. | — |
+
+   Expand **Advanced Configurations** to set `secureSocket`, `clientName`, `clientDescription`, `transacted`, `compressionLevel`, `localhost`, `connectTimeout`, `readTimeout`, and `retryConfig`.
 
 4. Click **Create**.
 
-5. WSO2 Integrator opens the service in the **Service Designer**. The canvas shows the attached listener pill, the destination name pill, and an empty **Event Handlers** section.
+5. WSO2 Integrator opens the service in the **Service Designer**. The canvas shows the attached listener pill, the queue or topic name pill, and an empty **Event Handlers** section.
 
    ![Service Designer showing the Solace Event Integration canvas](/img/develop/integration-artifacts/event/solace/step-service-designer.png)
 
@@ -92,13 +85,13 @@ Solace event integrations consume messages from a Solace PubSub+ queue or topic 
 import ballerinax/solace;
 import ballerina/log;
 
-configurable string brokerUrl = "smf://localhost:55554";
+configurable string brokerUrl = "tcp://localhost:55554";
 configurable string msgVpn = "default";
 configurable string username = "admin";
 configurable string password = "admin";
 
 listener solace:Listener solaceListener = check new (
-    url = brokerUrl,
+    brokerUrl,
     messageVpn = msgVpn,
     auth = {
         username: username,
@@ -106,17 +99,26 @@ listener solace:Listener solaceListener = check new (
     }
 );
 
+type OrderMessage record {|
+    string orderId;
+|};
+
+type Message record {|
+    *solace:Message;
+    OrderMessage payload;
+|};
+
 @solace:ServiceConfig {
     queueName: "test-queue",
-    sessionAckMode: "AUTO_ACKNOWLEDGE"
+    ackMode: "AUTO_ACK"
 }
-service on solaceListener {
+service solace:Service on solaceListener {
 
-    remote function onMessage(solace:Message message) returns error? {
-        log:printInfo("Message received", content = message.toString());
+    remote function onMessage(Message message, solace:Caller caller) returns solace:Error? {
+        log:printInfo("Message received", orderId = message.payload.orderId);
     }
 
-    remote function onError(solace:Error err) returns error? {
+    remote function onError(solace:Error err) returns solace:Error? {
         log:printError("Solace error", 'error = err);
     }
 }
@@ -132,25 +134,30 @@ In the **Service Designer**, click the **Configure** icon in the header to open 
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-![Solace Event Integration Configuration panel — service config and listener URL](/img/develop/integration-artifacts/event/solace/step-service-config.png)
+![Solace Event Integration Configuration panel — ServiceConfig expression and listener configuration](/img/develop/integration-artifacts/event/solace/step-service-config.png)
 
-The **Service Configuration** field accepts a record expression that sets the destination and message handling options.
+The **ServiceConfig** field accepts a record expression that sets the destination and message handling options.
 
 **Queue service configuration fields:**
 
 | Field | Description | Default |
 |---|---|---|
-| **queueName** | Name of the queue to consume from. | Required |
-| **sessionAckMode** | Message acknowledgment mode. | `AUTO_ACKNOWLEDGE` |
+| **queueName** | Name of the durable queue to consume from. | Required |
+| **ackMode** | Message acknowledgement mode: `AUTO_ACK` or `CLIENT_ACK`. | `AUTO_ACK` |
+| **messageSelector** | SQL-92 message selector expression. | — |
+| **transportWindowSize** | Maximum number of guaranteed messages in flight, unacknowledged. | `255` |
+| **ackThreshold** | Percentage of `transportWindowSize` consumed before an automatic acknowledgement is sent. | `60` |
+| **reconnectTries** | Number of reconnection attempts after a flow failure. `-1` retries indefinitely. | `-1` |
+| **reconnectRetryInterval** | Delay in seconds between reconnection attempts. | `3.0` |
 
 **Topic service configuration fields:**
 
 | Field | Description | Default |
 |---|---|---|
 | **topicName** | Name of the topic to subscribe to. | Required |
-| **subscriberName** | Name to use for the subscription. | `default` |
-| **consumerType** | Consumer type for the subscription (`DEFAULT` or `DURABLE`). | `DEFAULT` |
-| **sessionAckMode** | Message acknowledgment mode. | `AUTO_ACKNOWLEDGE` |
+| **durability** | `TEMPORARY` for a direct subscription, or `DURABLE` for a durable topic endpoint. | `TEMPORARY` |
+| **endpointName** | Durable topic endpoint name. Required when **durability** is `DURABLE`. | — |
+| **ackMode** | Message acknowledgement mode: `AUTO_ACK` or `CLIENT_ACK`. | `AUTO_ACK` |
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
@@ -159,18 +166,17 @@ The **Service Configuration** field accepts a record expression that sets the de
 // Queue subscription
 @solace:ServiceConfig {
     queueName: "orders",
-    sessionAckMode: "CLIENT_ACKNOWLEDGE"
+    ackMode: "CLIENT_ACK"
 }
-service on solaceListener { }
+service solace:Service on solaceListener { }
 
 // Topic subscription
 @solace:ServiceConfig {
     topicName: "trades/>",
-    subscriberName: "trade-subscriber",
-    consumerType: "DURABLE",
-    sessionAckMode: "AUTO_ACKNOWLEDGE"
+    durability: "TEMPORARY",
+    ackMode: "AUTO_ACK"
 }
-service on solaceListener { }
+service solace:Service on solaceListener { }
 ```
 
 </TabItem>
@@ -183,32 +189,23 @@ In the **Solace Event Integration Configuration** panel, select **solaceListener
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-<!-- ![Listener configuration — Message VPN, Auth, Secure Socket, Transacted, Client Id](/img/develop/integration-artifacts/event/solace/step-listener-config-1.png) -->
-<!-- 
-![Listener configuration — Allow Duplicate Client Id, Enable Dynamic Durables, Direct Transport, Direct Optimized, Localhost](/img/develop/integration-artifacts/event/solace/step-listener-config-2.png)
-
-![Listener configuration — Connect Timeout, Read Timeout, Compression Level, Retry Config, Additional Values](/img/develop/integration-artifacts/event/solace/step-listener-config-3.png) -->
-
 | Field | Description | Default |
 |---|---|---|
 | **Name** | Identifier for the listener. | `solaceListener` |
-| **Url** | The Solace broker URL in the format `<scheme>://[username]:[password]@<host>[:<port>]`. Supported schemes: `smf` (plain-text) and `smfs` (TLS/SSL). Comma-separate multiple hosts for failover. Default ports: 55555 (standard), 55003 (compression), 55443 (SSL). | `smf://localhost:55554` |
-| **Message VPN** | The name of the message VPN to connect to. | `default` |
-| **Auth** | Authentication configuration. Supports basic authentication, Kerberos, and OAuth 2.0. For client certificate authentication, configure the `secureSocket.keyStore` field. | `{username: "default"}` |
-| **Secure Socket** | SSL/TLS configuration for secure connections. | `{}` |
-| **Transacted** | Enables transacted messaging. When `true`, messages are sent and received within a transaction context requiring explicit commit or rollback. Must be `false` for XA transactions. | — |
-| **Client Id** | Client identifier. If not specified, a unique client ID is auto-generated. | — |
-| **Client Description** | Human-readable description of the client connection. | — |
-| **Allow Duplicate Client Id** | Whether to allow the same client ID across multiple connections. | — |
-| **Enable Dynamic Durables** | Enables automatic creation of durable queues and topic endpoints on the broker. | — |
-| **Direct Transport** | When `true`, uses direct (at-most-once) delivery. When `false`, uses guaranteed (persistent) delivery. Must be `false` for transacted sessions. | — |
-| **Direct Optimized** | Optimizes message delivery in direct transport mode by reducing protocol overhead. Only applicable when **Direct Transport** is `true`. | — |
+| **Url** | The Solace broker URL in the format `[protocol:]host[:port]`. Supported schemes: `tcp` (plain-text) and `tcps` (TLS/SSL). | `tcp://localhost:55554` |
+| **Message Vpn** | The name of the message VPN to connect to. | `default` |
+| **Auth** | Authentication configuration. Supports basic authentication, Kerberos, and OAuth 2.0. | Required |
+| **Secure Socket** | TLS/SSL configuration for secure connections. | — |
+| **Client Name** | Client identifier reported to the broker. A unique name is generated when omitted. | — |
+| **Client Description** | Human-readable description of the client connection. | `Ballerina Solace Connector` |
+| **Transacted** | Enables a transacted session shared by every service attached to this listener. Requires `ackMode: CLIENT_ACK` on each service. | `false` |
+| **Compression Level** | ZLIB compression level. Valid range is 0–9, where `0` disables compression. | `0` |
 | **Localhost** | Local interface IP address to bind for outbound connections. | — |
-| **Connect Timeout** | Maximum time in seconds permitted for a JNDI connection attempt. Set to `0` to wait indefinitely. | `0.0` |
-| **Read Timeout** | Maximum time in seconds permitted for reading a JNDI lookup reply from the host. | `0.0` |
-| **Compression Level** | ZLIB compression level. Valid range is 0–9, where `0` disables compression. Higher values improve compression at the cost of throughput. | `0` |
-| **Retry Config** | Retry configuration for connection and reconnection attempts. | `{}` |
-| **Additional Values** | Key-value pairs for additional connection configuration. | `{}` |
+| **Connect Timeout** | Connection timeout, in seconds. | `30.0` |
+| **Read Timeout** | Read timeout, in seconds. | `10.0` |
+| **Retry Config** | Reconnection retry configuration. | — |
+| **Generate Receive Timestamps** | Populate `receiveTimestamp` on every message delivered to a service. | `false` |
+| **Calculate Message Expiration** | Populate `expiration` on every message delivered to a service. | `false` |
 
 Click **+ Attach Listener** to attach an additional listener to the same service.
 
@@ -219,15 +216,14 @@ Click **Save Changes** to apply updates.
 
 ```ballerina
 listener solace:Listener solaceListener = check new (
-    url = "smf://localhost:55554",
+    "tcp://localhost:55554",
     messageVpn = "default",
     auth = {
         username: username,
         password: password
     },
-    clientId = "my-client",
+    clientName = "my-client",
     transacted = false,
-    directTransport = false,
     compressionLevel = 0
 );
 ```
@@ -236,22 +232,20 @@ listener solace:Listener solaceListener = check new (
 
 | Field | Type | Default | Description |
 |---|---|---|---|
-| **url** | `string` | Required | Solace broker URL |
+| **url** (constructor parameter) | `string` | Required | Solace broker URL |
 | **messageVpn** | `string` | `"default"` | Message VPN name |
-| **auth** | `solace:BasicAuthConfig\|solace:KerberosConfig\|solace:OAuth2Config` | — | Authentication configuration |
-| **secureSocket** | `solace:SecureSocket?` | — | SSL/TLS configuration |
-| **transacted** | `boolean?` | — | Enable transacted messaging |
-| **clientId** | `string?` | — | Client identifier |
-| **clientDescription** | `string?` | — | Client description |
-| **allowDuplicateClientId** | `boolean?` | — | Allow duplicate client IDs |
-| **enableDynamicDurables** | `boolean?` | — | Auto-create durable endpoints |
-| **directTransport** | `boolean?` | — | Use direct (at-most-once) delivery |
-| **directOptimized** | `boolean?` | — | Optimize direct transport delivery |
+| **auth** | `solace:BasicAuthConfiguration\|solace:KerberosConfiguration\|solace:OAuth2Configuration` | Required | Authentication configuration |
+| **secureSocket** | `solace:SecureSocket?` | — | TLS/SSL configuration |
+| **clientName** | `string?` | — | Client identifier |
+| **clientDescription** | `string` | `"Ballerina Solace Connector"` | Client description |
+| **transacted** | `boolean` | `false` | Share one transacted session across every attached service |
+| **compressionLevel** | `int` | `0` | ZLIB compression level (0–9) |
 | **localhost** | `string?` | — | Local interface IP address |
 | **connectTimeout** | `decimal` | `30.0` | Connection timeout in seconds |
 | **readTimeout** | `decimal` | `10.0` | Read timeout in seconds |
-| **compressionLevel** | `int` | `0` | ZLIB compression level (0–9) |
-| **retryConfig** | `solace:RetryConfig?` | — | Retry configuration |
+| **retryConfig** | `solace:RetryConfiguration?` | — | Reconnection retry configuration |
+| **generateReceiveTimestamps** | `boolean` | `false` | Populate `receiveTimestamp` on received messages |
+| **calculateMessageExpiration** | `boolean` | `false` | Populate `expiration` on received messages |
 
 </TabItem>
 </Tabs>
@@ -271,7 +265,7 @@ In the **Service Designer**, click **+ Add Handler**. The **Select Handler to Ad
 
 | Option | Description |
 |---|---|
-| **+ Define Payload** | Define the expected content type of the incoming message (e.g., a typed record). |
+| **Define Value** | Define the expected payload type of the incoming message, either by creating a new type schema or reusing an existing one. |
 
 Click **Save** to add the handler.
 
@@ -290,28 +284,37 @@ type TradeEvent record {|
     int quantity;
 |};
 
+type TradeMessage record {|
+    *solace:Message;
+    TradeEvent payload;
+|};
+
 @solace:ServiceConfig {
     queueName: "trades",
-    sessionAckMode: "CLIENT_ACKNOWLEDGE"
+    ackMode: "CLIENT_ACK"
 }
-service on solaceListener {
+service solace:Service on solaceListener {
 
-    remote function onMessage(solace:Message message) returns error? {
-        TradeEvent trade = check message.payload.ensureType();
-        log:printInfo("Trade received",
-                      tradeId = trade.tradeId,
-                      symbol = trade.symbol);
-        check executeTrade(trade);
+    remote function onMessage(TradeMessage message, solace:Caller caller) returns solace:Error? {
+        do {
+            log:printInfo("Trade received",
+                          tradeId = message.payload.tradeId,
+                          symbol = message.payload.symbol);
+            check executeTrade(message.payload);
+            check caller->ack(message);
+        } on fail error e {
+            check caller->nack(message, requeue = true);
+        }
     }
 }
 ```
 
-**onError handler** — called when message retrieval or processing fails:
+**onError handler** — called when message receipt or data binding fails:
 
 ```ballerina
-service on solaceListener {
+service solace:Service on solaceListener {
 
-    remote function onError(solace:Error err) returns error? {
+    remote function onError(solace:Error err) returns solace:Error? {
         log:printError("Solace error", 'error = err);
     }
 }
@@ -325,7 +328,7 @@ service on solaceListener {
 | Handler | Triggered when | Use when |
 |---|---|---|
 | `onMessage` | A new message arrives from the queue or topic | Processing incoming messages |
-| `onError` | A message retrieval or processing error occurs | Logging failures and triggering alerts |
+| `onError` | A message receipt or data-binding error occurs | Logging failures and triggering alerts |
 
 ## What's next
 
