@@ -1365,6 +1365,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/database/oracledb/setup-guide',
             'connectors/catalog/database/oracledb/actions',
+            'connectors/catalog/database/oracledb/triggers',
             'connectors/catalog/database/oracledb/example',
           ],
         },

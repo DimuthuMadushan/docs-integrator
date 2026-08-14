@@ -13,7 +13,6 @@ This guide walks you through setting up a PostgreSQL server and obtaining the co
 
 - A running PostgreSQL server (version 10 or later). You can [install PostgreSQL locally](https://www.postgresql.org/download/), use Docker (`docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:16`), or use a managed service such as AWS RDS, Google Cloud SQL, or Azure Database for PostgreSQL.
 - A database user with appropriate privileges for the operations you intend to perform.
-- For CDC: PostgreSQL must be configured with `wal_level = logical`, and the connecting user must have the `REPLICATION` privilege (see the CDC setup step below).
 
 ## Create a PostgreSQL database and user
 
@@ -66,7 +65,7 @@ The SSL mode is configured on the connector side. Supported modes are `DISABLE`,
 
 ## Enable logical replication for CDC (optional)
 
-If you plan to use the Change Data Capture (CDC) listener, you must enable logical replication on your PostgreSQL server.
+Change Data Capture (CDC) requires one additional prerequisite beyond the setup above: logical replication must be enabled on your PostgreSQL server.
 
 1. Set the Write-Ahead Log (WAL) level to `logical` in `postgresql.conf`:
 
