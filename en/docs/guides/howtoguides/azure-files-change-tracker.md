@@ -67,7 +67,15 @@ listener files:Listener tracker = new (shareName,
 
 ## Step 2: Add the snapshot, the state that turns presence into change
 
-The connector's listener keeps no per-file state, so the tracker owns it. Open the code view and add the snapshot: a record for what we remember about each file, and a class that classifies observations against that memory. Handlers can run concurrently, so the class is `isolated` and every access is inside a `lock`.
+The connector's listener keeps no per-file state, so the tracker owns it. Open the code view and first add the modules the tracker uses to the import block at the top of the file, alongside the generated connector import:
+
+```ballerina
+import ballerina/log;
+import ballerina/task;
+import ballerina/time;
+```
+
+Then add the snapshot: a record for what we remember about each file, and a class that classifies observations against that memory. Handlers can run concurrently, so the class is `isolated` and every access is inside a `lock`.
 
 ```ballerina
 // What the tracker remembers about a file between polls. The eTag changes on
@@ -83,6 +91,9 @@ const MODIFIED = "modified";
 
 isolated class Snapshot {
     private final map<FileState> files = {};
+    // When each path was last observed; reconcile uses it to leave alone any
+    // file the sweep's listing is too old to know about.
+    private final map<time:Utc> observedAt = {};
 
     // Classifies one observed file and records its latest state.
     // Returns () when the file is unchanged since the last observation.
@@ -90,6 +101,7 @@ isolated class Snapshot {
         lock {
             FileState? known = self.files[path];
             self.files[path] = state.clone();
+            self.observedAt[path] = time:utcNow();
             if known is () {
                 return CREATED;
             }
@@ -98,19 +110,28 @@ isolated class Snapshot {
     }
 
     // Drops every tracked file no longer present on the share, returning the
-    // removed paths: those are the deletions since the previous sweep.
-    isolated function reconcile(string[] presentPaths) returns string[] {
+    // removed paths: those are the deletions since the previous sweep. A file
+    // first observed after the sweep began is skipped: the sweep's listing
+    // predates it and cannot testify about it.
+    isolated function reconcile(string[] presentPaths, time:Utc sweepStart) returns string[] {
         lock {
             map<()> present = {};
             foreach string path in presentPaths.clone() {
                 present[path] = ();
             }
+            time:Utc boundary = sweepStart.clone();
             string[] removed = [];
             foreach string path in self.files.keys() {
-                if !present.hasKey(path) {
-                    removed.push(path);
-                    _ = self.files.remove(path);
+                if present.hasKey(path) {
+                    continue;
                 }
+                time:Utc? seen = self.observedAt[path];
+                if seen is time:Utc && time:utcDiffSeconds(seen, boundary) > 0d {
+                    continue;
+                }
+                removed.push(path);
+                _ = self.files.remove(path);
+                _ = self.observedAt.remove(path);
             }
             return removed.clone();
         }
@@ -154,8 +175,6 @@ The `onError` handler keeps trouble visible: if a poll fails (an expired credent
 A presence listener cannot observe absence: a deleted file simply stops appearing, and no handler fires. The sweep closes that gap. Add a scheduled task on the same interval, list the share, and reconcile:
 
 ```ballerina
-import ballerina/task;
-
 // The sweep's own client, sharing the listener's credentials.
 final files:Client shareClient = check new (shareName, auth = {accountName, accountKey});
 
@@ -164,6 +183,7 @@ listener task:Listener sweeper = new (trigger = {interval: 5});
 service on sweeper {
 
     isolated function execute() returns error? {
+        time:Utc sweepStart = time:utcNow();
         stream<files:Entry, files:Error?>|files:Error listing = shareClient->list("/", {recursive: true});
         if listing is files:Error {
             log:printError("change tracker sweep failed", 'error = listing);
@@ -183,7 +203,7 @@ service on sweeper {
                 present.push(entry.value.path);
             }
         }
-        foreach string path in snapshot.reconcile(present) {
+        foreach string path in snapshot.reconcile(present, sweepStart) {
             onFileDeleted(path);
         }
     }
@@ -191,6 +211,8 @@ service on sweeper {
 ```
 
 The listing is drained with an explicit `next()` loop because a scheduled task's `execute` must be `isolated`, which a `forEach` closure over the local array would break.
+
+The sweep timestamps its start before listing, and `reconcile` skips any file first observed after that moment: the listing predates such a file, so its absence there proves nothing. Without that boundary, a file arriving while the listing is in flight would be misreported as deleted and then created again on the next poll.
 
 ## Step 5: React to the events
 
@@ -230,8 +252,8 @@ isolated function onFileDeleted(string path) {
 
 **Restart behavior.** The snapshot lives in memory, so a restart re-baselines: every present file is reported as created again, and deletions that happened while the tracker was down are missed. If that matters for your integration, persist the snapshot map (as JSON to a local file, or even to a file on the share itself): load it at startup, save it after each sweep. The event hooks make natural save points.
 
-**Delivery semantics.** The events inherit the listener's at-least-once delivery, so make the event hooks idempotent: a duplicated `file created` for the same path and eTag should be harmless to whatever sits downstream.
+**Delivery semantics.** The derived events are best-effort, weaker than the listener's own at-least-once file delivery: `observe` and `reconcile` commit the snapshot state before your hook runs, so a crash between the commit and the hook drops that one event, while a restart re-baselines the snapshot and replays every present file as created. Plan for both directions. Make the hooks idempotent so replays are harmless downstream, and if an event must never be lost, persist the snapshot only after the hook has handed the event off durably, so a crash replays the event instead of dropping it.
 
 **Interval tuning.** The listener's poll and the sweep run on independent schedules; 5 seconds each makes a responsive demo. For large shares, lengthen both, and remember each tick lists the share, so the cost scales with the share's file count, not with how much changed.
 
-**The scheduled alternative.** If you do not need events within seconds, you do not need a resident listener at all: the same snapshot-diff idea works as a bounded program that runs on a schedule, compares the share against a snapshot file saved by its previous run, logs the differences, and exits. The connector repository's [change tracker example](https://github.com/ballerina-platform/module-ballerinax-azure.storage.files/tree/main/examples/change-tracker) is exactly that shape, and as a bonus its persisted snapshot catches deletions across downtime, the one blind spot of the in-memory tracker above. Pick by latency: live events warrant the listener, periodic reconciliation warrants the scheduled run.
+**The scheduled alternative.** If you do not need events within seconds, you do not need a resident listener at all: the same snapshot-diff idea works as a bounded program that runs on a schedule, compares the share against a snapshot file saved by its previous run, logs the differences, and exits. As a bonus, the persisted snapshot catches deletions across downtime, the one blind spot of the in-memory tracker above. Pick by latency: live events warrant the listener, periodic reconciliation warrants the scheduled run.

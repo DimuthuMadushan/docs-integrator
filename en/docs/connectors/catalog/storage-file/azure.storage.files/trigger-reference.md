@@ -194,6 +194,6 @@ A move onto an existing same-named file fails.
 
 ### `Caller`
 
-A `files:Caller` is passed to each handler so it can act on the event's file without constructing a separate client. It forwards a share-scoped subset of the `Client` operations, with the same signatures: `downloadFile`, `getFileContent`, `getFileText`, `getFileJson`, `getFileXml`, `getFileCsv`, `uploadFile`, `uploadContent`, `deleteFile`, `renameFile`, `copyFile`, `checkCopyStatus`, `abortCopy`, `createDirectory`, `deleteDirectory`, and `list`. See the [Action Reference](action-reference.md) for each operation.
+A `files:Caller` is passed to each handler so it can act on the event's file without constructing a separate client. It forwards a share-scoped subset of the `Client` operations, with the same signatures: `getFile`, `downloadFile`, `uploadFile`, `uploadContent`, `deleteFile`, `renameFile`, `copyFile`, `checkCopyStatus`, `abortCopy`, `createDirectory`, `deleteDirectory`, and `list`. See the [Action Reference](action-reference.md) for each operation.
 
 Handlers pass the event's path explicitly, for example `caller->deleteFile(file.path)`, and read the share's name from `FileInfo.shareName`. Property reads and writes and share-level administrative operations are not forwarded; construct a `Client` for those.

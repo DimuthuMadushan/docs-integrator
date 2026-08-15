@@ -841,156 +841,28 @@ check fileShare->downloadFile("/2026/q1/report.pdf", "./reports/q1.pdf");
 </details>
 
 <details>
-<summary>getFileContent</summary>
+<summary>getFile</summary>
 
 <div>
 
-Opens a file's content as a lazy byte stream. For content bound to a typed value, use `getFileText`, `getFileJson`, `getFileXml`, or `getFileCsv`.
+Retrieves the file's content in the form the target type selects: `byte[]` (raw, materialized), `string` (UTF-8 text; invalid UTF-8 fails client-side), `json`, `xml`, `string[][]` (CSV rows, every row kept), `record {}`/`record {}[]` (bound per the resolved format), `stream<byte[], error?>` (a lazy byte stream), or `stream<record {}, error?>` (lazy CSV rows). Record-shaped targets resolve their format from `options.fileFormat` when set, else the path's extension (`.json`, `.xml`, `.csv`): a single record binds from JSON or XML (never CSV), a record array from a JSON array or CSV rows (never XML), and an unresolvable format fails with a client-side `Error`. Binding is strict.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | <code>string</code> | Yes | The source share-relative path. |
-| `options` | <code>DownloadOptions</code> | No | Optional download options (range, snapshot). See [DownloadOptions](#downloadoptions). |
-
-**Returns:** `stream<byte[], Error?>|Error`
-
-**Sample code:**
-
-```ballerina
-stream<byte[], files:Error?> contentStream = check fileShare->getFileContent("/2026/q1/report.pdf");
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>getFileText</summary>
-
-<div>
-
-Reads a file's full content as UTF-8 text.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The source share-relative path. |
-| `options` | <code>DownloadOptions</code> | No | Optional download options (range, snapshot). See [DownloadOptions](#downloadoptions). |
-
-**Returns:** `string|Error`
-
-**Sample code:**
-
-```ballerina
-string text = check fileShare->getFileText("/2026/q1/notes.txt");
-```
-
-**Sample response:**
-
-```ballerina
-"Q1 revenue is up 12% year over year."
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>getFileJson</summary>
-
-<div>
-
-Reads a file's full content and binds it as JSON to the target type, a `json` form, a record, or a record array. Binding is strict: the content must match the target type exactly.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The source share-relative path. |
-| `options` | <code>DownloadOptions</code> | No | Optional download options (range, snapshot). See [DownloadOptions](#downloadoptions). |
-| `targetType` | <code>typedesc&lt;json&#124;record &#123;&#125;&#124;record &#123;&#125;[]&gt;</code> | No | The type to bind the content to, inferred from the assignment target. |
+| `options` | <code>GetFileOptions</code> | No | Every [DownloadOptions](#downloadoptions) field plus `fileFormat` (`JSON`, `XML`, or `CSV`), the record binding format. |
+| `targetType` | <code>typedesc&lt;RetrievableContent&gt;</code> | No | The form to retrieve the content in, inferred from the assignment target. |
 
 **Returns:** `targetType|Error`
 
 **Sample code:**
 
 ```ballerina
-json metrics = check fileShare->getFileJson("/2026/q1/metrics.json");
-```
-
-**Sample response:**
-
-```ballerina
-{"revenue": 1250000, "growth": 0.12}
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>getFileXml</summary>
-
-<div>
-
-Reads a file's full content and binds it as XML: to an `xml` value, or to a record projected from the document. Binding is strict.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The source share-relative path. |
-| `options` | <code>DownloadOptions</code> | No | Optional download options (range, snapshot). See [DownloadOptions](#downloadoptions). |
-| `targetType` | <code>typedesc&lt;xml&#124;record &#123;&#125;&gt;</code> | No | The type to bind the content to, inferred from the assignment target. |
-
-**Returns:** `targetType|Error`
-
-**Sample code:**
-
-```ballerina
-xml report = check fileShare->getFileXml("/2026/q1/report.xml");
-```
-
-**Sample response:**
-
-```ballerina
-<report><quarter>Q1</quarter><revenue>1250000</revenue></report>
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>getFileCsv</summary>
-
-<div>
-
-Reads a file's full content and binds it as CSV: to `string[][]` rows, or to a record array whose field names are taken from the header row. The string-matrix form keeps every row, including the first. Binding is strict.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The source share-relative path. |
-| `options` | <code>DownloadOptions</code> | No | Optional download options (range, snapshot). See [DownloadOptions](#downloadoptions). |
-| `targetType` | <code>typedesc&lt;string[][]&#124;record &#123;&#125;[]&gt;</code> | No | The type to bind the content to, inferred from the assignment target. |
-
-**Returns:** `targetType|Error`
-
-**Sample code:**
-
-```ballerina
-string[][] rows = check fileShare->getFileCsv("/2026/q1/sales.csv");
-```
-
-**Sample response:**
-
-```ballerina
-[["region", "revenue"], ["Europe", "1250000"], ["APAC", "980000"]]
+byte[] raw = check fileShare->getFile("/2026/q1/report.pdf");
+Person[] people = check fileShare->getFile("/2026/q1/people.csv");
+stream<byte[], error?> chunks = check fileShare->getFile("/2026/q1/large.bin");
 ```
 
 </div>
@@ -2681,7 +2553,7 @@ Options for `uploadContent`: every [UploadOptions](#uploadoptions) field, plus t
 
 ### DownloadOptions
 
-Options for the download operations (`downloadFile`, `getFileContent`, and the typed reads).
+Options for `downloadFile`, included by `getFile`'s `GetFileOptions`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|

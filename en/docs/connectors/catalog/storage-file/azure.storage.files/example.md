@@ -254,7 +254,7 @@ On the next poll (every 60 seconds by default, or the interval you set on the li
 
 The Azure Files connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-azure.storage.files/tree/main/examples), covering file backup, SAS handouts, and share-driven file processing.
 
-1. [File backup](https://github.com/ballerina-platform/module-ballerinax-azure.storage.files/tree/main/examples/file-backup) - Back up a local folder to a file share and restore a file from it.
+1. [File backup](https://github.com/ballerina-platform/module-ballerinax-azure.storage.files/tree/main/examples/file-backup) - Continuously back up a local folder: a directory listener watches it and uploads every new file to a file share.
 2. [Share handout](https://github.com/ballerina-platform/module-ballerinax-azure.storage.files/tree/main/examples/share-handout) - Upload a report and generate a time-limited, read-only SAS URL to share with a third party.
 3. [Drop folder processor](https://github.com/ballerina-platform/module-ballerinax-azure.storage.files/tree/main/examples/drop-folder-processor) - Watch a folder on a share with the listener and process each dropped file.
 4. [Change tracker](https://github.com/ballerina-platform/module-ballerinax-azure.storage.files/tree/main/examples/change-tracker) - A schedulable program that diffs a share against the snapshot saved by its previous run and logs created, modified, and deleted events.
