@@ -6,9 +6,6 @@ description: Build a live change tracker that turns an Azure Files share into a 
 keywords: [wso2 integrator, azure files, file share, listener, change tracking, file events, created, modified, deleted, etag, polling, event integration]
 ---
 
-import ThemedImage from '@theme/ThemedImage';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
 # Track File Changes on an Azure Files Share
 
 **Time:** About 30 minutes | **What you'll build:** A live integration that watches an Azure Files share and reacts to every change on it, logging a "file created", "file modified", or "file deleted" event within seconds of the change happening.
@@ -19,13 +16,16 @@ The good news is that everything you need to derive change events yourself is al
 
 ## How it works
 
-<ThemedImage
-    alt="Architecture diagram: the Azure Files listener dispatches present files into a snapshot that classifies created and modified events, while a scheduled sweep lists the share and reconciles the snapshot to detect deletions"
-    sources={{
-        light: useBaseUrl('/img/guides/usecases/azure-files-change-tracker/architecture.png'),
-        dark: useBaseUrl('/img/guides/usecases/azure-files-change-tracker/architecture.png'),
-    }}
-/>
+```mermaid
+flowchart LR
+    A[(Azure Files share)] -->|poll: present files| B[[files:Listener]]
+    A -->|list| C[[Scheduled sweep]]
+    B -->|observe path + eTag| S{Snapshot}
+    C -->|reconcile| S
+    S --> D[onFileCreated]
+    S --> E[onFileModified]
+    S --> F[onFileDeleted]
+```
 
 Two schedules cooperate around one shared snapshot:
 
@@ -239,14 +239,6 @@ isolated function onFileDeleted(string path) {
 2. On the first poll, every file already on the share is reported as created: the snapshot starts empty, so the first scan is the baseline.
 
 3. Upload a file to the share (through the Azure portal, the Azure CLI, or an SMB mount) and watch a `file created` line appear within a few seconds. Overwrite the same file with different content for `file modified`, and delete it for `file deleted`.
-
-<ThemedImage
-    alt="Integration terminal showing file created, file modified, and file deleted log lines as the share changes"
-    sources={{
-        light: useBaseUrl('/img/guides/usecases/azure-files-change-tracker/run-terminal-output.png'),
-        dark: useBaseUrl('/img/guides/usecases/azure-files-change-tracker/run-terminal-output.png'),
-    }}
-/>
 
 ## Going further
 
