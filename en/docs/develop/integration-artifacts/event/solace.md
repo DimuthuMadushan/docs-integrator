@@ -332,6 +332,7 @@ service solace:Service on solaceListener {
 
 ## What's next
 
+- [Solace (JMS)](solace-jms.md) — consume messages from Solace PubSub+ using the standard JMS API
 - [Kafka](kafka.md) — consume messages from Apache Kafka topics
 - [RabbitMQ](rabbitmq.md) — consume messages from RabbitMQ queues
 - [Connections](../supporting/connections.md) — reuse Solace connection credentials across services

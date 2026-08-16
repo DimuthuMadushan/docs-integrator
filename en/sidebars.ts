@@ -1826,6 +1826,17 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Solace (JMS)',
+          link: { type: 'doc', id: 'connectors/catalog/messaging/solace.jms/connector-overview' },
+          items: [
+            'connectors/catalog/messaging/solace.jms/setup-guide',
+            'connectors/catalog/messaging/solace.jms/actions',
+            'connectors/catalog/messaging/solace.jms/triggers',
+            'connectors/catalog/messaging/solace.jms/example',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Stripe',
           link: { type: 'doc', id: 'connectors/catalog/finance-accounting/stripe/connector-overview' },
           items: [
