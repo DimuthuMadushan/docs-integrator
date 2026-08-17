@@ -1630,6 +1630,7 @@ const sidebars: SidebarsConfig = {
             'connectors/catalog/erp-business/sap.jco/setup-guide',
             'connectors/catalog/erp-business/sap.jco/action-reference',
             'connectors/catalog/erp-business/sap.jco/trigger-reference',
+            'connectors/catalog/erp-business/sap.jco/example',
           ],
         },
         {
