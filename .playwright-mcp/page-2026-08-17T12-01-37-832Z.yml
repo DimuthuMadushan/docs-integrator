@@ -1,0 +1,111 @@
+- application [ref=f10e2]:
+  - generic [ref=f10e6]:
+    - generic [ref=f10e8]:
+      - toolbar [ref=f10e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f10e17]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f10e18]: 
+        - listitem [ref=f10e19] [cursor=pointer]:
+          - toolbar [ref=f10e22]:
+            - button "sample" [ref=f10e23]:
+              - generic [ref=f10e24]: 
+        - listitem [ref=f10e26] [cursor=pointer]:
+          - generic [ref=f10e28]:
+            - button [ref=f10e29]:
+              - button "Toggle Chat" [ref=f10e30]: 
+            - button "More Actions" [ref=f10e34]: 
+      - toolbar "Title actions" [ref=f10e39]:
+        - button "Customize Layout..." [ref=f10e40] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f10e41] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f10e42] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [ref=f10e43] [cursor=pointer]: 
+    - generic [ref=f10e49]:
+      - generic [ref=f10e51]:
+        - menubar [ref=f10e52]:
+          - menuitem "Application Menu" [ref=f10e53]:
+            - generic [ref=f10e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f10e57]:
+          - tab "Explorer (⇧⌘E)" [ref=f10e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f10e59]: 
+          - tab "Search (⇧⌘F)" [ref=f10e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f10e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f10e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f10e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f10e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f10e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f10e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f10e67]: 
+          - tab "WSO2 Integrator" [expanded] [selected] [ref=f10e68] [cursor=pointer]
+        - toolbar "Manage" [ref=f10e72]:
+          - button "Accounts" [ref=f10e73] [cursor=pointer]:
+            - generic "Accounts" [ref=f10e74]: 
+          - button "Manage" [ref=f10e75] [cursor=pointer]:
+            - generic "Manage" [ref=f10e76]: 
+      - generic [ref=f10e77]:
+        - generic [ref=f10e78]:
+          - 'heading "WSO2 Integrator: Integrations" [level=2] [ref=f10e264]'
+          - 'toolbar "WSO2 Integrator: Integrations actions" [ref=f10e265]':
+            - button "Refresh" [ref=f10e266] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f10e272]:
+          - text:  
+          - region "Welcome" [active] [ref=f10e275]:
+            - paragraph [ref=f10e276]:
+              - generic [ref=f10e277]: 
+              - text: Build integration solutions with WSO2 Integrator.
+            - paragraph [ref=f10e278]: Use the welcome page to create a new project, explore samples, import external integrations, and manage profile settings.
+            - paragraph [ref=f10e279]: Open an integration project folder to see your artifacts in this panel.
+            - button "Get Started" [ref=f10e281] [cursor=pointer]
+      - main [ref=f10e128]:
+        - generic "Editor Group 1 (empty)" [ref=f10e237]:
+          - generic [ref=f10e242]:
+            - generic [ref=f10e243]:
+              - term [ref=f10e244]: Open Chat
+              - definition [ref=f10e245]:
+                - generic "Control+Command+I" [ref=f10e246]:
+                  - generic [ref=f10e247]: ⌃
+                  - generic [ref=f10e248]: ⌘
+                  - generic [ref=f10e249]: I
+            - generic [ref=f10e250]:
+              - term [ref=f10e251]: Show All Commands
+              - definition [ref=f10e252]:
+                - generic "Shift+Command+P" [ref=f10e253]:
+                  - generic [ref=f10e254]: ⇧
+                  - generic [ref=f10e255]: ⌘
+                  - generic [ref=f10e256]: P
+            - generic [ref=f10e257]:
+              - term [ref=f10e258]: Find in Files
+              - definition [ref=f10e259]:
+                - generic "Shift+Command+F" [ref=f10e260]:
+                  - generic [ref=f10e261]: ⇧
+                  - generic [ref=f10e262]: ⌘
+                  - generic [ref=f10e263]: F
+    - status [ref=f10e214]:
+      - generic [ref=f10e215]:
+        - generic "remote" [ref=f10e216]:
+          - button "remote" [ref=f10e217] [cursor=pointer]:
+            - generic [ref=f10e218]: 
+        - generic "No Problems" [ref=f10e219]:
+          - button "No Problems" [ref=f10e220] [cursor=pointer]:
+            - generic [ref=f10e221]: 
+            - text: "0"
+            - generic [ref=f10e222]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f10e223]:
+          - button "No Ports Forwarded" [ref=f10e224] [cursor=pointer]:
+            - generic [ref=f10e225]: 
+            - text: "0"
+      - generic [ref=f10e226]:
+        - generic "Notifications" [ref=f10e227]:
+          - button "Notifications" [ref=f10e228] [cursor=pointer]:
+            - generic [ref=f10e229]: 
+        - 'generic "Layout: U.S." [ref=f10e230]':
+          - 'button "Layout: U.S." [ref=f10e231] [cursor=pointer]'
+        - generic "Copilot status" [ref=f10e232]:
+          - button "Copilot status" [ref=f10e233] [cursor=pointer]:
+            - generic [ref=f10e234]: 
+  - generic [ref=f10e235]:
+    - alert [ref=f10e236]: "Info: A git repository was found in the parent folders of the workspace or the open file(s). Would you like to open the repository?"
+    - alert

@@ -1,0 +1,128 @@
+- application [ref=f6e2]:
+  - generic [ref=f6e6]:
+    - generic [ref=f6e8]:
+      - toolbar [ref=f6e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f6e364]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f6e365]: 
+        - listitem [ref=f6e366] [cursor=pointer]:
+          - toolbar [ref=f6e369]:
+            - button "sample" [ref=f6e370]:
+              - generic [ref=f6e371]: 
+        - listitem [ref=f6e373] [cursor=pointer]:
+          - generic [ref=f6e375]:
+            - button [ref=f6e376]:
+              - button "Toggle Chat" [ref=f6e377]: 
+            - button "More Actions" [ref=f6e381]: 
+      - toolbar "Title actions" [ref=f6e39]:
+        - button "Customize Layout..." [ref=f6e447] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f6e448] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f6e449] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [ref=f6e450] [cursor=pointer]: 
+    - generic [ref=f6e49]:
+      - generic [ref=f6e51]:
+        - menubar [ref=f6e52]:
+          - menuitem "Application Menu" [ref=f6e53]:
+            - generic [ref=f6e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f6e57]:
+          - tab "Explorer (⇧⌘E)" [ref=f6e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f6e59]: 
+          - tab "Search (⇧⌘F)" [ref=f6e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f6e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f6e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f6e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f6e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f6e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f6e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f6e67]: 
+          - tab "Testing" [ref=f6e523] [cursor=pointer]:
+            - generic "Testing" [ref=f6e524]: 
+          - tab "WSO2 Integrator" [expanded] [selected] [ref=f6e386] [cursor=pointer]
+        - toolbar "Manage" [ref=f6e70]:
+          - button "Accounts" [ref=f6e71] [cursor=pointer]:
+            - generic "Accounts" [ref=f6e72]: 
+          - button "Manage" [ref=f6e73] [cursor=pointer]:
+            - generic "Manage" [ref=f6e74]: 
+      - generic [ref=f6e75]:
+        - generic [ref=f6e76]:
+          - 'heading "WSO2 Integrator: Integrations" [level=2] [ref=f6e478]'
+          - 'toolbar "WSO2 Integrator: Integrations actions" [ref=f6e479]':
+            - button "Refresh" [ref=f6e525] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f6e486]:
+          - text:  
+          - region "Welcome" [ref=f6e489]:
+            - paragraph [ref=f6e490]:
+              - generic [ref=f6e491]: 
+              - text: Build integration solutions with WSO2 Integrator.
+            - paragraph [ref=f6e492]: Use the welcome page to create a new project, explore samples, import external integrations, and manage profile settings.
+            - paragraph [ref=f6e493]: Open an integration project folder to see your artifacts in this panel.
+            - button "Get Started" [ref=f6e495] [cursor=pointer]
+      - main [ref=f6e126]:
+        - generic [ref=f6e136] [cursor=pointer]:
+          - tablist [ref=f6e137]:
+            - tab "Welcome" [selected] [ref=f6e505]:
+              - toolbar "Tab actions" [ref=f6e512]:
+                - button "Close (⌘W)" [ref=f6e513]: 
+          - toolbar "Editor actions" [ref=f6e149]:
+            - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f6e514]: 
+            - button "More Actions..." [ref=f6e517]: 
+    - status [ref=f6e311]:
+      - generic [ref=f6e312]:
+        - generic "remote" [ref=f6e313]:
+          - button "remote" [ref=f6e314] [cursor=pointer]:
+            - generic [ref=f6e315]: 
+        - generic "No Problems" [ref=f6e319]:
+          - button "No Problems" [ref=f6e320] [cursor=pointer]:
+            - generic [ref=f6e321]: 
+            - text: "0"
+            - generic [ref=f6e322]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f6e323]:
+          - button "No Ports Forwarded" [ref=f6e324] [cursor=pointer]:
+            - generic [ref=f6e325]: 
+            - text: "0"
+      - generic [ref=f6e326]:
+        - generic "Notifications" [ref=f6e327]:
+          - button "Notifications" [ref=f6e328] [cursor=pointer]:
+            - generic [ref=f6e420]: 
+        - 'generic "Layout: U.S." [ref=f6e330]':
+          - 'button "Layout: U.S." [ref=f6e331] [cursor=pointer]'
+        - 'generic "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f6e526]':
+          - 'button "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f6e527] [cursor=pointer]':
+            - generic [ref=f6e528]: 
+            - text: "ICP: Stopped"
+        - generic "Ballerina 2201.12.0 (Swan Lake Update 12)" [ref=f6e529]:
+          - button "Ballerina 2201.12.0 (Swan Lake Update 12)" [ref=f6e530] [cursor=pointer]
+        - generic "Copilot status" [ref=f6e332]:
+          - button "Copilot status" [ref=f6e333] [cursor=pointer]:
+            - generic [ref=f6e334]: 
+  - generic [ref=f6e421]:
+    - alert [ref=f6e422]: Secondary Side Bar hidden
+    - alert
+  - iframe [active] [ref=f6e522]:
+    - document [ref=f8e1]:
+      - iframe [active] [ref=f8e2]:
+        - document [active] [ref=f9e1]:
+          - generic [ref=f9e102]:
+            - generic [ref=f9e104]:
+              - button "" [ref=f9e105] [cursor=pointer]
+              - generic [ref=f9e108]:
+                - heading "Configurations" [level=2] [ref=f9e109]
+                - paragraph [ref=f9e110]: Configurations related to WSO2 Integrator.
+            - generic [ref=f9e111]:
+              - generic [ref=f9e112]: Select your Integration Profile.
+              - combobox "undefined" [ref=f9e117]:
+                - generic [ref=f9e118] [cursor=pointer]: "WSO2 Integrator: Default"
+                - generic: "WSO2 Integrator: Default"
+                - generic: "WSO2 Integrator: MI"
+                - generic: "WSO2 Integrator: SI"
+              - generic [ref=f9e126]:
+                - generic [ref=f9e127]:
+                  - generic [ref=f9e128]: 
+                  - generic [ref=f9e131]:
+                    - generic [ref=f9e132]: Ballerina Distribution Not Found
+                    - generic [ref=f9e133]: "The WSO2 Integrator: Default Profile requires the Ballerina distribution. You can switch to a different profile above, or set it up now."
+                - button [ref=f9e136] [cursor=pointer]

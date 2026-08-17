@@ -1,0 +1,9 @@
+[package]
+org = "dimuthu"
+name = "oraclefusion_common_scheduler_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.4"
+title = "oraclefusion_common_scheduler_connector_sample"
+
+[build-options]
+sticky = true

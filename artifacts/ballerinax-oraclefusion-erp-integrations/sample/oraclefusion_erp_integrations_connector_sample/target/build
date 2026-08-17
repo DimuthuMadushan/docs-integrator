@@ -1,0 +1,97 @@
+{
+  "last_build_time": 1786960910021,
+  "last_update_time": 1786960910021,
+  "last_bal_toml_update_time": 1786957465587,
+  "distribution_version": "2201.13.4",
+  "last_modified_time": {
+    "oraclefusion_erp_integrations_connector_sample": 1786960882523
+  },
+  "last_build_options": {
+    "compilationOptions": {
+      "dumpBir": false,
+      "cloud": "",
+      "sticky": true,
+      "dumpGraph": false,
+      "dumpRawGraphs": false,
+      "lockingMode": "HARD"
+    }
+  },
+  "src_meta_info": [
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/main.bal",
+      "hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1,
+      "lastModifiedTime": 1786957465591
+    },
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/functions.bal",
+      "hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1,
+      "lastModifiedTime": 1786957465590
+    },
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/agents.bal",
+      "hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1,
+      "lastModifiedTime": 1786957465589
+    },
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/config.bal",
+      "hash": "7058b04289ea9807f6f3e25f3c7588aab6316340f008c7f5215324ee10f5e275",
+      "size": 178,
+      "lastModifiedTime": 1786960411252
+    },
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/connections.bal",
+      "hash": "bbbd522781380d6b5f19b73a29b913fa71ad53ad27ef5c0809c45de35d6e99f1",
+      "size": 190,
+      "lastModifiedTime": 1786960017927
+    },
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/Ballerina.toml",
+      "hash": "9a6f2080beac2ae6da0acbd827c98c9a98f34fe0209b112e9ead63bb06d4fd69",
+      "size": 215,
+      "lastModifiedTime": 1786957465587
+    },
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/data_mappings.bal",
+      "hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1,
+      "lastModifiedTime": 1786957465590
+    },
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/types.bal",
+      "hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1,
+      "lastModifiedTime": 1786957465589
+    },
+    {
+      "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/automation.bal",
+      "hash": "20336c3ae9002635bb8ed138577286866b8431c60b079644b9edd8e14d3b7680",
+      "size": 369,
+      "lastModifiedTime": 1786960882523
+    }
+  ],
+  "target_exec_meta_info": {
+    "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/target/backup/bin/oraclefusion_erp_integrations_connector_sample.jar",
+    "hash": "41674d6f53ca1f861bdd371a405eef3a44159434fa77aedd235760109df3d106",
+    "size": 47867709,
+    "lastModifiedTime": 1786960910528
+  },
+  "settings_meta_info": {
+    "file": "/Users/dimuthu/.ballerina/Settings.toml",
+    "hash": "e242943dc9999ab0aa55040d9accda942010e1919649909f066adf99ff7429ae",
+    "size": 1311,
+    "lastModifiedTime": 1785164995648
+  },
+  "ballerina_toml_meta_info": {
+    "file": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample/Ballerina.toml",
+    "hash": "9a6f2080beac2ae6da0acbd827c98c9a98f34fe0209b112e9ead63bb06d4fd69",
+    "size": 215,
+    "lastModifiedTime": 1786957465587
+  },
+  "imports": [
+    "ballerina/log",
+    "ballerinax/oraclefusion.erp.integrations"
+  ]
+}

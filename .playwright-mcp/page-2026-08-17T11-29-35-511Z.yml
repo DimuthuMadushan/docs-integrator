@@ -1,0 +1,171 @@
+- application [ref=f6e2]:
+  - generic [ref=f6e6]:
+    - generic [ref=f6e8]:
+      - toolbar [ref=f6e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f6e364]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f6e365]: 
+        - listitem [ref=f6e366] [cursor=pointer]:
+          - toolbar [ref=f6e369]:
+            - button "sample" [ref=f6e370]:
+              - generic [ref=f6e371]: 
+        - listitem [ref=f6e373] [cursor=pointer]:
+          - generic [ref=f6e375]:
+            - button [ref=f6e376]:
+              - button "Toggle Chat" [ref=f6e377]: 
+            - button "More Actions" [ref=f6e381]: 
+      - toolbar "Title actions" [ref=f6e39]:
+        - button "Customize Layout..." [ref=f6e447] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f6e448] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f6e449] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [ref=f6e450] [cursor=pointer]: 
+    - generic [ref=f6e49]:
+      - generic [ref=f6e51]:
+        - menubar [ref=f6e52]:
+          - menuitem "Application Menu" [ref=f6e53]:
+            - generic [ref=f6e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f6e57]:
+          - tab "Explorer (⇧⌘E)" [ref=f6e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f6e59]: 
+          - tab "Search (⇧⌘F)" [ref=f6e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f6e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f6e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f6e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f6e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f6e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f6e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f6e67]: 
+          - tab "WSO2 Integrator" [expanded] [selected] [ref=f6e386] [cursor=pointer]
+        - toolbar "Manage" [ref=f6e70]:
+          - button "Accounts" [ref=f6e71] [cursor=pointer]:
+            - generic "Accounts" [ref=f6e72]: 
+          - button "Manage" [ref=f6e73] [cursor=pointer]:
+            - generic "Manage" [ref=f6e74]: 
+      - generic [ref=f6e75]:
+        - generic [ref=f6e76]:
+          - 'heading "WSO2 Integrator: Integrations" [level=2] [ref=f6e478]'
+          - 'toolbar "WSO2 Integrator: Integrations actions" [ref=f6e479]':
+            - button "Refresh" [ref=f6e503] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f6e486]:
+          - text:  
+          - region "Welcome" [ref=f6e489]:
+            - paragraph [ref=f6e490]:
+              - generic [ref=f6e491]: 
+              - text: Build integration solutions with WSO2 Integrator.
+            - paragraph [ref=f6e492]: Use the welcome page to create a new project, explore samples, import external integrations, and manage profile settings.
+            - paragraph [ref=f6e493]: Open an integration project folder to see your artifacts in this panel.
+            - button "Get Started" [ref=f6e495] [cursor=pointer]
+      - main [ref=f6e126]:
+        - generic [ref=f6e136] [cursor=pointer]:
+          - tablist [ref=f6e137]:
+            - tab "Welcome" [selected] [ref=f6e505]:
+              - toolbar "Tab actions" [ref=f6e512]:
+                - button "Close (⌘W)" [ref=f6e513]: 
+          - toolbar "Editor actions" [ref=f6e149]:
+            - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f6e514]: 
+            - button "More Actions..." [ref=f6e517]: 
+    - status [ref=f6e311]:
+      - generic [ref=f6e312]:
+        - generic "remote" [ref=f6e313]:
+          - button "remote" [ref=f6e314] [cursor=pointer]:
+            - generic [ref=f6e315]: 
+        - generic "No Problems" [ref=f6e319]:
+          - button "No Problems" [ref=f6e320] [cursor=pointer]:
+            - generic [ref=f6e321]: 
+            - text: "0"
+            - generic [ref=f6e322]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f6e323]:
+          - button "No Ports Forwarded" [ref=f6e324] [cursor=pointer]:
+            - generic [ref=f6e325]: 
+            - text: "0"
+      - generic [ref=f6e326]:
+        - generic "Notifications" [ref=f6e327]:
+          - button "Notifications" [ref=f6e328] [cursor=pointer]:
+            - generic [ref=f6e420]: 
+        - 'generic "Layout: U.S." [ref=f6e330]':
+          - 'button "Layout: U.S." [ref=f6e331] [cursor=pointer]'
+        - generic "Ballerina Detecting" [ref=f6e519]:
+          - button "Ballerina Detecting" [ref=f6e520] [cursor=pointer]
+        - generic "Copilot status" [ref=f6e332]:
+          - button "Copilot status" [ref=f6e333] [cursor=pointer]:
+            - generic [ref=f6e334]: 
+  - generic [ref=f6e421]:
+    - alert [ref=f6e422]: Secondary Side Bar hidden
+    - alert
+  - iframe [active] [ref=f6e522]:
+    - document [ref=f8e1]:
+      - iframe [active] [ref=f8e2]:
+        - document [active] [ref=f9e1]:
+          - generic [ref=f9e3]:
+            - generic [ref=f9e4]:
+              - generic [ref=f9e6]:
+                - button "Sign In" [ref=f9e7] [cursor=pointer]
+                - button " Configure" [ref=f9e8] [cursor=pointer]:
+                  - generic [ref=f9e9]: 
+                  - generic [ref=f9e11]: Configure
+              - generic [ref=f9e12]: Get Started
+              - heading "WSO2 Integrator" [level=1] [ref=f9e13]
+              - paragraph [ref=f9e14]: Connect AI agents, APIs, data, and events across cloud, on-prem, and hybrid environments. Build any type of integration and AI agent with the 100% open source WSO2 Integrator.
+            - generic [ref=f9e15]:
+              - generic [ref=f9e16]:
+                - generic [ref=f9e17] [cursor=pointer]:
+                  - generic [ref=f9e18]: 
+                  - generic [ref=f9e19]:
+                    - heading "Create New Integration" [level=3] [ref=f9e20]
+                    - paragraph [ref=f9e21]: Start building a new integration.
+                    - button "Create" [ref=f9e22]
+                - generic [ref=f9e24] [cursor=pointer]:
+                  - generic [ref=f9e25]: 
+                  - generic [ref=f9e26]:
+                    - heading "Open Integration" [level=3] [ref=f9e27]
+                    - paragraph [ref=f9e28]: Open an existing integration and continue building your solution.
+                    - button "Open" [ref=f9e29]
+                - generic [ref=f9e31] [cursor=pointer]:
+                  - generic [ref=f9e32]: 
+                  - generic [ref=f9e33]:
+                    - heading "Explore Pre-built Integrations and Samples" [level=3] [ref=f9e34]
+                    - paragraph [ref=f9e35]: Explore ready-to-use pre-built integrations and samples to accelerate your development.
+                    - button "Explore" [ref=f9e36]
+              - button "More Actions " [ref=f9e40] [cursor=pointer]:
+                - generic [ref=f9e41]: More Actions
+                - generic [ref=f9e42]: 
+              - generic [ref=f9e45]:
+                - generic [ref=f9e46] [cursor=pointer]:
+                  - generic [ref=f9e47]: 
+                  - generic [ref=f9e50]:
+                    - generic [ref=f9e51]: Create Library
+                    - generic [ref=f9e52]: Create reusable components and utilities to share across integrations and projects.
+                  - generic [ref=f9e53]: 
+                - generic [ref=f9e55] [cursor=pointer]:
+                  - generic [ref=f9e56]: 
+                  - generic [ref=f9e59]:
+                    - generic [ref=f9e60]: Create Project
+                    - generic [ref=f9e61]: Create a project to organize and manage multiple integrations.
+                  - generic [ref=f9e62]: 
+                - generic [ref=f9e64] [cursor=pointer]:
+                  - generic [ref=f9e65]: 
+                  - generic [ref=f9e68]:
+                    - generic [ref=f9e69]: Open Project
+                    - generic [ref=f9e70]: Open an existing project to view and manage its integrations.
+                  - generic [ref=f9e71]: 
+                - generic [ref=f9e73] [cursor=pointer]:
+                  - generic [ref=f9e74]: 
+                  - generic [ref=f9e77]:
+                    - generic [ref=f9e78]: Migrate Integrations from Other Vendors
+                    - generic [ref=f9e79]: Import integrations from other vendors and convert them to WSO2 Integrator format.
+                  - generic [ref=f9e80]: 
+            - generic [ref=f9e83]:
+              - generic [ref=f9e84]:
+                - heading "Recent Integrations and Projects" [level=3] [ref=f9e85]
+                - button "See more" [ref=f9e86] [cursor=pointer]
+              - generic [ref=f9e87]:
+                - button "sample /Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample" [ref=f9e88] [cursor=pointer]:
+                  - generic [ref=f9e89]: sample
+                  - generic [ref=f9e90]: /Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample
+                - button "oraclefusion_erp_integrations_connector_sample /Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample" [ref=f9e91] [cursor=pointer]:
+                  - generic [ref=f9e92]: oraclefusion_erp_integrations_connector_sample
+                  - generic [ref=f9e93]: /Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample

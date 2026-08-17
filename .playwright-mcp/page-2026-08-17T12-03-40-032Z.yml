@@ -1,0 +1,253 @@
+- application [ref=f14e2]:
+  - generic [ref=f14e6]:
+    - generic [ref=f14e8]:
+      - toolbar [ref=f14e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f14e17]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f14e18]: 
+        - listitem [ref=f14e19] [cursor=pointer]:
+          - toolbar [ref=f14e22]:
+            - button "oraclefusion_common_scheduler_connector_sample" [ref=f14e23]:
+              - generic [ref=f14e24]: 
+        - listitem [ref=f14e26] [cursor=pointer]:
+          - generic [ref=f14e28]:
+            - button [ref=f14e29]:
+              - button "Toggle Chat" [ref=f14e30]: 
+            - button "More Actions" [ref=f14e34]: 
+      - toolbar "Title actions" [ref=f14e39]:
+        - button "Customize Layout..." [ref=f14e40] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f14e41] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f14e42] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [pressed] [ref=f14e43] [cursor=pointer]: 
+    - generic [ref=f14e49]:
+      - generic [ref=f14e51]:
+        - menubar [ref=f14e52]:
+          - menuitem "Application Menu" [ref=f14e53]:
+            - generic [ref=f14e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f14e57]:
+          - tab "Explorer (⇧⌘E)" [expanded] [selected] [ref=f14e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f14e59]: 
+          - tab "Search (⇧⌘F)" [ref=f14e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f14e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f14e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f14e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f14e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f14e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f14e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f14e67]: 
+          - tab "WSO2 Integrator" [ref=f14e68] [cursor=pointer]
+        - toolbar "Manage" [ref=f14e72]:
+          - button "Accounts" [ref=f14e73] [cursor=pointer]:
+            - generic "Accounts" [ref=f14e74]: 
+          - button "Manage" [ref=f14e75] [cursor=pointer]:
+            - generic "Manage" [ref=f14e76]: 
+      - generic [ref=f14e77]:
+        - generic [ref=f14e78]:
+          - heading "Explorer" [level=2] [ref=f14e80]
+          - toolbar "Explorer actions" [ref=f14e84]:
+            - button "Views and More Actions..." [ref=f14e87] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f14e92]:
+          - generic [ref=f14e94]:
+            - 'button "Explorer Section: oraclefusion_common_scheduler_connector_sample" [expanded] [ref=f14e95] [cursor=pointer]':
+              - generic [ref=f14e96]: 
+              - text: 
+              - 'heading "Explorer Section: oraclefusion_common_scheduler_connector_sample" [level=3] [ref=f14e97]': oraclefusion_common_scheduler_connector_sample
+              - text:    
+            - tree "Files Explorer" [ref=f14e100]:
+              - generic [ref=f14e101]:
+                - treeitem ".vscode" [level=1] [ref=f14e102] [cursor=pointer]:
+                  - generic [ref=f14e103]:
+                    - generic [ref=f14e104]: 
+                    - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/.vscode" [ref=f14e106]: .vscode
+                - treeitem ".gitignore" [level=1] [ref=f14e110] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/.gitignore" [ref=f14e113]:
+                    - text: 
+                    - generic [ref=f14e114]: .gitignore
+                - treeitem "agents.bal" [level=1] [ref=f14e117] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/agents.bal" [ref=f14e120]: agents.bal
+                - treeitem "automation.bal" [level=1] [ref=f14e124] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/automation.bal" [ref=f14e127]: automation.bal
+                - treeitem "Ballerina.toml" [level=1] [ref=f14e131] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/Ballerina.toml" [ref=f14e134]:
+                    - text: 
+                    - generic [ref=f14e135]: Ballerina.toml
+                - treeitem "config.bal" [level=1] [ref=f14e138] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/config.bal" [ref=f14e141]: config.bal
+                - treeitem "connections.bal" [level=1] [ref=f14e145] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/connections.bal" [ref=f14e148]: connections.bal
+                - treeitem "data_mappings.bal" [level=1] [ref=f14e152] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/data_mappings.bal" [ref=f14e155]: data_mappings.bal
+                - treeitem "functions.bal" [level=1] [ref=f14e159] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/functions.bal" [ref=f14e162]: functions.bal
+                - treeitem "main.bal" [level=1] [ref=f14e166] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/main.bal" [ref=f14e169]: main.bal
+                - treeitem "types.bal" [level=1] [ref=f14e173] [cursor=pointer]:
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample/types.bal" [ref=f14e176]: types.bal
+          - button "Outline Section" [ref=f14e182] [cursor=pointer]:
+            - generic [ref=f14e183]: 
+            - text: 
+            - heading "Outline" [level=3] [ref=f14e184]
+            - text:  
+          - button "Timeline Section" [ref=f14e187] [cursor=pointer]:
+            - generic [ref=f14e188]: 
+            - text: 
+            - heading "Timeline" [level=3] [ref=f14e189]
+            - text:    
+      - main [ref=f14e198]:
+        - generic [ref=f14e206]:
+          - generic [ref=f14e208] [cursor=pointer]:
+            - tablist [ref=f14e209]:
+              - tab "Welcome, preview" [selected] [ref=f14e210]:
+                - generic "Welcome" [ref=f14e211]
+                - toolbar "Tab actions" [ref=f14e216]:
+                  - button "Close (⌘W)" [ref=f14e217]: 
+            - toolbar "Editor actions" [ref=f14e221]:
+              - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f14e222]: 
+              - button "More Actions..." [ref=f14e225]: 
+          - document "Overview of how to get up to speed with your editor." [ref=f14e228]:
+            - generic [ref=f14e229]:
+              - generic [ref=f14e231]:
+                - generic [ref=f14e232]:
+                  - heading "code-server" [level=1] [ref=f14e233]
+                  - paragraph [ref=f14e234]: Editing evolved
+                - generic [ref=f14e235]:
+                  - generic [ref=f14e236]:
+                    - heading "Start" [level=2] [ref=f14e237]
+                    - list [ref=f14e238]:
+                      - listitem [ref=f14e239]:
+                        - button " New File..." [ref=f14e240] [cursor=pointer]:
+                          - generic [ref=f14e241]: 
+                          - text: New File...
+                      - listitem [ref=f14e242]:
+                        - button " Open File..." [ref=f14e243] [cursor=pointer]:
+                          - generic [ref=f14e244]: 
+                          - text: Open File...
+                      - listitem [ref=f14e245]:
+                        - button " Clone Git Repository..." [ref=f14e246] [cursor=pointer]:
+                          - generic [ref=f14e247]: 
+                          - text: Clone Git Repository...
+                  - generic [ref=f14e248]:
+                    - heading "Recent" [level=2] [ref=f14e249]
+                    - list [ref=f14e250]:
+                      - listitem [ref=f14e251]:
+                        - button "Open folder sample with path ~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler" [ref=f14e252] [cursor=pointer]: sample
+                        - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample" [ref=f14e253]: ~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler
+                      - listitem [ref=f14e254]:
+                        - button "Open folder oraclefusion_erp_integrations_connector_sample with path ~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample" [ref=f14e255] [cursor=pointer]: oraclefusion_erp_integrations_connector_sample
+                        - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample" [ref=f14e256]: ~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample
+                - generic [ref=f14e257]:
+                  - generic [ref=f14e258]:
+                    - heading "Next Up" [level=2] [ref=f14e259]
+                    - link [ref=f14e260] [cursor=pointer]:
+                      - /url: https://cdr.co/code-server-to-coder
+                      - button "Deploy code-server for your team Provision software development environments on your infrastructure with Coder. Coder is a self-service portal which provisions via Terraform—Linux, macOS, Windows, x86, ARM, and, of course, Kubernetes based infrastructure. Get started " [ref=f14e261]:
+                        - heading "Deploy code-server for your team" [level=3] [ref=f14e262]
+                        - paragraph [ref=f14e263]: Provision software development environments on your infrastructure with Coder.
+                        - paragraph [ref=f14e264]: Coder is a self-service portal which provisions via Terraform—Linux, macOS, Windows, x86, ARM, and, of course, Kubernetes based infrastructure.
+                        - paragraph [ref=f14e265]:
+                          - text: Get started
+                          - generic [ref=f14e266]: 
+                  - generic [ref=f14e267]:
+                    - heading "Walkthroughs" [level=2] [ref=f14e268]
+                    - list [ref=f14e269]:
+                      - button " Get Started with VS Code for the Web Customize your editor, learn the basics, and start coding" [ref=f14e270]:
+                        - generic: 
+                        - heading "Get Started with VS Code for the Web" [level=3] [ref=f14e274]
+                        - generic [ref=f14e275]: Customize your editor, learn the basics, and start coding
+                      - button " Learn the Fundamentals" [ref=f14e276]:
+                        - generic [ref=f14e277]:
+                          - generic [ref=f14e278]: 
+                          - heading "Learn the Fundamentals" [level=3] [ref=f14e279]
+                - paragraph [ref=f14e281]:
+                  - checkbox "When checked, this page will be shown on startup." [checked] [ref=f14e282] [cursor=pointer]: 
+                  - generic [ref=f14e283] [cursor=pointer]: Show welcome page on startup
+              - generic [ref=f14e284]: 
+      - generic [ref=f14e286]:
+        - generic [ref=f14e287]:
+          - tablist "Active View Switcher" [ref=f14e291]:
+            - tab "Chat (⌃⌘I)" [expanded] [selected] [ref=f14e292] [cursor=pointer]:
+              - generic "Chat (⌃⌘I)" [ref=f14e293]: Chat
+          - toolbar "Chat actions" [ref=f14e297]:
+            - button "New Chat (⌘N)" [ref=f14e299] [cursor=pointer]: 
+            - button "New Chat" [ref=f14e303] [cursor=pointer]: 
+            - button "Configure Chat" [ref=f14e306] [cursor=pointer]: 
+            - button "Views and More Actions..." [ref=f14e309] [cursor=pointer]: 
+          - toolbar [ref=f14e314]:
+            - button "Maximize Secondary Side Bar" [ref=f14e315] [cursor=pointer]: 
+            - button "Hide Secondary Side Bar (⌥⌘B)" [ref=f14e316] [cursor=pointer]: 
+        - generic [ref=f14e323]:
+          - text:      
+          - generic [ref=f14e324]:
+            - text:    
+            - generic [ref=f14e325]:
+              - text:  
+              - generic [ref=f14e326]:
+                - generic [ref=f14e328]:
+                  - generic [ref=f14e329]: 
+                  - generic [ref=f14e331]: Build with Agent
+                  - paragraph [ref=f14e334]: AI responses may be inaccurate
+                  - paragraph [ref=f14e337]:
+                    - link "Generate Agent Instructions" [ref=f14e338] [cursor=pointer]:
+                      - /url: ""
+                    - text: to onboard AI onto your codebase.
+                - text: 
+                - generic [ref=f14e339]:
+                  - generic:  
+                  - generic [ref=f14e341]:
+                    - code [ref=f14e344]:
+                      - generic [ref=f14e345]:
+                        - textbox "Chat Input (Agent), edit files in your workspace. Press Enter to send out the request. Use ⌥F1 for Chat Accessibility Help." [active] [ref=f14e346]
+                        - textbox [ref=f14e347]
+                        - generic [ref=f14e348]: Describe what to build
+                    - generic [ref=f14e354]:
+                      - toolbar [ref=f14e357]:
+                        - button "Add Context... (⌘/)" [ref=f14e358] [cursor=pointer]: 
+                        - button "Set Agent (⌘.) - Open Agent Picker" [ref=f14e361] [cursor=pointer]:
+                          - generic [ref=f14e362]: 
+                        - button "Pick Model, Auto" [ref=f14e363] [cursor=pointer]:
+                          - generic [ref=f14e364]: Auto
+                          - generic [ref=f14e365]: 
+                        - button "Configure Tools..." [ref=f14e366] [cursor=pointer]: 
+                      - toolbar [ref=f14e369]:
+                        - button "Send [⌥] Send to New Chat (⇧⌘Enter)" [disabled] [ref=f14e370]: 
+                  - toolbar [ref=f14e374]:
+                    - button "Set Session Target - Local" [ref=f14e377] [cursor=pointer]:
+                      - generic [ref=f14e378]: 
+                      - generic [ref=f14e379]: Local
+                      - generic [ref=f14e380]: 
+                    - button "Set Permissions - Default Approvals" [ref=f14e383] [cursor=pointer]:
+                      - generic [ref=f14e384]: 
+                      - generic [ref=f14e385]: Default Approvals
+                      - generic [ref=f14e386]: 
+    - status [ref=f14e389]:
+      - generic [ref=f14e390]:
+        - generic "remote" [ref=f14e391]:
+          - button "remote" [ref=f14e392] [cursor=pointer]:
+            - generic [ref=f14e393]: 
+        - generic "No Problems" [ref=f14e394]:
+          - button "No Problems" [ref=f14e395] [cursor=pointer]:
+            - generic [ref=f14e396]: 
+            - text: "0"
+            - generic [ref=f14e397]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f14e398]:
+          - button "No Ports Forwarded" [ref=f14e399] [cursor=pointer]:
+            - generic [ref=f14e400]: 
+            - text: "0"
+      - generic [ref=f14e401]:
+        - generic "Notifications" [ref=f14e402]:
+          - button "Notifications" [ref=f14e403] [cursor=pointer]:
+            - generic [ref=f14e404]: 
+        - 'generic "Layout: U.S." [ref=f14e405]':
+          - 'button "Layout: U.S." [ref=f14e406] [cursor=pointer]'
+        - generic "Ballerina Detecting" [ref=f14e407]:
+          - button "Ballerina Detecting" [ref=f14e408] [cursor=pointer]
+        - generic "Copilot status" [ref=f14e409]:
+          - button "Copilot status" [ref=f14e410] [cursor=pointer]:
+            - generic [ref=f14e411]: 
+  - generic:
+    - alert
+    - alert

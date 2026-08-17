@@ -1,0 +1,224 @@
+- application [ref=f14e2]:
+  - generic [ref=f14e6]:
+    - generic [ref=f14e8]:
+      - toolbar [ref=f14e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f14e580]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f14e581]: 
+        - listitem [ref=f14e582] [cursor=pointer]:
+          - toolbar [ref=f14e585]:
+            - button "oraclefusion_common_scheduler_connector_sample" [ref=f14e586]:
+              - generic [ref=f14e587]: 
+        - listitem [ref=f14e589] [cursor=pointer]:
+          - generic [ref=f14e591]:
+            - button [ref=f14e592]:
+              - button "Toggle Chat" [ref=f14e593]: 
+            - button "More Actions" [ref=f14e597]: 
+      - toolbar "Title actions" [ref=f14e39]:
+        - button "Customize Layout..." [ref=f14e575] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f14e576] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f14e577] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [ref=f14e578] [cursor=pointer]: 
+    - generic [ref=f14e49]:
+      - generic [ref=f14e51]:
+        - menubar [ref=f14e52]:
+          - menuitem "Application Menu" [ref=f14e53]:
+            - generic [ref=f14e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f14e57]:
+          - tab "Explorer (⇧⌘E)" [ref=f14e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f14e59]: 
+          - tab "Search (⇧⌘F)" [ref=f14e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f14e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f14e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f14e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f14e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f14e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f14e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f14e67]: 
+          - tab "Testing" [ref=f14e434] [cursor=pointer]:
+            - generic "Testing" [ref=f14e435]: 
+          - tab "WSO2 Integrator" [expanded] [selected] [ref=f14e68] [cursor=pointer]
+        - toolbar "Manage" [ref=f14e72]:
+          - button "Accounts" [ref=f14e73] [cursor=pointer]:
+            - generic "Accounts" [ref=f14e74]: 
+          - button "Manage" [ref=f14e75] [cursor=pointer]:
+            - generic "Manage" [ref=f14e76]: 
+      - generic [ref=f14e77]:
+        - generic [ref=f14e78]:
+          - 'heading "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample" [level=2] [ref=f14e436]'
+          - 'toolbar "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample actions" [ref=f14e437]':
+            - button "Add Integration or Library" [ref=f14e634] [cursor=pointer]: 
+            - button "Open Overview" [ref=f14e635] [cursor=pointer]
+            - button "Refresh" [ref=f14e636] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f14e446]:
+          - text:   
+          - tree "oraclefusion_common_scheduler_connector_sample" [ref=f14e450]:
+            - generic [ref=f14e451]:
+              - treeitem "oraclefusion_common_scheduler_connector_sample" [expanded] [level=1] [selected] [ref=f14e452] [cursor=pointer]:
+                - generic [ref=f14e453]:
+                  - generic [ref=f14e454]: 
+                  - generic "oraclefusion_common_scheduler_connector_sample" [ref=f14e456]:
+                    - generic [ref=f14e457]: 
+                    - toolbar [ref=f14e620]:
+                      - button "Force Update Artifacts" [ref=f14e637]: 
+                      - button "Show Visualizer" [ref=f14e638]
+              - treeitem "Entry Points" [expanded] [level=2] [ref=f14e461] [cursor=pointer]:
+                - generic [ref=f14e462]:
+                  - generic [ref=f14e463]: 
+                  - generic "Entry Points" [ref=f14e465]: 
+              - treeitem "Listeners" [expanded] [level=2] [ref=f14e470] [cursor=pointer]:
+                - generic [ref=f14e471]:
+                  - generic [ref=f14e472]: 
+                  - generic "Listeners" [ref=f14e474]
+              - treeitem "Connections" [expanded] [level=2] [ref=f14e479] [cursor=pointer]:
+                - generic [ref=f14e480]:
+                  - generic [ref=f14e481]: 
+                  - generic "Connections" [ref=f14e483]: 
+              - treeitem "Types" [expanded] [level=2] [ref=f14e488] [cursor=pointer]:
+                - generic [ref=f14e489]:
+                  - generic [ref=f14e490]: 
+                  - generic "Types" [ref=f14e492]: 
+              - treeitem "Functions" [expanded] [level=2] [ref=f14e497] [cursor=pointer]:
+                - generic [ref=f14e498]:
+                  - generic [ref=f14e499]: 
+                  - generic "Functions" [ref=f14e501]: 
+              - treeitem "Data Mappers" [expanded] [level=2] [ref=f14e506] [cursor=pointer]:
+                - generic [ref=f14e507]:
+                  - generic [ref=f14e508]: 
+                  - generic "Data Mappers" [ref=f14e510]: 
+              - treeitem "Configurations" [level=2] [ref=f14e515] [cursor=pointer]:
+                - generic "Configurations" [ref=f14e519]: 
+      - main [ref=f14e198]:
+        - generic [ref=f14e208] [cursor=pointer]:
+          - tablist [ref=f14e209]:
+            - tab "WSO2 Integrator" [selected] [ref=f14e598]:
+              - toolbar "Tab actions" [ref=f14e216]:
+                - button "Close (⌘W)" [ref=f14e217]: 
+          - toolbar "Editor actions" [ref=f14e221]:
+            - button "Open WSO2 Integrator Copilot" [ref=f14e601]
+            - button "Run Integration" [ref=f14e602]
+            - button "Debug Integration" [ref=f14e603]
+            - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f14e604]: 
+            - button "More Actions..." [ref=f14e607]: 
+    - status [ref=f14e389]:
+      - generic [ref=f14e390]:
+        - generic "remote" [ref=f14e391]:
+          - button "remote" [ref=f14e392] [cursor=pointer]:
+            - generic [ref=f14e393]: 
+        - 'generic "Errors: 1" [ref=f14e639]':
+          - 'button "Errors: 1" [ref=f14e640] [cursor=pointer]':
+            - generic [ref=f14e641]: 
+            - text: "1"
+            - generic [ref=f14e642]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f14e398]:
+          - button "No Ports Forwarded" [ref=f14e399] [cursor=pointer]:
+            - generic [ref=f14e400]: 
+            - text: "0"
+      - generic [ref=f14e401]:
+        - generic "Notifications" [ref=f14e402]:
+          - button "Notifications" [ref=f14e403] [cursor=pointer]:
+            - generic [ref=f14e565]: 
+        - 'generic "Layout: U.S." [ref=f14e405]':
+          - 'button "Layout: U.S." [ref=f14e406] [cursor=pointer]'
+        - 'generic "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e566]':
+          - 'button "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e567] [cursor=pointer]':
+            - generic [ref=f14e568]: 
+            - text: "ICP: Stopped"
+        - generic "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e569]:
+          - button "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e570] [cursor=pointer]
+        - generic "Copilot status" [ref=f14e409]:
+          - button "Copilot status" [ref=f14e410] [cursor=pointer]:
+            - generic [ref=f14e411]: 
+  - generic [ref=f14e571]:
+    - alert [ref=f14e572]: Secondary Side Bar hidden
+    - alert
+  - iframe [active] [ref=f14e574]:
+    - document [ref=f16e1]:
+      - iframe [active] [ref=f16e2]:
+        - document [active] [ref=f17e1]:
+          - generic [ref=f17e513]:
+            - generic [ref=f17e514]:
+              - generic "Icon Button" [ref=f17e516] [cursor=pointer]:
+                - button "Icon Button" [ref=f17e517]:
+                  - generic [ref=f17e518]: 
+              - generic [ref=f17e521]:
+                - heading "Configure Scheduler" [level=2] [ref=f17e522]
+                - paragraph [ref=f17e523]: Configure connection settings for this connector
+              - generic "Icon Button" [ref=f17e525] [cursor=pointer]:
+                - button "Icon Button" [ref=f17e526]:
+                  - generic [ref=f17e527]: 
+            - generic [ref=f17e530]:
+              - generic [ref=f17e534]:
+                - paragraph [ref=f17e535]: Scheduler
+                - paragraph [ref=f17e537]:
+                  - link "Oracle Fusion Cloud Applications" [ref=f17e538] [cursor=pointer]:
+                    - /url: https://www.oracle.com/applications/
+                  - text: run their long-running background work — data imports, reports, period-close processes — as
+                  - emphasis [ref=f17e539]: scheduled processes
+                  - text: on the Enterprise Scheduler Service (ESS).
+              - paragraph [ref=f17e541]: Standard
+            - generic [ref=f17e554]:
+              - generic [ref=f17e555]:
+                - generic [ref=f17e556]:
+                  - generic [ref=f17e876]:
+                    - generic [ref=f17e877]:
+                      - generic [ref=f17e879]:
+                        - text: Config*
+                        - generic "scheduler:ConnectionConfig" [ref=f17e880]: ConnectionConfig
+                      - generic [ref=f17e881]:
+                        - paragraph [ref=f17e884]:
+                          - text: The configurations to be used when initializing the
+                          - code [ref=f17e885]: connector
+                          - text: .
+                        - generic [ref=f17e888]:
+                          - generic [ref=f17e889] [cursor=pointer]: Record
+                          - generic [ref=f17e890] [cursor=pointer]: Expression
+                    - generic [ref=f17e900]:
+                      - textbox [ref=f17e904]:
+                        - generic [ref=f17e905]: "{auth: {tokenUrl: \"\", clientId: \"\", clientSecret: \"\"}}"
+                      - generic [ref=f17e976]:
+                        - generic [ref=f17e977] [cursor=pointer]:
+                          - generic [ref=f17e978]: 
+                          - text: Configurables
+                        - generic [ref=f17e980]:
+                          - generic [ref=f17e987] [cursor=pointer]:
+                            - generic [ref=f17e988]: 
+                            - paragraph [ref=f17e990]: serviceUrl
+                            - generic [ref=f17e991]: string
+                          - button " New Configurable" [ref=f17e995] [cursor=pointer]:
+                            - generic [ref=f17e996]: 
+                            - generic [ref=f17e998]: New Configurable
+                      - generic [ref=f17e906]:
+                        - button "Close Helper Panel" [ref=f17e973] [cursor=pointer]
+                        - button "Expand Editor" [ref=f17e910] [cursor=pointer]
+                  - generic [ref=f17e588]:
+                    - generic [ref=f17e589]:
+                      - generic [ref=f17e591]:
+                        - text: Service Url*
+                        - generic "string" [ref=f17e592]
+                      - generic [ref=f17e593]:
+                        - paragraph [ref=f17e596]: URL of the target service .
+                        - generic [ref=f17e599]:
+                          - generic [ref=f17e600] [cursor=pointer]: Text
+                          - generic [ref=f17e601] [cursor=pointer]: Expression
+                    - generic [ref=f17e608]:
+                      - textbox [ref=f17e612]:
+                        - 'generic "${serviceUrl}" [ref=f17e873] [cursor=pointer]':
+                          - generic [ref=f17e874]: 
+                          - generic [ref=f17e875]: serviceUrl
+                      - generic [ref=f17e614]:
+                        - button "Open Helper Panel" [ref=f17e863] [cursor=pointer]
+                        - button "Expand Editor" [ref=f17e618] [cursor=pointer]
+                - generic "Connection Name*Name of the connection" [ref=f17e625]:
+                  - generic [ref=f17e626] [cursor=pointer]:
+                    - generic:
+                      - generic [ref=f17e627]:
+                        - generic [ref=f17e628]: Connection Name
+                        - generic [ref=f17e629]: "*"
+                      - generic [ref=f17e630]: Name of the connection
+                  - textbox "Connection Name*Name of the connection" [ref=f17e632]: schedulerClient
+              - button [disabled] [ref=f17e920]

@@ -1370,6 +1370,16 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Oracle Fusion Common Scheduler',
+          link: { type: 'doc', id: 'connectors/catalog/erp-business/oraclefusion.common.scheduler/overview' },
+          items: [
+            'connectors/catalog/erp-business/oraclefusion.common.scheduler/setup-guide',
+            'connectors/catalog/erp-business/oraclefusion.common.scheduler/action-reference',
+            'connectors/catalog/erp-business/oraclefusion.common.scheduler/example',
+          ],
+        },
+        {
+          type: 'category',
           label: 'PayPal Invoices',
           link: { type: 'doc', id: 'connectors/catalog/finance-accounting/paypal.invoices/paypal-invoices-connector-overview' },
           items: [

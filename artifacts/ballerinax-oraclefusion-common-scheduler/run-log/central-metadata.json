@@ -1,0 +1,49 @@
+{
+  "URL": "/ballerinax/oraclefusion.common.scheduler/0.1.0",
+  "authors": [
+    "Ballerina"
+  ],
+  "balToolId": "",
+  "balaURL": "https://fileserver.central.ballerina.io/2.0/ballerinax/oraclefusion.common.scheduler/0.1.0/ballerinax-oraclefusion.common.scheduler-any-0.1.0.bala?Expires=1786965983&Signature=c6L2LlR-9xsr3N5azKicLie1Jq8I0sCZnsUCXFXK~vlr9NFDKT44o2jgdJJnyVRfqhDQhwB44b3tULioc~m2iHosnEEoRhl0qWORBNptZ97qPFEUIYc-RGCAoFsenySnJxLRf-DcUbKVYjJKQDVtu4YCOp4B3Z4Ma02KkwhV3L~qhkro6AmBIkKwhYJT4LgTyEMCdXJ-U7SZLKud3wnUXeHsir1iKiAwxajjhJ3WUcyNHrsPtYVtqhDXvhFMWPx0t0RaaHKfs9IE70XLg3fPijX1Ne3MFP8hp3aF~tVyEQJBV~mRHtnrG4qd~~7LNw71WuEtqwkSXLFn0NVA~b-ahA__&Key-Pair-Id=K27IQ7NPTKLKDU",
+  "balaVersion": "3.0.0",
+  "ballerinaVersion": "2201.12.0",
+  "createdDate": 1786963233000,
+  "deprecateMessage": "",
+  "digest": "sha-256=77c239ddcfeed8ecf251308121714d47834941ad0be5e22291f1d00a9d2231f8",
+  "graalvmCompatible": "Yes",
+  "icon": "https://bcentral-packageicons.azureedge.net/images/ballerinax_oraclefusion.common.scheduler_0.1.0.png",
+  "id": 54773,
+  "isDeprecated": false,
+  "keywords": [
+    "Type/Connector",
+    "Vendor/Oracle",
+    "Area/ERP & Business Operations",
+    "Oracle Fusion",
+    "Scheduler",
+    "ESS"
+  ],
+  "languageSpecificationVersion": "2024R1",
+  "licenses": [
+    "Apache-2.0"
+  ],
+  "modules": [
+    {
+      "apiDocURL": "https://lib.ballerina.io/ballerinax/oraclefusion.common.scheduler/0.1.0",
+      "name": "oraclefusion.common.scheduler",
+      "packageURL": "/ballerinax/oraclefusion.common.scheduler/0.1.0",
+      "readme": "",
+      "summary": ""
+    }
+  ],
+  "name": "oraclefusion.common.scheduler",
+  "organization": "ballerinax",
+  "ownerUUID": "b5a9e54d-8ade-47a1-8abc-6bc46e89069d",
+  "platform": "any",
+  "pullCount": 1,
+  "readme": "## Overview\n\n[Oracle Fusion Cloud Applications](https://www.oracle.com/applications/) run their long-running background work \u2014 data imports, reports, period-close processes \u2014 as *scheduled processes* on the Enterprise Scheduler Service (ESS).\n\nThe generic Scheduler REST API (introduced in Oracle Fusion release 23B) is the entry point for that work. It submits job requests against a job definition, queries requests with a SCIM-style filter, and reports the execution state of an individual request.\n\n### Key Features\n\n- Submit a scheduled process against a job definition, with its job-specific request parameters, priority, retries, request timeout, and log level\n- Query job requests with SCIM-style filters (for example, `state eq \"RUNNING\"`), response field shaping via `fields`/`excludeFields`, request-ID selection, and ordering\n- Poll an individual request for its execution state, state description, submission and processing timestamps, elapsed time, and the parameters it was submitted with\n- Schedule recurring runs inline with iCal recurrence rules, a timezone, and date exclusions or inclusions \u2014 or reference an existing schedule by ID\n- Register a callback subscription so the scheduler notifies your endpoint as the request changes state, as an alternative to polling\n- Flexible authentication: HTTP Basic with Fusion integration user credentials, or OAuth2 client credentials against Oracle Identity Cloud Service (IDCS)\n- GraalVM compatible for native image builds\n\n## Setup guide\n\n### Step 1: Identify your Fusion instance base URL\n\nThe Scheduler base URL is instance-specific and takes the form:\n\n```text\nhttps://{fusionHost}/ess/rest/scheduler/v1\n```\n\nFor example: `https://acme.fa.us2.oraclecloud.com/ess/rest/scheduler/v1`\n\n> **Note:** The generic Scheduler REST API is available from Oracle Fusion release 23B onwards. On earlier releases, use the product-specific ESS endpoints instead.\n\n### Step 2: Provision a user with the required privileges\n\n1. Sign in to your Oracle Fusion Cloud instance as a user with security administration rights.\n2. Create (or identify) the integration user that will submit and monitor the processes.\n3. Grant the roles required for the scheduled processes you intend to run. Submitting a process requires the privileges of that specific job definition; monitoring requires the privileges to view scheduled processes. Consult your Fusion security administrator for the exact roles for your module.\n\n### Step 3: Identify the job definition to submit\n\nSubmitting a request takes a `jobDefinitionId` \u2014 the metadata object ID of the process, not its display name. It has the form:\n\n```text\noracle/apps/ess/financials/payables/invoices/transactions/ImportPayablesInvoicesJob\n```\n\nFind it in the Fusion UI under **Tools > Scheduled Processes**, or ask your functional administrator. The job-specific `requestParameters` are defined by the job definition, so confirm their names, order, and types for the process you intend to run.\n\n### Step 4: Choose an authentication scheme\n\nThe connector supports both of the schemes the service accepts. `ConnectionConfig.auth` is a union, so the choice is a configuration change rather than a code change.\n\n**HTTP Basic** over HTTPS, using a Fusion integration user's credentials:\n\n```ballerina\nfinal scheduler:Client schedulerClient = check new ({auth: {username, password}}, serviceUrl);\n```\n\n**OAuth2 client credentials**, for instances that reject Basic auth. Register a confidential application in Oracle Identity Cloud Service (IDCS), grant it access to the Scheduler resource, and use its client id and secret:\n\n```ballerina\nfinal scheduler:Client schedulerClient = check new ({\n    auth: {\n        clientId,\n        clientSecret,\n        tokenUrl: \"https://<your-idcs-host>.identity.oraclecloud.com/oauth2/v1/token\"\n    }\n}, serviceUrl);\n```\n\nAsk your Fusion administrator which scheme the instance is configured for \u2014 some pods disable Basic auth for integration users.\n\n## Quickstart\n\nTo use the `oraclefusion.common.scheduler` connector in your Ballerina application, modify the `.bal` file as follows:\n\n### Step 1: Import the module\n\n```ballerina\nimport ballerina/io;\nimport ballerinax/oraclefusion.common.scheduler;\n```\n\n### Step 2: Instantiate a new connector\n\n1. Create a `Config.toml` file and configure the obtained credentials in the above steps as follows:\n\n    ```toml\n    serviceUrl = \"https://<fusionHost>/ess/rest/scheduler/v1\"\n    username = \"<your-fusion-username>\"\n    password = \"<your-fusion-password>\"\n    ```\n\n2. Create a `scheduler:Client` with the configuration.\n\n    ```ballerina\n    configurable string serviceUrl = ?;\n    configurable string username = ?;\n    configurable string password = ?;\n\n    final scheduler:Client schedulerClient = check new ({auth: {username, password}}, serviceUrl);\n    ```\n\n### Step 3: Invoke the connector operation\n\nNow, utilize the available connector operations. The following snippet lists the scheduled processes that are currently running:\n\n```ballerina\npublic function main() returns error? {\n    scheduler:RequestQueryResponse response = check schedulerClient->queryJobRequests(\n        queries = {q: \"state eq \\\"RUNNING\\\"\", orderBy: \"submissionTime:desc\"}\n    );\n    io:println(response);\n}\n```\n\n### Step 4: Run the Ballerina application\n\n```bash\nbal run\n```\n\n## Examples\n\nThe `Oraclefusion.common.scheduler` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-oraclefusion.common.scheduler/tree/main/examples/), covering the following use cases:\n\n1. [Submit and track job](https://github.com/ballerina-platform/module-ballerinax-oraclefusion.common.scheduler/tree/main/examples/submit-and-track-job) - Submit a scheduled process and poll the resulting request until it reaches a terminal state, then report the final execution outcome.\n2. [Monitor scheduled processes](https://github.com/ballerina-platform/module-ballerinax-oraclefusion.common.scheduler/tree/main/examples/monitor-scheduled-processes) - Build an operational view over scheduled processes: list running requests, find the ones in the `ERROR` state, and drill into the most recent of those for its parameters and error detail.",
+  "sourceCodeLocation": "https://github.com/ballerina-platform/module-ballerinax-oraclefusion.common.scheduler",
+  "summary": "[Oracle Fusion Cloud Applications](https://www.oracle.com/applications/) run their long-running background work \u2014 data imports, reports, period-close processes \u2014 as *scheduled processes* on the Enterprise Scheduler Service (ESS).",
+  "template": false,
+  "version": "0.1.0",
+  "visibility": "public"
+}

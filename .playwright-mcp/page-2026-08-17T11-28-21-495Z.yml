@@ -1,0 +1,238 @@
+- application [ref=f6e2]:
+  - generic [ref=f6e6]:
+    - generic [ref=f6e8]:
+      - toolbar [ref=f6e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f6e364]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f6e365]: 
+        - listitem [ref=f6e366] [cursor=pointer]:
+          - toolbar [ref=f6e369]:
+            - button "sample" [ref=f6e370]:
+              - generic [ref=f6e371]: 
+        - listitem [ref=f6e373] [cursor=pointer]:
+          - generic [ref=f6e375]:
+            - button [ref=f6e376]:
+              - button "Toggle Chat" [ref=f6e377]: 
+            - button "More Actions" [ref=f6e381]: 
+      - toolbar "Title actions" [ref=f6e39]:
+        - button "Customize Layout..." [ref=f6e382] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f6e383] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f6e384] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [pressed] [ref=f6e385] [cursor=pointer]: 
+    - generic [ref=f6e49]:
+      - generic [ref=f6e51]:
+        - menubar [ref=f6e52]:
+          - menuitem "Application Menu" [ref=f6e53]:
+            - generic [ref=f6e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f6e57]:
+          - tab "Explorer (⇧⌘E)" [expanded] [selected] [ref=f6e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f6e59]: 
+          - tab "Search (⇧⌘F)" [ref=f6e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f6e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f6e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f6e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f6e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f6e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f6e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f6e67]: 
+          - tab "WSO2 Integrator" [ref=f6e386] [cursor=pointer]
+        - toolbar "Manage" [ref=f6e70]:
+          - button "Accounts" [ref=f6e71] [cursor=pointer]:
+            - generic "Accounts" [ref=f6e72]: 
+          - button "Manage" [ref=f6e73] [cursor=pointer]:
+            - generic "Manage" [ref=f6e74]: 
+      - generic [ref=f6e75]:
+        - generic [ref=f6e76]:
+          - heading "Explorer" [level=2] [ref=f6e78]
+          - toolbar "Explorer actions" [ref=f6e82]:
+            - button "Views and More Actions..." [ref=f6e390] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f6e90]:
+          - generic [ref=f6e92]:
+            - 'button "Explorer Section: sample" [expanded] [ref=f6e93] [cursor=pointer]':
+              - generic [ref=f6e94]: 
+              - text: 
+              - 'heading "Explorer Section: sample" [level=3] [ref=f6e95]': sample
+              - text:    
+            - tree "Files Explorer" [ref=f6e98]:
+              - treeitem "oraclefusion.common.scheduler_connector_sample" [level=1] [ref=f6e100] [cursor=pointer]:
+                - generic [ref=f6e101]:
+                  - generic [ref=f6e102]: 
+                  - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion.common.scheduler_connector_sample" [ref=f6e104]: oraclefusion.common.scheduler_connector_sample
+          - button "Outline Section" [ref=f6e110] [cursor=pointer]:
+            - generic [ref=f6e111]: 
+            - text: 
+            - heading "Outline" [level=3] [ref=f6e112]
+            - text:  
+          - button "Timeline Section" [ref=f6e115] [cursor=pointer]:
+            - generic [ref=f6e116]: 
+            - text: 
+            - heading "Timeline" [level=3] [ref=f6e117]
+            - text:    
+      - main [ref=f6e126]:
+        - generic [ref=f6e134]:
+          - generic [ref=f6e136] [cursor=pointer]:
+            - tablist [ref=f6e137]:
+              - tab "Welcome, preview" [selected] [ref=f6e138]:
+                - generic "Welcome" [ref=f6e139]
+                - toolbar "Tab actions" [ref=f6e144]:
+                  - button "Close (⌘W)" [ref=f6e145]: 
+            - toolbar "Editor actions" [ref=f6e149]:
+              - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f6e391]: 
+              - button "More Actions..." [ref=f6e394]: 
+          - document "Overview of how to get up to speed with your editor." [ref=f6e156]:
+            - generic [ref=f6e157]:
+              - generic [ref=f6e159]:
+                - generic [ref=f6e160]:
+                  - heading "code-server" [level=1] [ref=f6e161]
+                  - paragraph [ref=f6e162]: Editing evolved
+                - generic [ref=f6e163]:
+                  - generic [ref=f6e164]:
+                    - heading "Start" [level=2] [ref=f6e165]
+                    - list [ref=f6e166]:
+                      - listitem [ref=f6e395]:
+                        - button " New File..." [ref=f6e396] [cursor=pointer]:
+                          - generic [ref=f6e397]: 
+                          - text: New File...
+                      - listitem [ref=f6e398]:
+                        - button " Open File..." [ref=f6e399] [cursor=pointer]:
+                          - generic [ref=f6e400]: 
+                          - text: Open File...
+                      - listitem [ref=f6e401]:
+                        - button " Clone Git Repository..." [ref=f6e402] [cursor=pointer]:
+                          - generic [ref=f6e403]: 
+                          - text: Clone Git Repository...
+                  - generic [ref=f6e173]:
+                    - heading "Recent" [level=2] [ref=f6e174]
+                    - list [ref=f6e175]:
+                      - listitem [ref=f6e176]:
+                        - button "Open folder oraclefusion_erp_integrations_connector_sample with path ~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample" [ref=f6e177] [cursor=pointer]: oraclefusion_erp_integrations_connector_sample
+                        - generic "~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample/oraclefusion_erp_integrations_connector_sample" [ref=f6e178]: ~/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-erp-integrations/sample
+                - generic [ref=f6e179]:
+                  - generic [ref=f6e180]:
+                    - heading "Next Up" [level=2] [ref=f6e181]
+                    - link [ref=f6e182] [cursor=pointer]:
+                      - /url: https://cdr.co/code-server-to-coder
+                      - button "Deploy code-server for your team Provision software development environments on your infrastructure with Coder. Coder is a self-service portal which provisions via Terraform—Linux, macOS, Windows, x86, ARM, and, of course, Kubernetes based infrastructure. Get started " [ref=f6e183]:
+                        - heading "Deploy code-server for your team" [level=3] [ref=f6e184]
+                        - paragraph [ref=f6e185]: Provision software development environments on your infrastructure with Coder.
+                        - paragraph [ref=f6e186]: Coder is a self-service portal which provisions via Terraform—Linux, macOS, Windows, x86, ARM, and, of course, Kubernetes based infrastructure.
+                        - paragraph [ref=f6e187]:
+                          - text: Get started
+                          - generic [ref=f6e188]: 
+                  - generic [ref=f6e189]:
+                    - heading "Walkthroughs" [level=2] [ref=f6e190]
+                    - list [ref=f6e191]:
+                      - button " Get Started with VS Code for the Web Customize your editor, learn the basics, and start coding" [ref=f6e192]:
+                        - generic: 
+                        - heading "Get Started with VS Code for the Web" [level=3] [ref=f6e196]
+                        - generic [ref=f6e197]: Customize your editor, learn the basics, and start coding
+                      - button " Learn the Fundamentals" [ref=f6e198]:
+                        - generic [ref=f6e199]:
+                          - generic [ref=f6e200]: 
+                          - heading "Learn the Fundamentals" [level=3] [ref=f6e201]
+                - paragraph [ref=f6e203]:
+                  - checkbox "When checked, this page will be shown on startup." [checked] [ref=f6e204] [cursor=pointer]: 
+                  - generic [ref=f6e205] [cursor=pointer]: Show welcome page on startup
+              - generic [ref=f6e206]: 
+      - generic [ref=f6e208]:
+        - generic [ref=f6e209]:
+          - tablist "Active View Switcher" [ref=f6e213]:
+            - tab "Chat (⌃⌘I)" [expanded] [selected] [ref=f6e214] [cursor=pointer]:
+              - generic "Chat (⌃⌘I)" [ref=f6e215]: Chat
+          - toolbar "Chat actions" [ref=f6e219]:
+            - button "New Chat (⌘N)" [ref=f6e405] [cursor=pointer]: 
+            - button "New Chat" [ref=f6e409] [cursor=pointer]: 
+            - button "Configure Chat" [ref=f6e412] [cursor=pointer]: 
+            - button "Views and More Actions..." [ref=f6e415] [cursor=pointer]: 
+          - toolbar [ref=f6e236]:
+            - button "Maximize Secondary Side Bar" [ref=f6e417] [cursor=pointer]: 
+            - button "Hide Secondary Side Bar (⌥⌘B)" [ref=f6e418] [cursor=pointer]: 
+        - generic [ref=f6e245]:
+          - text:      
+          - generic [ref=f6e246]:
+            - text:    
+            - generic [ref=f6e247]:
+              - text:  
+              - generic [ref=f6e248]:
+                - generic [ref=f6e250]:
+                  - generic [ref=f6e251]: 
+                  - generic [ref=f6e253]: Build with Agent
+                  - paragraph [ref=f6e256]: AI responses may be inaccurate
+                  - paragraph [ref=f6e259]:
+                    - link "Generate Agent Instructions" [ref=f6e260] [cursor=pointer]:
+                      - /url: ""
+                    - text: to onboard AI onto your codebase.
+                - text: 
+                - generic [ref=f6e261]:
+                  - generic:  
+                  - generic [ref=f6e263]:
+                    - code [ref=f6e266]:
+                      - generic [ref=f6e267]:
+                        - textbox "Chat Input (Agent), edit files in your workspace. Press Enter to send out the request. Use ⌥F1 for Chat Accessibility Help." [active] [ref=f6e268]
+                        - textbox [ref=f6e269]
+                        - generic [ref=f6e270]: Describe what to build
+                    - generic [ref=f6e276]:
+                      - toolbar [ref=f6e279]:
+                        - button "Add Context... (⌘/)" [ref=f6e280] [cursor=pointer]: 
+                        - button "Set Agent (⌘.) - Open Agent Picker" [ref=f6e283] [cursor=pointer]:
+                          - generic [ref=f6e284]: 
+                        - button "Pick Model, Auto" [ref=f6e285] [cursor=pointer]:
+                          - generic [ref=f6e286]: Auto
+                          - generic [ref=f6e287]: 
+                        - button "Configure Tools..." [ref=f6e288] [cursor=pointer]: 
+                      - toolbar [ref=f6e291]:
+                        - button "Send [⌥] Send to New Chat (⇧⌘Enter)" [disabled] [ref=f6e292]: 
+                  - toolbar [ref=f6e296]:
+                    - button "Set Session Target - Local" [ref=f6e299] [cursor=pointer]:
+                      - generic [ref=f6e300]: 
+                      - generic [ref=f6e301]: Local
+                      - generic [ref=f6e302]: 
+                    - button "Set Permissions - Default Approvals" [ref=f6e305] [cursor=pointer]:
+                      - generic [ref=f6e306]: 
+                      - generic [ref=f6e307]: Default Approvals
+                      - generic [ref=f6e308]: 
+    - status [ref=f6e311]:
+      - generic [ref=f6e312]:
+        - generic "remote" [ref=f6e313]:
+          - button "remote" [ref=f6e314] [cursor=pointer]:
+            - generic [ref=f6e315]: 
+        - generic "No Problems" [ref=f6e319]:
+          - button "No Problems" [ref=f6e320] [cursor=pointer]:
+            - generic [ref=f6e321]: 
+            - text: "0"
+            - generic [ref=f6e322]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f6e323]:
+          - button "No Ports Forwarded" [ref=f6e324] [cursor=pointer]:
+            - generic [ref=f6e325]: 
+            - text: "0"
+      - generic [ref=f6e326]:
+        - generic "Notifications" [ref=f6e327]:
+          - button "Notifications" [ref=f6e328] [cursor=pointer]:
+            - generic [ref=f6e420]: 
+        - 'generic "Layout: U.S." [ref=f6e330]':
+          - 'button "Layout: U.S." [ref=f6e331] [cursor=pointer]'
+        - generic "Copilot status" [ref=f6e332]:
+          - button "Copilot status" [ref=f6e333] [cursor=pointer]:
+            - generic [ref=f6e334]: 
+  - generic [ref=f6e421]:
+    - alert [ref=f6e422]: "Info: A git repository was found in the parent folders of the workspace or the open file(s). Would you like to open the repository?"
+    - alert
+  - 'list "Info: A git repository was found in the parent folders of the workspace or the open file(s). Would you like to open the repository?, source: Git, notification" [ref=f6e427]':
+    - 'dialog "Info: A git repository was found in the parent folders of the workspace or the open file(s). Would you like to open the repository?, source: Git, notification, Inspect the response in the accessible view with Option+F2" [ref=f6e429] [cursor=pointer]':
+      - generic [ref=f6e430]:
+        - generic [ref=f6e431]:
+          - generic [ref=f6e432]: "Source: Git"
+          - generic [ref=f6e433]:
+            - button "Yes" [ref=f6e434]
+            - button "Always" [ref=f6e435]
+            - button "Never" [ref=f6e436]
+        - generic [ref=f6e437]:
+          - generic [ref=f6e438]: 
+          - generic [ref=f6e439]: A git repository was found in the parent folders of the workspace or the open file(s). Would you like to open the repository?
+          - toolbar "Notification Actions" [ref=f6e442]:
+            - button "More Actions..." [ref=f6e445]: 
+            - button "Clear Notification (⌘Backspace)" [ref=f6e446]: 

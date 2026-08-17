@@ -1,0 +1,51 @@
+{
+  "category_slug": "erp-business",
+  "central_examples_found": true,
+  "central_url": "https://api.central.ballerina.io/2.0/registry/packages/ballerinax/oraclefusion.common.scheduler/latest",
+  "code_server": {
+    "pid": null,
+    "port": 8080,
+    "started_by_run": false
+  },
+  "completed_at": "2026-08-17T12:28:42.757432+00:00",
+  "context_path": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/run-log/context.json",
+  "devant_url": "https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/connectors/oraclefusion_common_scheduler_connector_sample",
+  "doc_path": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/workflow-docs/ballerinax_oraclefusion_common_scheduler.md",
+  "docs_connector_dir": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/en/docs/connectors/catalog/erp-business/oraclefusion.common.scheduler",
+  "docs_overview_path": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/en/docs/connectors/catalog/erp-business/oraclefusion.common.scheduler/overview.md",
+  "docs_repo_root": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator",
+  "examples_added": true,
+  "github_repo": "module-ballerinax-oraclefusion.common.scheduler",
+  "github_url": "https://github.com/wso2/integration-samples/tree/main/integrator-default-profile/connectors/oraclefusion_common_scheduler_connector_sample",
+  "image_prefix": "ballerinax_oraclefusion_common_scheduler",
+  "invocation_root": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator",
+  "metadata_path": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/run-log/central-metadata.json",
+  "module_slug": "oraclefusion.common.scheduler",
+  "organization": "ballerinax",
+  "package": "oraclefusion.common.scheduler",
+  "prepared_at": "2026-08-17T11:21:23.549790+00:00",
+  "prerequisites": {
+    "code-server": true,
+    "node": true,
+    "npx": true,
+    "python3": true
+  },
+  "requested_coordinate": "ballerinax/oraclefusion.common.scheduler",
+  "requested_version": "latest",
+  "resolved_coordinate": "ballerinax/oraclefusion.common.scheduler:0.1.0",
+  "resolved_version": "0.1.0",
+  "run_dir": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler",
+  "run_log_dir": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/run-log",
+  "sample_dir": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample/oraclefusion_common_scheduler_connector_sample",
+  "sample_name": "oraclefusion_common_scheduler_connector_sample",
+  "sample_parent_dir": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/sample",
+  "screenshots_cropped": true,
+  "screenshots_dir": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/screenshots",
+  "slug": "ballerinax-oraclefusion-common-scheduler",
+  "try_it_yourself_added": true,
+  "validation": {
+    "errors": [],
+    "status": "passed"
+  },
+  "workflow_docs_dir": "/Users/dimuthu/Documents/1.Repository/AWS/docs-integrator/artifacts/ballerinax-oraclefusion-common-scheduler/workflow-docs"
+}

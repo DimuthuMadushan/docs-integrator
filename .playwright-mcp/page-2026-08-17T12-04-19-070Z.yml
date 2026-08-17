@@ -1,0 +1,247 @@
+- application [ref=f14e2]:
+  - generic [ref=f14e6]:
+    - generic [ref=f14e8]:
+      - toolbar [ref=f14e16]:
+        - button "Go Back (⌃-)" [ref=f14e412] [cursor=pointer]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f14e413]: 
+        - listitem [ref=f14e414] [cursor=pointer]:
+          - toolbar [ref=f14e417]:
+            - button "oraclefusion_common_scheduler_connector_sample" [ref=f14e418]:
+              - generic [ref=f14e419]: 
+        - listitem [ref=f14e421] [cursor=pointer]:
+          - generic [ref=f14e423]:
+            - button [ref=f14e424]:
+              - button "Toggle Chat" [ref=f14e425]: 
+            - button "More Actions" [ref=f14e429]: 
+      - toolbar "Title actions" [ref=f14e39]:
+        - button "Customize Layout..." [ref=f14e575] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f14e576] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f14e577] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [ref=f14e578] [cursor=pointer]: 
+    - generic [ref=f14e49]:
+      - generic [ref=f14e51]:
+        - menubar [ref=f14e52]:
+          - menuitem "Application Menu" [ref=f14e53]:
+            - generic [ref=f14e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f14e57]:
+          - tab "Explorer (⇧⌘E)" [ref=f14e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f14e59]: 
+          - tab "Search (⇧⌘F)" [ref=f14e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f14e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f14e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f14e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f14e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f14e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f14e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f14e67]: 
+          - tab "Testing" [ref=f14e434] [cursor=pointer]:
+            - generic "Testing" [ref=f14e435]: 
+          - tab "WSO2 Integrator" [expanded] [selected] [ref=f14e68] [cursor=pointer]
+        - toolbar "Manage" [ref=f14e72]:
+          - button "Accounts" [ref=f14e73] [cursor=pointer]:
+            - generic "Accounts" [ref=f14e74]: 
+          - button "Manage" [ref=f14e75] [cursor=pointer]:
+            - generic "Manage" [ref=f14e76]: 
+      - generic [ref=f14e77]:
+        - generic [ref=f14e78]:
+          - 'heading "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample" [level=2] [ref=f14e436]'
+          - 'toolbar "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample actions" [ref=f14e437]':
+            - button "Add Integration or Library" [ref=f14e438] [cursor=pointer]: 
+            - button "Open Overview" [ref=f14e439] [cursor=pointer]
+            - button "Refresh" [ref=f14e440] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f14e446]:
+          - text:   
+          - tree "oraclefusion_common_scheduler_connector_sample" [ref=f14e450]:
+            - generic [ref=f14e451]:
+              - treeitem "oraclefusion_common_scheduler_connector_sample" [expanded] [level=1] [ref=f14e452] [cursor=pointer]:
+                - generic [ref=f14e453]:
+                  - generic [ref=f14e454]: 
+                  - generic "oraclefusion_common_scheduler_connector_sample" [ref=f14e456]:
+                    - generic [ref=f14e457]: 
+                    - text: 
+              - treeitem "Entry Points" [expanded] [level=2] [ref=f14e461] [cursor=pointer]:
+                - generic [ref=f14e462]:
+                  - generic [ref=f14e463]: 
+                  - generic "Entry Points" [ref=f14e465]: 
+              - treeitem "Listeners" [expanded] [level=2] [ref=f14e470] [cursor=pointer]:
+                - generic [ref=f14e471]:
+                  - generic [ref=f14e472]: 
+                  - generic "Listeners" [ref=f14e474]
+              - treeitem "Connections" [expanded] [level=2] [ref=f14e479] [cursor=pointer]:
+                - generic [ref=f14e480]:
+                  - generic [ref=f14e481]: 
+                  - generic "Connections" [ref=f14e483]: 
+              - treeitem "Types" [expanded] [level=2] [ref=f14e488] [cursor=pointer]:
+                - generic [ref=f14e489]:
+                  - generic [ref=f14e490]: 
+                  - generic "Types" [ref=f14e492]: 
+              - treeitem "Functions" [expanded] [level=2] [ref=f14e497] [cursor=pointer]:
+                - generic [ref=f14e498]:
+                  - generic [ref=f14e499]: 
+                  - generic "Functions" [ref=f14e501]: 
+              - treeitem "Data Mappers" [expanded] [level=2] [ref=f14e506] [cursor=pointer]:
+                - generic [ref=f14e507]:
+                  - generic [ref=f14e508]: 
+                  - generic "Data Mappers" [ref=f14e510]: 
+              - treeitem "Configurations" [level=2] [ref=f14e515] [cursor=pointer]:
+                - generic "Configurations" [ref=f14e519]: 
+      - main [ref=f14e198]:
+        - generic [ref=f14e208] [cursor=pointer]:
+          - tablist [ref=f14e209]:
+            - tab "Welcome, preview" [ref=f14e210]:
+              - generic "Welcome" [ref=f14e211]
+              - toolbar "Tab actions" [ref=f14e216]:
+                - button "Close (⌘W)" [ref=f14e217]: 
+            - tab "WSO2 Integrator" [selected] [ref=f14e524]:
+              - toolbar "Tab actions" [ref=f14e531]:
+                - button "Close (⌘W)" [ref=f14e532]: 
+          - toolbar "Editor actions" [ref=f14e221]:
+            - button "Open WSO2 Integrator Copilot" [ref=f14e533]
+            - button "Run Integration" [ref=f14e534]
+            - button "Debug Integration" [ref=f14e535]
+            - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f14e536]: 
+            - button "More Actions..." [ref=f14e539]: 
+    - status [ref=f14e389]:
+      - generic [ref=f14e390]:
+        - generic "remote" [ref=f14e391]:
+          - button "remote" [ref=f14e392] [cursor=pointer]:
+            - generic [ref=f14e393]: 
+        - generic "No Problems" [ref=f14e394]:
+          - button "No Problems" [ref=f14e395] [cursor=pointer]:
+            - generic [ref=f14e396]: 
+            - text: "0"
+            - generic [ref=f14e397]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f14e398]:
+          - button "No Ports Forwarded" [ref=f14e399] [cursor=pointer]:
+            - generic [ref=f14e400]: 
+            - text: "0"
+      - generic [ref=f14e401]:
+        - generic "Notifications" [ref=f14e402]:
+          - button "Notifications" [ref=f14e403] [cursor=pointer]:
+            - generic [ref=f14e565]: 
+        - 'generic "Layout: U.S." [ref=f14e405]':
+          - 'button "Layout: U.S." [ref=f14e406] [cursor=pointer]'
+        - 'generic "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e566]':
+          - 'button "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e567] [cursor=pointer]':
+            - generic [ref=f14e568]: 
+            - text: "ICP: Stopped"
+        - generic "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e569]:
+          - button "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e570] [cursor=pointer]
+        - generic "Copilot status" [ref=f14e409]:
+          - button "Copilot status" [ref=f14e410] [cursor=pointer]:
+            - generic [ref=f14e411]: 
+  - generic [ref=f14e571]:
+    - alert [ref=f14e572]: Secondary Side Bar hidden
+    - alert
+  - iframe [active] [ref=f14e574]:
+    - document [ref=f16e1]:
+      - iframe [active] [ref=f16e2]:
+        - document [active] [ref=f17e1]:
+          - generic [ref=f17e5]:
+            - generic [ref=f17e6]:
+              - generic [ref=f17e7]:
+                - button "Edit name" [ref=f17e9] [cursor=pointer]:
+                  - heading "oraclefusion_common_scheduler_connector_sample" [level=1] [ref=f17e10]
+                  - generic: 
+                - heading "Integration" [level=2] [ref=f17e13]
+              - generic [ref=f17e14]:
+                - generic [ref=f17e15]:
+                  - generic "Icon Button" [ref=f17e17]:
+                    - button "Icon Button" [disabled] [ref=f17e18]:
+                      - generic [ref=f17e19]: 
+                  - generic "Icon Button" [ref=f17e21]:
+                    - button "Icon Button" [disabled] [ref=f17e22]:
+                      - generic [ref=f17e23]: 
+                - generic "Icon Button" [ref=f17e25] [cursor=pointer]:
+                  - button "Icon Button" [ref=f17e26]:
+                    - generic [ref=f17e27]:
+                      - generic:
+                        - generic [ref=f17e28]: 
+                        - text: Configure
+                - generic "Icon Button" [ref=f17e31] [cursor=pointer]:
+                  - button "Icon Button" [ref=f17e32]:
+                    - generic [ref=f17e33]:
+                      - generic:
+                        - generic [ref=f17e34]: 
+                        - text: Run
+                - generic "Icon Button" [ref=f17e37] [cursor=pointer]:
+                  - button "Icon Button" [ref=f17e38]:
+                    - generic [ref=f17e39]:
+                      - generic:
+                        - generic [ref=f17e40]: 
+                        - text: Debug
+            - generic [ref=f17e42]:
+              - generic [ref=f17e43]:
+                - generic [ref=f17e44]:
+                  - heading "Design" [level=2] [ref=f17e46]
+                  - generic [ref=f17e48]:
+                    - heading "Your integration is empty" [level=3] [ref=f17e49]
+                    - paragraph [ref=f17e50]: Start by adding artifacts or use AI to generate your integration structure
+                    - generic [ref=f17e51]:
+                      - button " Add Artifact" [ref=f17e54] [cursor=pointer]:
+                        - generic [ref=f17e55]:
+                          - generic:
+                            - generic [ref=f17e56]: 
+                            - text: Add Artifact
+                      - button " Generate with AI" [ref=f17e60] [cursor=pointer]:
+                        - generic [ref=f17e61]:
+                          - generic:
+                            - generic [ref=f17e62]: 
+                            - text: Generate with AI
+                - generic [ref=f17e64]:
+                  - generic [ref=f17e65]:
+                    - heading "README" [level=2] [ref=f17e66]
+                    - generic "Icon Button" [ref=f17e69] [cursor=pointer]:
+                      - button "Icon Button" [ref=f17e70]:
+                        - generic [ref=f17e71]:
+                          - generic:
+                            - generic [ref=f17e72]: 
+                            - text: Edit
+                  - generic [ref=f17e75]:
+                    - paragraph [ref=f17e76]: Describe your integration and generate your artifacts with AI
+                    - generic [ref=f17e77] [cursor=pointer]: Add a README
+              - generic [ref=f17e80]:
+                - generic [ref=f17e81]:
+                  - heading "Deployment Options" [level=3] [ref=f17e82]
+                  - generic [ref=f17e83] [cursor=pointer]:
+                    - generic [ref=f17e84]:
+                      - generic [ref=f17e85]: 
+                      - heading "Deploy to WSO2 Cloud" [level=3] [ref=f17e87]
+                    - generic [ref=f17e88]:
+                      - paragraph [ref=f17e89]:
+                        - text: Deploy your integration to WSO2 Cloud.
+                        - generic [ref=f17e90]: Learn more
+                      - generic "No deployable integration found" [ref=f17e94]:
+                        - button [disabled] [ref=f17e95]
+                  - generic [ref=f17e97] [cursor=pointer]:
+                    - generic [ref=f17e98]:
+                      - generic [ref=f17e99]: 
+                      - heading "Deploy with Docker" [level=3] [ref=f17e101]
+                    - generic:
+                      - paragraph [ref=f17e102]: Create a Docker image of your integration and deploy it to any Docker-enabled system.
+                      - generic "No deployable integration found" [ref=f17e104]:
+                        - button [disabled] [ref=f17e105]
+                  - generic [ref=f17e107] [cursor=pointer]:
+                    - generic [ref=f17e108]:
+                      - generic [ref=f17e109]: 
+                      - heading "Deploy on a VM" [level=3] [ref=f17e111]
+                    - generic:
+                      - paragraph [ref=f17e112]: Create a self-contained Ballerina executable and run it on any system with Java installed.
+                      - generic "No deployable integration found" [ref=f17e114]:
+                        - button [disabled] [ref=f17e115]
+                - generic [ref=f17e118]:
+                  - heading "Integration Control Plane" [level=3] [ref=f17e119]
+                  - paragraph [ref=f17e120]:
+                    - text: Monitor and manage your integration deployments using a single enhanced interface, and streamline operations and increase efficiency.
+                    - generic [ref=f17e121] [cursor=pointer]: Learn More
+                  - checkbox "Enable ICP monitoring" [ref=f17e126]
+                - button " Publish to local ICP" [ref=f17e135] [cursor=pointer]:
+                  - generic [ref=f17e136]:
+                    - generic [ref=f17e137]: 
+                    - heading "Publish to local ICP" [level=3] [ref=f17e139]
+                  - generic: Start ICP Server

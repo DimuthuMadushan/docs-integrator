@@ -1,0 +1,329 @@
+- application [ref=f14e2]:
+  - generic [ref=f14e6]:
+    - generic [ref=f14e8]:
+      - toolbar [ref=f14e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f14e580]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f14e581]: 
+        - listitem [ref=f14e582] [cursor=pointer]:
+          - toolbar [ref=f14e585]:
+            - button "oraclefusion_common_scheduler_connector_sample" [ref=f14e586]:
+              - generic [ref=f14e587]: 
+        - listitem [ref=f14e589] [cursor=pointer]:
+          - generic [ref=f14e591]:
+            - button [ref=f14e592]:
+              - button "Toggle Chat" [ref=f14e593]: 
+            - button "More Actions" [ref=f14e597]: 
+      - toolbar "Title actions" [ref=f14e39]:
+        - button "Customize Layout..." [ref=f14e575] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f14e576] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f14e577] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [ref=f14e578] [cursor=pointer]: 
+    - generic [ref=f14e49]:
+      - generic [ref=f14e51]:
+        - menubar [ref=f14e52]:
+          - menuitem "Application Menu" [ref=f14e53]:
+            - generic [ref=f14e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f14e57]:
+          - tab "Explorer (⇧⌘E)" [ref=f14e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f14e59]: 
+          - tab "Search (⇧⌘F)" [ref=f14e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f14e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f14e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f14e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f14e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f14e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f14e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f14e67]: 
+          - tab "Testing" [ref=f14e434] [cursor=pointer]:
+            - generic "Testing" [ref=f14e435]: 
+          - tab "WSO2 Integrator" [expanded] [selected] [ref=f14e68] [cursor=pointer]
+        - toolbar "Manage" [ref=f14e72]:
+          - button "Accounts" [ref=f14e73] [cursor=pointer]:
+            - generic "Accounts" [ref=f14e74]: 
+          - button "Manage" [ref=f14e75] [cursor=pointer]:
+            - generic "Manage" [ref=f14e76]: 
+      - generic [ref=f14e77]:
+        - generic [ref=f14e78]:
+          - 'heading "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample" [level=2] [ref=f14e436]'
+          - 'toolbar "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample actions" [ref=f14e437]':
+            - button "Add Integration or Library" [ref=f14e699] [cursor=pointer]: 
+            - button "Open Overview" [ref=f14e700] [cursor=pointer]
+            - button "Refresh" [ref=f14e701] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f14e446]:
+          - text:   
+          - tree "oraclefusion_common_scheduler_connector_sample" [ref=f14e450]:
+            - generic [ref=f14e451]:
+              - treeitem "oraclefusion_common_scheduler_connector_sample" [expanded] [level=1] [ref=f14e702] [cursor=pointer]:
+                - generic [ref=f14e703]:
+                  - generic [ref=f14e704]: 
+                  - generic "oraclefusion_common_scheduler_connector_sample" [ref=f14e706]:
+                    - generic [ref=f14e707]: 
+                    - text: 
+              - treeitem "Entry Points" [expanded] [level=2] [ref=f14e711] [cursor=pointer]:
+                - generic [ref=f14e666]:
+                  - generic [ref=f14e667]: 
+                  - generic "Entry Points" [ref=f14e712]: 
+              - treeitem "main" [level=3] [selected] [ref=f14e713] [cursor=pointer]:
+                - generic "main" [ref=f14e714]:
+                  - generic [ref=f14e458]: Automation
+                  - toolbar [ref=f14e620]:
+                    - button "Delete" [ref=f14e715]: 
+              - treeitem "Listeners" [expanded] [level=2] [ref=f14e681] [cursor=pointer]:
+                - generic [ref=f14e462]:
+                  - generic [ref=f14e463]: 
+                  - generic "Listeners" [ref=f14e682]
+              - treeitem "Connections" [expanded] [level=2] [ref=f14e683] [cursor=pointer]:
+                - generic [ref=f14e471]:
+                  - generic [ref=f14e472]: 
+                  - generic "Connections" [ref=f14e684]: 
+              - treeitem "schedulerClient" [level=3] [ref=f14e685] [cursor=pointer]:
+                - generic "schedulerClient" [ref=f14e686]: 
+              - treeitem "Types" [expanded] [level=2] [ref=f14e488] [cursor=pointer]:
+                - generic [ref=f14e489]:
+                  - generic [ref=f14e490]: 
+                  - generic "Types" [ref=f14e492]: 
+              - treeitem "Functions" [expanded] [level=2] [ref=f14e497] [cursor=pointer]:
+                - generic [ref=f14e498]:
+                  - generic [ref=f14e499]: 
+                  - generic "Functions" [ref=f14e501]: 
+              - treeitem "Data Mappers" [expanded] [level=2] [ref=f14e506] [cursor=pointer]:
+                - generic [ref=f14e507]:
+                  - generic [ref=f14e508]: 
+                  - generic "Data Mappers" [ref=f14e510]: 
+              - treeitem "Configurations" [level=2] [ref=f14e515] [cursor=pointer]:
+                - generic "Configurations" [ref=f14e519]: 
+      - main [ref=f14e198]:
+        - generic [ref=f14e208] [cursor=pointer]:
+          - tablist [ref=f14e209]:
+            - tab "WSO2 Integrator" [selected] [ref=f14e598]:
+              - toolbar "Tab actions" [ref=f14e216]:
+                - button "Close (⌘W)" [ref=f14e217]: 
+          - toolbar "Editor actions" [ref=f14e221]:
+            - button "Open WSO2 Integrator Copilot" [ref=f14e716]
+            - button "Run Integration" [ref=f14e717]
+            - button "Debug Integration" [ref=f14e718]
+            - button "Show Source" [ref=f14e719]: 
+            - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f14e720]: 
+            - button "More Actions..." [ref=f14e723]: 
+    - status [ref=f14e389]:
+      - generic [ref=f14e390]:
+        - generic "remote" [ref=f14e391]:
+          - button "remote" [ref=f14e392] [cursor=pointer]:
+            - generic [ref=f14e393]: 
+        - generic "No Problems" [ref=f14e643]:
+          - button "No Problems" [ref=f14e644] [cursor=pointer]:
+            - generic [ref=f14e645]: 
+            - text: "0"
+            - generic [ref=f14e646]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f14e398]:
+          - button "No Ports Forwarded" [ref=f14e399] [cursor=pointer]:
+            - generic [ref=f14e400]: 
+            - text: "0"
+      - generic [ref=f14e401]:
+        - generic "Notifications" [ref=f14e402]:
+          - button "Notifications" [ref=f14e403] [cursor=pointer]:
+            - generic [ref=f14e565]: 
+        - 'generic "Layout: U.S." [ref=f14e405]':
+          - 'button "Layout: U.S." [ref=f14e406] [cursor=pointer]'
+        - 'generic "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e566]':
+          - 'button "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e567] [cursor=pointer]':
+            - generic [ref=f14e568]: 
+            - text: "ICP: Stopped"
+        - generic "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e569]:
+          - button "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e570] [cursor=pointer]
+        - generic "Copilot status" [ref=f14e409]:
+          - button "Copilot status" [ref=f14e410] [cursor=pointer]:
+            - generic [ref=f14e411]: 
+  - generic [ref=f14e571]:
+    - alert [ref=f14e572]: Secondary Side Bar hidden
+    - alert
+  - iframe [active] [ref=f14e574]:
+    - document [ref=f16e1]:
+      - iframe [active] [ref=f16e2]:
+        - document [ref=f17e1]:
+          - generic [ref=f17e2230]:
+            - generic [ref=f17e2231]:
+              - generic [ref=f17e2232] [cursor=pointer]: 
+              - generic [ref=f17e2235]:
+                - generic "Artifacts" [ref=f17e2237] [cursor=pointer]
+                - generic [ref=f17e2238] [cursor=pointer]: 
+                - generic "Automation" [ref=f17e2241]
+            - generic [ref=f17e2242]:
+              - generic [ref=f17e2243]:
+                - generic [ref=f17e2244] [cursor=pointer]: 
+                - heading "Automation" [level=2] [ref=f17e2248]
+              - generic [ref=f17e2249]:
+                - generic [ref=f17e2250]:
+                  - generic "Icon Button" [ref=f17e2252] [cursor=pointer]:
+                    - button "Icon Button" [ref=f17e2253]:
+                      - generic [ref=f17e2254]: 
+                  - generic "Icon Button" [ref=f17e2256]:
+                    - button "Icon Button" [disabled] [ref=f17e2257]:
+                      - generic [ref=f17e2258]: 
+                - button " Configure" [ref=f17e2262] [cursor=pointer]:
+                  - generic [ref=f17e2263]:
+                    - generic:
+                      - generic [ref=f17e2264]: 
+                      - text: Configure
+            - generic [ref=f17e2266]:
+              - generic [ref=f17e2267]: Flow
+              - generic [ref=f17e2270]: Sequence
+            - generic [ref=f17e2274]:
+              - generic [ref=f17e2275]:
+                - generic [ref=f17e2276] [cursor=pointer]: 
+                - generic [ref=f17e2279]:
+                  - generic [ref=f17e2280] [cursor=pointer]: 
+                  - generic [ref=f17e2283] [cursor=pointer]: 
+              - generic [ref=f17e2287]:
+                - generic:
+                  - generic [ref=f17e2327] [cursor=pointer]:
+                    - generic [ref=f17e2328]: 
+                    - generic [ref=f17e2333]:
+                      - generic [ref=f17e2334]: Error Handler
+                      - generic "Icon Button" [ref=f17e2336]:
+                        - button "Icon Button" [ref=f17e2337]
+                  - generic [ref=f17e2341]: Start
+                  - generic [ref=f17e2348]: Select node from node panel.
+            - generic [ref=f17e2355]:
+              - generic [ref=f17e2564]:
+                - generic [ref=f17e2565]:
+                  - generic "Icon Button" [ref=f17e2567] [cursor=pointer]:
+                    - button "Icon Button" [ref=f17e2568]
+                  - text: schedulerClient → queryJobRequests
+                - generic "Icon Button" [ref=f17e2573] [cursor=pointer]:
+                  - button "Icon Button" [ref=f17e2574]
+              - generic [ref=f17e2579]:
+                - paragraph [ref=f17e2583]: Query scheduled process (ESS) job requests
+                - generic [ref=f17e2584]: This operation has no required parameters. Optional settings can be configured below.
+                - generic [ref=f17e2585]:
+                  - generic [ref=f17e2586]:
+                    - text: Advanced Configurations
+                    - generic [ref=f17e2624] [cursor=pointer]:
+                      - generic [ref=f17e2625]: 
+                      - text: Collapse
+                  - generic [ref=f17e2629]:
+                    - generic [ref=f17e2631]:
+                      - generic [ref=f17e2632]:
+                        - generic [ref=f17e2633]: Headers
+                        - generic [ref=f17e2635]: Headers to be sent with the request
+                      - generic [ref=f17e2639]:
+                        - generic [ref=f17e2640] [cursor=pointer]: Map
+                        - generic [ref=f17e2641] [cursor=pointer]: Expression
+                    - generic "Icon Button" [ref=f17e2643] [cursor=pointer]:
+                      - button "Icon Button" [ref=f17e2644]:
+                        - generic [ref=f17e2645]:
+                          - generic:
+                            - generic [ref=f17e2646]: 
+                            - text: Initialize Map
+                  - generic [ref=f17e2650]:
+                    - generic [ref=f17e2651]:
+                      - generic [ref=f17e2653]:
+                        - text: "Q(Default: \"\")"
+                        - generic "string" [ref=f17e2654]
+                      - generic [ref=f17e2655]:
+                        - paragraph [ref=f17e2658]: SCIM-style filter, e.g. state eq "RUNNING". Queryable fields include requestId, absParentRequestId, description, application, product, requestCategory, runAsUser, executionType, jobDefinitionId, state, priority, processStartTime, processEndTime, requestedStartTime, requestedEndTime, submissionTime, parentRequestId, elapsedTime, submitter, requestType, errorType, completedTime, and more.
+                        - generic [ref=f17e2661]:
+                          - generic [ref=f17e2662] [cursor=pointer]: Text
+                          - generic [ref=f17e2663] [cursor=pointer]: Expression
+                    - generic [ref=f17e2670]:
+                      - textbox [ref=f17e2674]:
+                        - generic [ref=f17e2675]: state eq "RUNNING"
+                      - generic [ref=f17e2676]:
+                        - button "Open Helper Panel" [active] [ref=f17e2927] [cursor=pointer]
+                        - button "Expand Editor" [ref=f17e2680] [cursor=pointer]
+                  - generic [ref=f17e2685]:
+                    - generic [ref=f17e2686]:
+                      - generic [ref=f17e2688]:
+                        - text: "Order By(Default: \"\")"
+                        - generic "string" [ref=f17e2689]
+                      - generic [ref=f17e2690]:
+                        - paragraph [ref=f17e2693]: fieldName[:asc|desc], e.g. name:asc.
+                        - generic [ref=f17e2696]:
+                          - generic [ref=f17e2697] [cursor=pointer]: Text
+                          - generic [ref=f17e2698] [cursor=pointer]: Expression
+                    - generic [ref=f17e2705]:
+                      - textbox [ref=f17e2709]:
+                        - generic [ref=f17e2710]: submissionTime:desc
+                      - generic [ref=f17e2711]:
+                        - button "Open Helper Panel" [ref=f17e2930] [cursor=pointer]
+                        - button "Expand Editor" [ref=f17e2715] [cursor=pointer]
+                  - generic [ref=f17e2720]:
+                    - generic [ref=f17e2721]:
+                      - generic [ref=f17e2723]:
+                        - text: "Id(Default: \"\")"
+                        - generic "string" [ref=f17e2724]
+                      - generic [ref=f17e2725]:
+                        - paragraph [ref=f17e2728]: Comma-separated list of request IDs to return.
+                        - generic [ref=f17e2731]:
+                          - generic [ref=f17e2732] [cursor=pointer]: Text
+                          - generic [ref=f17e2733] [cursor=pointer]: Expression
+                    - generic [ref=f17e2740]:
+                      - textbox [ref=f17e2744]
+                      - generic [ref=f17e2746]:
+                        - button "Open Helper Panel" [ref=f17e2747] [cursor=pointer]
+                        - button "Expand Editor" [ref=f17e2750] [cursor=pointer]
+                  - generic [ref=f17e2755]:
+                    - generic [ref=f17e2756]:
+                      - generic [ref=f17e2758]:
+                        - text: "Fields(Default: \"\")"
+                        - generic "string" [ref=f17e2759]
+                      - generic [ref=f17e2760]:
+                        - paragraph [ref=f17e2763]: Comma-separated list of fields to include in the response.
+                        - generic [ref=f17e2766]:
+                          - generic [ref=f17e2767] [cursor=pointer]: Text
+                          - generic [ref=f17e2768] [cursor=pointer]: Expression
+                    - generic [ref=f17e2775]:
+                      - textbox [ref=f17e2779]
+                      - generic [ref=f17e2781]:
+                        - button "Open Helper Panel" [ref=f17e2782] [cursor=pointer]
+                        - button "Expand Editor" [ref=f17e2785] [cursor=pointer]
+                  - generic [ref=f17e2790]:
+                    - generic [ref=f17e2791]:
+                      - generic [ref=f17e2793]:
+                        - text: "Exclude Fields(Default: \"\")"
+                        - generic "string" [ref=f17e2794]
+                      - generic [ref=f17e2795]:
+                        - paragraph [ref=f17e2798]: Comma-separated list of fields to exclude from the response.
+                        - generic [ref=f17e2801]:
+                          - generic [ref=f17e2802] [cursor=pointer]: Text
+                          - generic [ref=f17e2803] [cursor=pointer]: Expression
+                    - generic [ref=f17e2810]:
+                      - textbox [ref=f17e2814]
+                      - generic [ref=f17e2816]:
+                        - button "Open Helper Panel" [ref=f17e2817] [cursor=pointer]
+                        - button "Expand Editor" [ref=f17e2820] [cursor=pointer]
+                  - generic [ref=f17e2825]:
+                    - generic [ref=f17e2828]:
+                      - generic [ref=f17e2829]: Additional Values
+                      - generic [ref=f17e2831]: Capture key value pairs
+                    - generic "Icon Button" [ref=f17e2834] [cursor=pointer]:
+                      - button "Icon Button" [ref=f17e2835]:
+                        - generic [ref=f17e2836]:
+                          - generic:
+                            - generic [ref=f17e2837]: 
+                            - text: Initialize Map
+                - generic [ref=f17e2591]:
+                  - generic "Result*Name of the result variable" [ref=f17e2595]:
+                    - generic [ref=f17e2596] [cursor=pointer]:
+                      - generic:
+                        - generic [ref=f17e2597]:
+                          - generic [ref=f17e2598]: Result
+                          - generic [ref=f17e2599]: "*"
+                        - generic [ref=f17e2600]: Name of the result variable
+                    - textbox "Result*Name of the result variable" [ref=f17e2602]: jobRequests
+                  - generic [ref=f17e2604]:
+                    - generic [ref=f17e2605]:
+                      - generic [ref=f17e2606]: Result Type
+                      - generic [ref=f17e2607]: "*"
+                    - generic [ref=f17e2608]: Type of the variable
+                    - generic [ref=f17e2609]:
+                      - generic [ref=f17e2610]: scheduler:RequestQueryResponse
+                      - generic "Icon Button" [ref=f17e2614]:
+                        - button "Icon Button" [disabled] [ref=f17e2615]:
+                          - generic [ref=f17e2616]: 
+                - button [ref=f17e2622] [cursor=pointer]

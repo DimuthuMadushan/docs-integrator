@@ -1,0 +1,273 @@
+- application [ref=f14e2]:
+  - generic [ref=f14e6]:
+    - generic [ref=f14e8]:
+      - toolbar [ref=f14e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f14e580]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f14e581]: 
+        - listitem [ref=f14e582] [cursor=pointer]:
+          - toolbar [ref=f14e585]:
+            - button "oraclefusion_common_scheduler_connector_sample" [ref=f14e586]:
+              - generic [ref=f14e587]: 
+        - listitem [ref=f14e589] [cursor=pointer]:
+          - generic [ref=f14e591]:
+            - button [ref=f14e592]:
+              - button "Toggle Chat" [ref=f14e593]: 
+            - button "More Actions" [ref=f14e597]: 
+      - toolbar "Title actions" [ref=f14e39]:
+        - button "Customize Layout..." [ref=f14e575] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f14e576] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f14e577] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [ref=f14e578] [cursor=pointer]: 
+    - generic [ref=f14e49]:
+      - generic [ref=f14e51]:
+        - menubar [ref=f14e52]:
+          - menuitem "Application Menu" [ref=f14e53]:
+            - generic [ref=f14e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f14e57]:
+          - tab "Explorer (⇧⌘E)" [ref=f14e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f14e59]: 
+          - tab "Search (⇧⌘F)" [ref=f14e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f14e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f14e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f14e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f14e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f14e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f14e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f14e67]: 
+          - tab "Testing" [ref=f14e434] [cursor=pointer]:
+            - generic "Testing" [ref=f14e435]: 
+          - tab "WSO2 Integrator" [expanded] [selected] [ref=f14e68] [cursor=pointer]
+        - toolbar "Manage" [ref=f14e72]:
+          - button "Accounts" [ref=f14e73] [cursor=pointer]:
+            - generic "Accounts" [ref=f14e74]: 
+          - button "Manage" [ref=f14e75] [cursor=pointer]:
+            - generic "Manage" [ref=f14e76]: 
+      - generic [ref=f14e77]:
+        - generic [ref=f14e78]:
+          - 'heading "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample" [level=2] [ref=f14e436]'
+          - 'toolbar "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample actions" [ref=f14e437]':
+            - button "Add Integration or Library" [ref=f14e724] [cursor=pointer]: 
+            - button "Open Overview" [ref=f14e725] [cursor=pointer]
+            - button "Refresh" [ref=f14e726] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f14e446]:
+          - text:   
+          - tree "oraclefusion_common_scheduler_connector_sample" [ref=f14e450]:
+            - generic [ref=f14e451]:
+              - treeitem "oraclefusion_common_scheduler_connector_sample" [expanded] [level=1] [ref=f14e702] [cursor=pointer]:
+                - generic [ref=f14e703]:
+                  - generic [ref=f14e704]: 
+                  - generic "oraclefusion_common_scheduler_connector_sample" [ref=f14e706]:
+                    - generic [ref=f14e707]: 
+                    - text: 
+              - treeitem "Entry Points" [expanded] [level=2] [ref=f14e711] [cursor=pointer]:
+                - generic [ref=f14e666]:
+                  - generic [ref=f14e667]: 
+                  - generic "Entry Points" [ref=f14e712]: 
+              - treeitem "main" [level=3] [selected] [ref=f14e713] [cursor=pointer]:
+                - generic "main" [ref=f14e714]:
+                  - generic [ref=f14e458]: Automation
+                  - toolbar [ref=f14e620]:
+                    - button "Delete" [ref=f14e727]: 
+              - treeitem "Listeners" [expanded] [level=2] [ref=f14e681] [cursor=pointer]:
+                - generic [ref=f14e462]:
+                  - generic [ref=f14e463]: 
+                  - generic "Listeners" [ref=f14e682]
+              - treeitem "Connections" [expanded] [level=2] [ref=f14e683] [cursor=pointer]:
+                - generic [ref=f14e471]:
+                  - generic [ref=f14e472]: 
+                  - generic "Connections" [ref=f14e684]: 
+              - treeitem "schedulerClient" [level=3] [ref=f14e685] [cursor=pointer]:
+                - generic "schedulerClient" [ref=f14e686]: 
+              - treeitem "Types" [expanded] [level=2] [ref=f14e488] [cursor=pointer]:
+                - generic [ref=f14e489]:
+                  - generic [ref=f14e490]: 
+                  - generic "Types" [ref=f14e492]: 
+              - treeitem "Functions" [expanded] [level=2] [ref=f14e497] [cursor=pointer]:
+                - generic [ref=f14e498]:
+                  - generic [ref=f14e499]: 
+                  - generic "Functions" [ref=f14e501]: 
+              - treeitem "Data Mappers" [expanded] [level=2] [ref=f14e506] [cursor=pointer]:
+                - generic [ref=f14e507]:
+                  - generic [ref=f14e508]: 
+                  - generic "Data Mappers" [ref=f14e510]: 
+              - treeitem "Configurations" [level=2] [ref=f14e515] [cursor=pointer]:
+                - generic "Configurations" [ref=f14e519]: 
+      - main [ref=f14e198]:
+        - generic [ref=f14e208] [cursor=pointer]:
+          - tablist [ref=f14e209]:
+            - tab "WSO2 Integrator" [selected] [ref=f14e598]:
+              - toolbar "Tab actions" [ref=f14e216]:
+                - button "Close (⌘W)" [ref=f14e217]: 
+          - toolbar "Editor actions" [ref=f14e221]:
+            - button "Open WSO2 Integrator Copilot" [ref=f14e716]
+            - button "Run Integration" [ref=f14e717]
+            - button "Debug Integration" [ref=f14e718]
+            - button "Show Source" [ref=f14e719]: 
+            - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f14e720]: 
+            - button "More Actions..." [ref=f14e723]: 
+    - status [ref=f14e389]:
+      - generic [ref=f14e390]:
+        - generic "remote" [ref=f14e391]:
+          - button "remote" [ref=f14e392] [cursor=pointer]:
+            - generic [ref=f14e393]: 
+        - 'generic "Warnings: 1" [ref=f14e728]':
+          - 'button "Warnings: 1" [ref=f14e729] [cursor=pointer]':
+            - generic [ref=f14e730]: 
+            - text: "0"
+            - generic [ref=f14e731]: 
+            - text: "1"
+        - generic "No Ports Forwarded" [ref=f14e398]:
+          - button "No Ports Forwarded" [ref=f14e399] [cursor=pointer]:
+            - generic [ref=f14e400]: 
+            - text: "0"
+      - generic [ref=f14e401]:
+        - generic "Notifications" [ref=f14e402]:
+          - button "Notifications" [ref=f14e403] [cursor=pointer]:
+            - generic [ref=f14e565]: 
+        - 'generic "Layout: U.S." [ref=f14e405]':
+          - 'button "Layout: U.S." [ref=f14e406] [cursor=pointer]'
+        - 'generic "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e566]':
+          - 'button "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e567] [cursor=pointer]':
+            - generic [ref=f14e568]: 
+            - text: "ICP: Stopped"
+        - generic "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e569]:
+          - button "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e570] [cursor=pointer]
+        - generic "Copilot status" [ref=f14e409]:
+          - button "Copilot status" [ref=f14e410] [cursor=pointer]:
+            - generic [ref=f14e411]: 
+  - generic [ref=f14e571]:
+    - alert [ref=f14e572]: Secondary Side Bar hidden
+    - alert
+  - iframe [active] [ref=f14e574]:
+    - document [ref=f16e1]:
+      - iframe [active] [ref=f16e2]:
+        - document [active] [ref=f17e1]:
+          - generic [ref=f17e2230]:
+            - generic [ref=f17e2231]:
+              - generic [ref=f17e2232] [cursor=pointer]: 
+              - generic [ref=f17e2235]:
+                - generic "Artifacts" [ref=f17e2237] [cursor=pointer]
+                - generic [ref=f17e2238] [cursor=pointer]: 
+                - generic "Automation" [ref=f17e2241]
+            - generic [ref=f17e2242]:
+              - generic [ref=f17e2243]:
+                - generic [ref=f17e2244] [cursor=pointer]: 
+                - heading "Automation" [level=2] [ref=f17e2248]
+              - generic [ref=f17e2249]:
+                - generic [ref=f17e2940]:
+                  - generic "Icon Button" [ref=f17e2942] [cursor=pointer]:
+                    - button "Icon Button" [ref=f17e2943]:
+                      - generic [ref=f17e2944]: 
+                  - generic "Icon Button" [ref=f17e2946]:
+                    - button "Icon Button" [disabled] [ref=f17e2947]:
+                      - generic [ref=f17e2948]: 
+                - button " Configure" [ref=f17e2952] [cursor=pointer]:
+                  - generic [ref=f17e2953]:
+                    - generic:
+                      - generic [ref=f17e2954]: 
+                      - text: Configure
+            - generic [ref=f17e2956]:
+              - generic [ref=f17e2957]: Flow
+              - generic [ref=f17e2960]: Sequence
+            - generic [ref=f17e2274]:
+              - generic [ref=f17e2275]:
+                - generic [ref=f17e2276] [cursor=pointer]: 
+                - generic [ref=f17e2279]:
+                  - generic [ref=f17e2280] [cursor=pointer]: 
+                  - generic [ref=f17e2283] [cursor=pointer]: 
+              - generic [ref=f17e2287]:
+                - generic:
+                  - generic [ref=f17e3023] [cursor=pointer]:
+                    - generic [ref=f17e3024]: 
+                    - generic [ref=f17e3029]:
+                      - generic [ref=f17e3030]: Error Handler
+                      - generic "Icon Button" [ref=f17e3032]:
+                        - button "Icon Button" [ref=f17e3033]
+                  - generic [ref=f17e3037]: Start
+                  - generic [ref=f17e3042]:
+                    - generic [ref=f17e3049]:
+                      - generic [ref=f17e3050]:
+                        - generic [ref=f17e3051]: "scheduler : queryJobRequests"
+                        - generic [ref=f17e3052]: jobRequests
+                      - generic "Icon Button" [ref=f17e3055]:
+                        - button "Icon Button" [ref=f17e3056]
+                    - img [ref=f17e3060]:
+                      - generic [ref=f17e3062]: schedulerClient
+                  - generic [ref=f17e3067]: Select node from node panel.
+            - generic [ref=f17e3076]:
+              - generic [ref=f17e3077]:
+                - generic "Icon Button" [ref=f17e3079] [cursor=pointer]:
+                  - button "Icon Button" [ref=f17e3080]
+                - generic "Text field" [ref=f17e3086]:
+                  - generic [ref=f17e3087]:
+                    - generic [ref=f17e3088]: 
+                    - textbox "Text field" [ref=f17e3092]:
+                      - /placeholder: Search
+              - generic [ref=f17e3093]:
+                - generic [ref=f17e3095]:
+                  - generic [ref=f17e3097]:
+                    - generic [ref=f17e3098]: Connections
+                    - generic [ref=f17e3099]:
+                      - generic "Icon Button" [ref=f17e3102] [cursor=pointer]:
+                        - button "Icon Button" [ref=f17e3103]:
+                          - generic [ref=f17e3104]: 
+                      - generic "Icon Button" [ref=f17e3109] [cursor=pointer]:
+                        - button "Icon Button" [ref=f17e3110]:
+                          - generic [ref=f17e3111]: 
+                  - generic [ref=f17e3116] [cursor=pointer]:
+                    - generic [ref=f17e3119]: schedulerClient
+                    - generic [ref=f17e3120]: 
+                - generic [ref=f17e3125]:
+                  - generic [ref=f17e3127] [cursor=pointer]:
+                    - generic [ref=f17e3128]: Statement
+                    - generic [ref=f17e3129]: 
+                  - generic [ref=f17e3134]:
+                    - generic [ref=f17e3135] [cursor=pointer]: Declare Variable
+                    - generic [ref=f17e3142] [cursor=pointer]: Update Variable
+                    - generic [ref=f17e3149] [cursor=pointer]: Call Function
+                    - generic [ref=f17e3157] [cursor=pointer]:
+                      - generic [ref=f17e3158]: 
+                      - generic [ref=f17e3162]: Map Data
+                - generic [ref=f17e3164]:
+                  - generic [ref=f17e3166] [cursor=pointer]:
+                    - generic [ref=f17e3167]: Control
+                    - generic [ref=f17e3168]: 
+                  - generic [ref=f17e3173]:
+                    - generic [ref=f17e3174] [cursor=pointer]: If
+                    - generic [ref=f17e3182] [cursor=pointer]:
+                      - generic [ref=f17e3183]: 
+                      - generic [ref=f17e3187]: Match
+                    - generic [ref=f17e3189] [cursor=pointer]:
+                      - generic [ref=f17e3190]: 
+                      - generic [ref=f17e3194]: While
+                    - generic [ref=f17e3196] [cursor=pointer]:
+                      - generic [ref=f17e3197]: 
+                      - generic [ref=f17e3201]: Foreach
+                    - generic [ref=f17e3202] [cursor=pointer]: Return
+                - generic [ref=f17e3212] [cursor=pointer]:
+                  - generic [ref=f17e3213]: AI
+                  - generic [ref=f17e3214]: 
+                - generic [ref=f17e3222] [cursor=pointer]:
+                  - generic [ref=f17e3223]: Error Handling
+                  - generic [ref=f17e3224]: 
+                - generic [ref=f17e3232] [cursor=pointer]:
+                  - generic [ref=f17e3233]: Concurrency
+                  - generic [ref=f17e3234]: 
+                - generic [ref=f17e3240]:
+                  - generic [ref=f17e3242] [cursor=pointer]:
+                    - generic [ref=f17e3243]: Logging
+                    - generic [ref=f17e3244]: 
+                  - generic [ref=f17e3258]:
+                    - generic [ref=f17e3259] [cursor=pointer]: Log Info
+                    - generic [ref=f17e3266] [cursor=pointer]: Log Error
+                    - generic [ref=f17e3273] [cursor=pointer]: Log Warn
+                    - generic [ref=f17e3280] [cursor=pointer]: Log Debug
+                - generic [ref=f17e3250] [cursor=pointer]:
+                  - generic [ref=f17e3251]: Show More Functions
+                  - generic "Icon Button" [ref=f17e3253]:
+                    - button "Icon Button" [ref=f17e3254]:
+                      - generic [ref=f17e3255]: 

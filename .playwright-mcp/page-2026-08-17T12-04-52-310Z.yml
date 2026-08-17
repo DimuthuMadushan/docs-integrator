@@ -1,0 +1,305 @@
+- application [ref=f14e2]:
+  - generic [ref=f14e6]:
+    - generic [ref=f14e8]:
+      - toolbar [ref=f14e16]:
+        - button "Go Back (⌃-)" [disabled] [ref=f14e580]: 
+        - button "Go Forward (⌃⇧-)" [disabled] [ref=f14e581]: 
+        - listitem [ref=f14e582] [cursor=pointer]:
+          - toolbar [ref=f14e585]:
+            - button "oraclefusion_common_scheduler_connector_sample" [ref=f14e586]:
+              - generic [ref=f14e587]: 
+        - listitem [ref=f14e589] [cursor=pointer]:
+          - generic [ref=f14e591]:
+            - button [ref=f14e592]:
+              - button "Toggle Chat" [ref=f14e593]: 
+            - button "More Actions" [ref=f14e597]: 
+      - toolbar "Title actions" [ref=f14e39]:
+        - button "Customize Layout..." [ref=f14e575] [cursor=pointer]: 
+        - button "Toggle Primary Side Bar (⌘B)" [pressed] [ref=f14e576] [cursor=pointer]: 
+        - button "Toggle Panel (⌘J)" [ref=f14e577] [cursor=pointer]: 
+        - button "Toggle Secondary Side Bar (⌥⌘B)" [ref=f14e578] [cursor=pointer]: 
+    - generic [ref=f14e49]:
+      - generic [ref=f14e51]:
+        - menubar [ref=f14e52]:
+          - menuitem "Application Menu" [ref=f14e53]:
+            - generic [ref=f14e54] [cursor=pointer]: 
+        - tablist "Active View Switcher" [ref=f14e57]:
+          - tab "Explorer (⇧⌘E)" [ref=f14e58] [cursor=pointer]:
+            - generic "Explorer (⇧⌘E)" [ref=f14e59]: 
+          - tab "Search (⇧⌘F)" [ref=f14e60] [cursor=pointer]:
+            - generic "Search (⇧⌘F)" [ref=f14e61]: 
+          - tab "Source Control (⌃⇧G)" [ref=f14e62] [cursor=pointer]:
+            - generic "Source Control (⌃⇧G)" [ref=f14e63]: 
+          - tab "Run and Debug (⇧⌘D)" [ref=f14e64] [cursor=pointer]:
+            - generic "Run and Debug (⇧⌘D)" [ref=f14e65]: 
+          - tab "Extensions (⇧⌘X)" [ref=f14e66] [cursor=pointer]:
+            - generic "Extensions (⇧⌘X)" [ref=f14e67]: 
+          - tab "Testing" [ref=f14e434] [cursor=pointer]:
+            - generic "Testing" [ref=f14e435]: 
+          - tab "WSO2 Integrator" [expanded] [selected] [ref=f14e68] [cursor=pointer]
+        - toolbar "Manage" [ref=f14e72]:
+          - button "Accounts" [ref=f14e73] [cursor=pointer]:
+            - generic "Accounts" [ref=f14e74]: 
+          - button "Manage" [ref=f14e75] [cursor=pointer]:
+            - generic "Manage" [ref=f14e76]: 
+      - generic [ref=f14e77]:
+        - generic [ref=f14e78]:
+          - 'heading "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample" [level=2] [ref=f14e436]'
+          - 'toolbar "WSO2 Integrator: oraclefusion_common_scheduler_connector_sample actions" [ref=f14e437]':
+            - button "Add Integration or Library" [ref=f14e438] [cursor=pointer]: 
+            - button "Open Overview" [ref=f14e439] [cursor=pointer]
+            - button "Refresh" [ref=f14e440] [cursor=pointer]: 
+          - generic:
+            - generic:
+              - generic:
+                - toolbar
+        - generic [ref=f14e446]:
+          - text:   
+          - tree "oraclefusion_common_scheduler_connector_sample" [ref=f14e450]:
+            - generic [ref=f14e451]:
+              - treeitem "oraclefusion_common_scheduler_connector_sample" [expanded] [level=1] [selected] [ref=f14e452] [cursor=pointer]:
+                - generic [ref=f14e453]:
+                  - generic [ref=f14e454]: 
+                  - generic "oraclefusion_common_scheduler_connector_sample" [ref=f14e456]:
+                    - generic [ref=f14e457]: 
+                    - toolbar [ref=f14e620]:
+                      - button "Force Update Artifacts" [ref=f14e621]: 
+                      - button "Show Visualizer" [ref=f14e622]
+              - treeitem "Entry Points" [expanded] [level=2] [ref=f14e461] [cursor=pointer]:
+                - generic [ref=f14e462]:
+                  - generic [ref=f14e463]: 
+                  - generic "Entry Points" [ref=f14e465]: 
+              - treeitem "Listeners" [expanded] [level=2] [ref=f14e470] [cursor=pointer]:
+                - generic [ref=f14e471]:
+                  - generic [ref=f14e472]: 
+                  - generic "Listeners" [ref=f14e474]
+              - treeitem "Connections" [expanded] [level=2] [ref=f14e479] [cursor=pointer]:
+                - generic [ref=f14e480]:
+                  - generic [ref=f14e481]: 
+                  - generic "Connections" [ref=f14e483]:
+                    - toolbar [ref=f14e616]:
+                      - button "Add Connection" [ref=f14e617]: 
+              - treeitem "Types" [expanded] [level=2] [ref=f14e488] [cursor=pointer]:
+                - generic [ref=f14e489]:
+                  - generic [ref=f14e490]: 
+                  - generic "Types" [ref=f14e492]: 
+              - treeitem "Functions" [expanded] [level=2] [ref=f14e497] [cursor=pointer]:
+                - generic [ref=f14e498]:
+                  - generic [ref=f14e499]: 
+                  - generic "Functions" [ref=f14e501]: 
+              - treeitem "Data Mappers" [expanded] [level=2] [ref=f14e506] [cursor=pointer]:
+                - generic [ref=f14e507]:
+                  - generic [ref=f14e508]: 
+                  - generic "Data Mappers" [ref=f14e510]: 
+              - treeitem "Configurations" [level=2] [ref=f14e515] [cursor=pointer]:
+                - generic "Configurations" [ref=f14e519]: 
+      - main [ref=f14e198]:
+        - generic [ref=f14e208] [cursor=pointer]:
+          - tablist [ref=f14e209]:
+            - tab "WSO2 Integrator" [selected] [ref=f14e598]:
+              - toolbar "Tab actions" [ref=f14e216]:
+                - button "Close (⌘W)" [ref=f14e217]: 
+          - toolbar "Editor actions" [ref=f14e221]:
+            - button "Open WSO2 Integrator Copilot" [ref=f14e601]
+            - button "Run Integration" [ref=f14e602]
+            - button "Debug Integration" [ref=f14e603]
+            - button "Split Editor Right (⌘\\) [⌥] Split Editor Down" [ref=f14e604]: 
+            - button "More Actions..." [ref=f14e607]: 
+    - status [ref=f14e389]:
+      - generic [ref=f14e390]:
+        - generic "remote" [ref=f14e391]:
+          - button "remote" [ref=f14e392] [cursor=pointer]:
+            - generic [ref=f14e393]: 
+        - generic "No Problems" [ref=f14e394]:
+          - button "No Problems" [ref=f14e395] [cursor=pointer]:
+            - generic [ref=f14e396]: 
+            - text: "0"
+            - generic [ref=f14e397]: 
+            - text: "0"
+        - generic "No Ports Forwarded" [ref=f14e398]:
+          - button "No Ports Forwarded" [ref=f14e399] [cursor=pointer]:
+            - generic [ref=f14e400]: 
+            - text: "0"
+      - generic [ref=f14e401]:
+        - generic "Notifications" [ref=f14e402]:
+          - button "Notifications" [ref=f14e403] [cursor=pointer]:
+            - generic [ref=f14e565]: 
+        - 'generic "Layout: U.S." [ref=f14e405]':
+          - 'button "Layout: U.S." [ref=f14e406] [cursor=pointer]'
+        - 'generic "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e566]':
+          - 'button "server-environment ICP: Stopped, Integration Control Plane is stopped. Click to start." [ref=f14e567] [cursor=pointer]':
+            - generic [ref=f14e568]: 
+            - text: "ICP: Stopped"
+        - generic "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e569]:
+          - button "Ballerina 2201.13.4 (Swan Lake Update 13)" [ref=f14e570] [cursor=pointer]
+        - generic "Copilot status" [ref=f14e409]:
+          - button "Copilot status" [ref=f14e410] [cursor=pointer]:
+            - generic [ref=f14e411]: 
+  - generic [ref=f14e571]:
+    - alert [ref=f14e572]: Secondary Side Bar hidden
+    - alert
+  - iframe [active] [ref=f14e574]:
+    - document [ref=f16e1]:
+      - iframe [active] [ref=f16e2]:
+        - document [active] [ref=f17e1]:
+          - generic [ref=f17e141]:
+            - generic [ref=f17e142]:
+              - heading "Add Connection" [level=2] [ref=f17e143]
+              - generic "Icon Button" [ref=f17e145] [cursor=pointer]:
+                - button "Icon Button" [ref=f17e146]:
+                  - generic [ref=f17e147]: 
+            - generic [ref=f17e150]:
+              - paragraph [ref=f17e151]:
+                - generic [ref=f17e152] [cursor=pointer]: Deploy integration
+                - text: or
+                - generic [ref=f17e155] [cursor=pointer]: associate workspace
+                - text: with a WSO2 Cloud project in order to connect with cloud dependencies
+              - paragraph [ref=f17e158]: To establish your connection, first define a connector. You may create a custom connector using an API specification or by introspecting a database. Alternatively, you can select one of the pre-built connectors below. You will then be guided to provide the required details to complete the connection setup.
+              - generic "Text field" [ref=f17e161]:
+                - generic [ref=f17e162]:
+                  - generic [ref=f17e163]: 
+                  - textbox "Text field" [ref=f17e167]:
+                    - /placeholder: Search connectors...
+              - generic [ref=f17e168]:
+                - heading "Create New Connector" [level=4] [ref=f17e169]
+                - generic [ref=f17e170]:
+                  - generic [ref=f17e171] [cursor=pointer]:
+                    - generic [ref=f17e172]: 
+                    - generic [ref=f17e175]:
+                      - paragraph [ref=f17e176]: Connect via API Specification
+                      - paragraph [ref=f17e177]: Import an OpenAPI or WSDL file to create a connector
+                      - generic [ref=f17e178]:
+                        - paragraph [ref=f17e179]: OpenAPI
+                        - paragraph [ref=f17e180]: WSDL
+                    - generic [ref=f17e181]: 
+                  - generic [ref=f17e184] [cursor=pointer]:
+                    - generic [ref=f17e185]: 
+                    - generic [ref=f17e188]:
+                      - paragraph [ref=f17e190]: Connect to a Database
+                      - paragraph [ref=f17e191]: Enter credentials to introspect and discover database tables
+                      - generic [ref=f17e192]:
+                        - paragraph [ref=f17e193]: MySQL
+                        - paragraph [ref=f17e194]: MSSQL
+                        - paragraph [ref=f17e195]: PostgreSQL
+                    - generic [ref=f17e196]: 
+              - generic [ref=f17e199]:
+                - generic [ref=f17e200]:
+                  - heading "Pre-built Connectors" [level=4] [ref=f17e201]
+                  - generic [ref=f17e202]:
+                    - button "All" [ref=f17e203] [cursor=pointer]
+                    - button "Standard" [ref=f17e204] [cursor=pointer]
+                    - button "Organization" [ref=f17e205] [cursor=pointer]
+                - generic [ref=f17e206]:
+                  - generic [ref=f17e209] [cursor=pointer]:
+                    - generic [ref=f17e210]: 
+                    - generic [ref=f17e213]:
+                      - paragraph [ref=f17e214]: HTTP
+                      - paragraph [ref=f17e215]: ballerina / http
+                  - generic [ref=f17e219] [cursor=pointer]:
+                    - paragraph [ref=f17e220]: GraphQL
+                    - paragraph [ref=f17e221]: ballerina / graphql
+                  - generic [ref=f17e225] [cursor=pointer]:
+                    - paragraph [ref=f17e226]: Websocket
+                    - paragraph [ref=f17e227]: ballerina / websocket
+                  - generic [ref=f17e231] [cursor=pointer]:
+                    - paragraph [ref=f17e232]: TCP
+                    - paragraph [ref=f17e233]: ballerina / tcp
+                  - generic [ref=f17e237] [cursor=pointer]:
+                    - paragraph [ref=f17e238]: UDP
+                    - paragraph [ref=f17e239]: ballerina / udp
+                  - generic [ref=f17e243] [cursor=pointer]:
+                    - paragraph [ref=f17e244]: FTP
+                    - paragraph [ref=f17e245]: ballerina / ftp
+                  - generic [ref=f17e249] [cursor=pointer]:
+                    - paragraph [ref=f17e250]: MySQL
+                    - paragraph [ref=f17e251]: ballerinax / mysql
+                  - generic [ref=f17e255] [cursor=pointer]:
+                    - paragraph [ref=f17e256]: MongoDB
+                    - paragraph [ref=f17e257]: ballerinax / mongodb
+                  - generic [ref=f17e261] [cursor=pointer]:
+                    - paragraph [ref=f17e262]: PostgreSQL
+                    - paragraph [ref=f17e263]: ballerinax / postgresql
+                  - generic [ref=f17e267] [cursor=pointer]:
+                    - paragraph [ref=f17e268]: MS SQL
+                    - paragraph [ref=f17e269]: ballerinax / mssql
+                  - generic [ref=f17e273] [cursor=pointer]:
+                    - paragraph [ref=f17e274]: Redis
+                    - paragraph [ref=f17e275]: ballerinax / redis
+                  - generic [ref=f17e279] [cursor=pointer]:
+                    - paragraph [ref=f17e280]: Kafka Consumer
+                    - paragraph [ref=f17e281]: ballerinax / kafka
+                  - generic [ref=f17e285] [cursor=pointer]:
+                    - paragraph [ref=f17e286]: Kafka Producer
+                    - paragraph [ref=f17e287]: ballerinax / kafka
+                  - generic [ref=f17e291] [cursor=pointer]:
+                    - paragraph [ref=f17e292]: RabbitMQ
+                    - paragraph [ref=f17e293]: ballerinax / rabbitmq
+                  - generic [ref=f17e297] [cursor=pointer]:
+                    - paragraph [ref=f17e298]: S3
+                    - paragraph [ref=f17e299]: ballerinax / aws.s3
+                  - generic [ref=f17e303] [cursor=pointer]:
+                    - paragraph [ref=f17e304]: SQS
+                    - paragraph [ref=f17e305]: ballerinax / aws.sqs
+                  - generic [ref=f17e309] [cursor=pointer]:
+                    - paragraph [ref=f17e310]: DynamoDB
+                    - paragraph [ref=f17e311]: ballerinax / aws.dynamodb
+                  - generic [ref=f17e315] [cursor=pointer]:
+                    - paragraph [ref=f17e316]: Gmail
+                    - paragraph [ref=f17e317]: ballerinax / googleapis.gmail
+                  - generic [ref=f17e321] [cursor=pointer]:
+                    - paragraph [ref=f17e322]: Gcalendar
+                    - paragraph [ref=f17e323]: ballerinax / googleapis.gcalendar
+                  - generic [ref=f17e327] [cursor=pointer]:
+                    - paragraph [ref=f17e328]: Salesforce
+                    - paragraph [ref=f17e329]: ballerinax / salesforce
+                  - generic [ref=f17e333] [cursor=pointer]:
+                    - paragraph [ref=f17e334]: Slack
+                    - paragraph [ref=f17e335]: ballerinax / slack
+                  - generic [ref=f17e339] [cursor=pointer]:
+                    - paragraph [ref=f17e340]: Twilio
+                    - paragraph [ref=f17e341]: ballerinax / twilio
+                  - generic [ref=f17e345] [cursor=pointer]:
+                    - paragraph [ref=f17e346]: Github
+                    - paragraph [ref=f17e347]: ballerinax / github
+                  - generic [ref=f17e351] [cursor=pointer]:
+                    - paragraph [ref=f17e352]: Stripe
+                    - paragraph [ref=f17e353]: ballerinax / stripe
+                  - generic [ref=f17e357] [cursor=pointer]:
+                    - paragraph [ref=f17e358]: Chat
+                    - paragraph [ref=f17e359]: ballerinax / azure.openai.chat
+                  - generic [ref=f17e363] [cursor=pointer]:
+                    - paragraph [ref=f17e364]: Embeddings
+                    - paragraph [ref=f17e365]: ballerinax / azure.openai.embeddings
+                  - generic [ref=f17e369] [cursor=pointer]:
+                    - paragraph [ref=f17e370]: Chat
+                    - paragraph [ref=f17e371]: ballerinax / openai.chat
+                  - generic [ref=f17e375] [cursor=pointer]:
+                    - paragraph [ref=f17e376]: Embeddings
+                    - paragraph [ref=f17e377]: ballerinax / openai.embeddings
+                  - generic [ref=f17e381] [cursor=pointer]:
+                    - paragraph [ref=f17e382]: Stabilityai
+                    - paragraph [ref=f17e383]: ballerinax / stabilityai
+                  - generic [ref=f17e387] [cursor=pointer]:
+                    - paragraph [ref=f17e388]: Mistral
+                    - paragraph [ref=f17e389]: ballerinax / mistral
+                  - generic [ref=f17e392] [cursor=pointer]:
+                    - generic [ref=f17e393]: 
+                    - generic [ref=f17e396]:
+                      - paragraph [ref=f17e397]: Mcp StreamableHttp
+                      - paragraph [ref=f17e398]: ballerina / mcp
+                  - generic [ref=f17e402] [cursor=pointer]:
+                    - paragraph [ref=f17e403]: Ai
+                    - paragraph [ref=f17e404]: ballerinax / webscraping.ai
+                  - generic [ref=f17e408] [cursor=pointer]:
+                    - paragraph [ref=f17e409]: Vector
+                    - paragraph [ref=f17e410]: ballerinax / pinecone.vector
+                  - generic [ref=f17e414] [cursor=pointer]:
+                    - paragraph [ref=f17e415]: Index
+                    - paragraph [ref=f17e416]: ballerinax / pinecone.index
+                  - generic [ref=f17e420] [cursor=pointer]:
+                    - paragraph [ref=f17e421]: Weaviate
+                    - paragraph [ref=f17e422]: ballerinax / weaviate
+                  - generic [ref=f17e426] [cursor=pointer]:
+                    - paragraph [ref=f17e427]: Milvus
+                    - paragraph [ref=f17e428]: ballerinax / milvus
+  - tooltip "Connections" [ref=f14e625]
