@@ -1805,6 +1805,17 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'SMB',
+          link: { type: 'doc', id: 'connectors/catalog/storage-file/smb/overview' },
+          items: [
+            'connectors/catalog/storage-file/smb/setup-guide',
+            'connectors/catalog/storage-file/smb/action-reference',
+            'connectors/catalog/storage-file/smb/trigger-reference',
+            'connectors/catalog/storage-file/smb/example',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Snowflake',
           link: { type: 'doc', id: 'connectors/catalog/database/snowflake/connector-overview' },
           items: [
