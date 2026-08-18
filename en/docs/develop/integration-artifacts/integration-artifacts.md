@@ -66,6 +66,7 @@ Trigger an integration when files appear on a remote server or local directory.
 | Artifact | Description |
 |---|---|
 | [FTP/SFTP](file/ftp-sftp.md) | Watches an FTP, FTPS, or SFTP server for new or modified files. |
+| [Azure Files](file/azure-files.md) | Watches a directory on an Azure file share for incoming files. |
 | [Local files](file/local-files.md) | Watches a local directory for file arrivals and changes. |
 
 ### Other artifacts

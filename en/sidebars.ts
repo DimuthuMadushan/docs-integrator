@@ -182,6 +182,7 @@ const sidebars: SidebarsConfig = {
                     'develop/integration-artifacts/file/csv-fault-tolerance',
                   ],
                 },
+                'develop/integration-artifacts/file/azure-files',
                 'develop/integration-artifacts/file/local-files',
               ],
             },
