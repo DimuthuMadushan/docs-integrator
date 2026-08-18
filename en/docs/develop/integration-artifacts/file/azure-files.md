@@ -444,9 +444,9 @@ For most use cases, the typed handler parameters and the `@files:FunctionConfig`
 | Operation | Return type | Description |
 |---|---|---|
 | `caller->getFile(path, options)` | `T\|Error` | Retrieve a file's content in the form the assignment target selects — `byte[]`, `string`, `json`, `xml`, a typed record or record array, or a lazy stream |
-| `caller->downloadFile(sourcePath, destinationPath, options)` | `Error?` | Download a file to a local path |
-| `caller->uploadFile(sourcePath, destinationPath, options)` | `Error?` | Upload a local file to the share |
-| `caller->uploadContent(content, destinationPath, options)` | `Error?` | Upload in-memory content — `byte[]`, `string`, `json`, `xml`, a record, or a record array |
+| `caller->download(sourcePath, destinationPath, options)` | `Error?` | Download a file to a local path |
+| `caller->uploadFromFile(sourcePath, destinationPath, options)` | `Error?` | Upload a local file to the share |
+| `caller->upload(content, destinationPath, options)` | `Error?` | Upload in-memory content — `byte[]`, `string`, `json`, `xml`, a record, or a record array |
 
 **File management:**
 

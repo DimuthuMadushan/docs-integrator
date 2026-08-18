@@ -4,10 +4,10 @@
 
 ### What you'll build
 
-Build a WSO2 Integrator automation that connects to an Azure file share, uploads a local report with the `uploadFile` operation, and confirms the upload with the `hasFile` operation. The workflow uses configurable variables to manage the Azure credentials securely.
+Build a WSO2 Integrator automation that connects to an Azure file share, uploads a local report with the `uploadFromFile` operation, and confirms the upload with the `hasFile` operation. The workflow uses configurable variables to manage the Azure credentials securely.
 
 **Operations used:**
-- **uploadFile** : Uploads a local file to a path on the share.
+- **uploadFromFile** : Uploads a local file to a path on the share.
 - **hasFile** : Checks whether a file exists at a share path.
 
 ### Architecture
@@ -15,7 +15,7 @@ Build a WSO2 Integrator automation that connects to an Azure file share, uploads
 ```mermaid
 flowchart LR
     A((User)) --> B[main Automation]
-    B --> C[uploadFile Operation]
+    B --> C[uploadFromFile Operation]
     C <--> D[(Azure Files share)]
     B --> E[hasFile Operation]
     E <--> D
@@ -89,9 +89,9 @@ Select **Save Connection** to persist the connection. The form closes and `azFil
 - **accountKey** (string) : An access key of the storage account
 - **shareName** (string) : The file share to work with (for example, `reports`)
 
-### Configuring the uploadFile operation
+### Configuring the uploadFromFile operation
 
-#### Step 7: Select the uploadFile operation and configure its parameters
+#### Step 7: Select the uploadFromFile operation and configure its parameters
 
 1. In the sidebar under **Entry Points**, select **Automation** to open its flow editor (selecting the automation node in the design view works too).
 2. Select the **+** button on the canvas between **Start** and **Error Handler**.
@@ -99,18 +99,18 @@ Select **Save Connection** to persist the connection. The form closes and `azFil
 
 ![Azure Files operations panel](/img/connectors/catalog/storage-file/azure.storage.files/azure_files_screenshot_04_operations_panel.png)
 
-4. Select **Upload File** and fill in the operation form:
+4. Select **Upload From File** and fill in the operation form:
 
 - **Source Path** : The local file to upload (for example, `./data/q1-report.pdf`)
 - **Destination Path** : The full share path to upload to, including the file name (for example, `/reports/q1-report.pdf`)
 
 5. Select **Save**.
 
-![uploadFile operation configuration](/img/connectors/catalog/storage-file/azure.storage.files/azure_files_screenshot_05_uploadfile_form.png)
+![uploadFromFile operation configuration](/img/connectors/catalog/storage-file/azure.storage.files/azure_files_screenshot_05_uploadfile_form.png)
 
 #### Step 8: Confirm the upload and log the result
 
-1. Select the **+** below the **Upload File** node and add the **Has File** operation from **Connections → azFilesClient**. Set **Path** to the destination path from Step 7 (`/reports/q1-report.pdf`) and name the result variable `uploaded` (its type is fixed to `boolean`).
+1. Select the **+** below the **Upload From File** node and add the **Has File** operation from **Connections → azFilesClient**. Set **Path** to the destination path from Step 7 (`/reports/q1-report.pdf`) and name the result variable `uploaded` (its type is fixed to `boolean`).
 2. Add a **Log Info** statement below it with the expression ``string `${uploaded}` `` (the message must be a string, so the boolean is interpolated).
 
 `hasFile` returns `true` once the file is present on the share, so the log output confirms the upload.

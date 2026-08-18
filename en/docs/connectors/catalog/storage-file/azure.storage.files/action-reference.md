@@ -727,10 +727,10 @@ check fileShare->renameFile("/2026/q1/report-draft.pdf", "/2026/q1/report.pdf", 
 
 #### Transfer operations
 
-`uploadFile` and `downloadFile` move data between a local file on disk and the share; the other operations work in memory or over streams. Transfer paths are full paths including the file name on both sides.
+`uploadFromFile` and `download` move data between a local file on disk and the share; the other operations work in memory or over streams. Transfer paths are full paths including the file name on both sides.
 
 <details>
-<summary>uploadFile</summary>
+<summary>uploadFromFile</summary>
 
 <div>
 
@@ -749,7 +749,7 @@ Uploads a local file to the bound share (disk to share).
 **Sample code:**
 
 ```ballerina
-check fileShare->uploadFile("./reports/q1.pdf", "/2026/q1/report.pdf");
+check fileShare->uploadFromFile("./reports/q1.pdf", "/2026/q1/report.pdf");
 ```
 
 </div>
@@ -757,7 +757,7 @@ check fileShare->uploadFile("./reports/q1.pdf", "/2026/q1/report.pdf");
 </details>
 
 <details>
-<summary>uploadContent</summary>
+<summary>upload</summary>
 
 <div>
 
@@ -776,7 +776,7 @@ Uploads in-memory content to the bound share. A `byte[]` is written as-is, and a
 **Sample code:**
 
 ```ballerina
-check fileShare->uploadContent(<map<json>>{"revenue": 1250000, "growth": 0.12}, "/2026/q1/metrics.json");
+check fileShare->upload(<map<json>>{"revenue": 1250000, "growth": 0.12}, "/2026/q1/metrics.json");
 ```
 
 </div>
@@ -813,7 +813,7 @@ check fileShare->uploadFromStream(fileStream, 524288, "/2026/q1/report.pdf");
 </details>
 
 <details>
-<summary>downloadFile</summary>
+<summary>download</summary>
 
 <div>
 
@@ -832,7 +832,7 @@ Downloads a file to a local path (share to disk). The download fails with a clie
 **Sample code:**
 
 ```ballerina
-check fileShare->downloadFile("/2026/q1/report.pdf", "./reports/q1.pdf");
+check fileShare->download("/2026/q1/report.pdf", "./reports/q1.pdf");
 ```
 
 </div>
@@ -1792,7 +1792,7 @@ Options for `Client.createFile` (creating an empty file of a given size).
 
 ### UploadOptions
 
-Options for the upload operations (`uploadFile` and `uploadFromStream`; `uploadContent` takes [UploadContentOptions](#uploadcontentoptions)).
+Options for the upload operations (`uploadFromFile` and `uploadFromStream`; `upload` takes [UploadContentOptions](#uploadcontentoptions)).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1801,7 +1801,7 @@ Options for the upload operations (`uploadFile` and `uploadFromStream`; `uploadC
 
 ### UploadContentOptions
 
-Options for `uploadContent`: every [UploadOptions](#uploadoptions) field, plus the record serialization format override.
+Options for `upload`: every [UploadOptions](#uploadoptions) field, plus the record serialization format override.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1809,7 +1809,7 @@ Options for `uploadContent`: every [UploadOptions](#uploadoptions) field, plus t
 
 ### DownloadOptions
 
-Options for `downloadFile`, included by `getFile`'s `GetFileOptions`.
+Options for `download`, included by `getFile`'s `GetFileOptions`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
