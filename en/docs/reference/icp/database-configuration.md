@@ -76,9 +76,9 @@ dbUseTLS = false
 Note the following when you use Oracle:
 
 - `dbName` is the service name of the database or pluggable database (PDB). It is not a SID.
-- Set `dbUseTLS` to `true` when the listener uses TCPS. Oracle Autonomous Database requires this. ICP applies the driver's default TLS settings and exposes no wallet, keystore, or `TNS_ADMIN` option, so the database certificate must be trusted by the JVM that runs ICP.
+- Set `dbUseTLS` to `true` when the listener uses TCPS. ICP connects with one-way TLS and exposes no wallet, keystore, or `TNS_ADMIN` option, so the database must accept TLS connections without mutual TLS, and its certificate must be trusted by the JVM that runs ICP. On Oracle Autonomous Database, enable TLS connections, because its default mTLS requires a wallet.
 - Initialize the schema with `oracle_init.sql` before you start the server. Run it with SQL\*Plus or SQLcl, because the script contains PL/SQL blocks terminated by a `/` on its own line.
-- The schema user needs `CREATE SESSION`, `CREATE TABLE`, `CREATE VIEW`, `CREATE INDEX`, `CREATE TRIGGER`, `CREATE SEQUENCE`, `ADMINISTER DATABASE TRIGGER`, and a tablespace quota. See [Install ICP](../../manage/icp/install-icp.md#database).
+- The schema user needs `CREATE SESSION`, `CREATE TABLE`, `CREATE VIEW`, `CREATE TRIGGER`, `CREATE SEQUENCE`, and a tablespace quota. See [Install ICP](../../manage/icp/install-icp.md#database).
 - Oracle applies `UNIQUE` constraints to rows with partially null keys, whereas MySQL treats any null key column as distinct. Deduplicate `group_role_mapping` before you migrate data from MySQL.
 
 ### H2 (In-Memory)
