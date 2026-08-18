@@ -117,4 +117,4 @@ credentialsDbPassword = "icp_password"
 
 The credentials database is independent of the main database, so the two can use different engines. For Oracle, initialize it with `credentials_oracle_init.sql`.
 
-Credentials are stored in a dedicated credentials database separate from the main ICP database, configured via `credentialsDbName`, `credentialsDbHost`, and `credentialsDbPort`. For H2, they are stored in `<ICP_HOME>/bin/database/credentials`.
+For H2, the credentials database is a file named after `credentialsDbName`, so the default is `<ICP_HOME>/bin/database/credentials_db.mv.db`.
