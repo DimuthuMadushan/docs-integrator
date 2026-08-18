@@ -5,14 +5,14 @@ title: "Azure Files"
 description: "Overview of the ballerinax/azure.storage.files connector for WSO2 Integrator."
 ---
 
-[Azure Files](https://learn.microsoft.com/en-us/azure/storage/files/storage-files-introduction) offers fully managed file shares in the cloud, accessible via the industry-standard SMB and NFS protocols and a REST API. The `ballerinax/azure.storage.files` connector (v1.0.0) connects WSO2 Integrator to Microsoft Azure Files, managing shares and the directories and files within them: uploads, downloads, copies, renames, byte ranges, snapshots, leases, and SAS token generation. A polling `Listener` turns files arriving on a share into service events.
+[Azure Files](https://learn.microsoft.com/en-us/azure/storage/files/storage-files-introduction) offers fully managed file shares in the cloud, accessible via the industry-standard SMB and NFS protocols and a REST API. The `ballerinax/azure.storage.files` connector (v1.0.0) connects WSO2 Integrator to Microsoft Azure Files, managing shares and the directories and files within them: uploads, downloads, copies, renames, byte ranges, snapshots, and SAS token generation. A polling `Listener` turns files arriving on a share into service events.
 
 ## Key features
 
 - Share-scoped `Client` for directory and file operations, transfers, copies, and byte ranges
 - Account-level `AdminClient` for creating, listing, deleting, and restoring shares
 - Polling `Listener` that routes files arriving on a watched path to raw, typed, or streaming content handlers, with an optional `onError` notification handler
-- Share snapshots, leases, access policies, SMB handles, and NFS links
+- Share snapshots
 - Authentication with shared key, SAS tokens, connection strings, and Microsoft Entra ID
 - GraalVM compatible for native image builds
 
@@ -22,7 +22,7 @@ Actions are operations you invoke on Azure Files from your integration: uploadin
 
 | Client | Actions |
 |--------|---------|
-| `Client` | Directory, file, transfer, copy, range, snapshot, lease, and SAS operations within one share |
+| `Client` | Directory, file, transfer, copy, range, snapshot, and SAS operations within one share |
 | `AdminClient` | Account-level share management and file-service configuration |
 
 See the **[Action Reference](action-reference.md)** for the full list of operations, parameters, and sample code for each client.

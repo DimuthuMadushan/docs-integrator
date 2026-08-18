@@ -227,7 +227,7 @@ Operations on the bound share itself.
 
 <div>
 
-Gets the properties of the bound share (quota, tier, protocols, lease). This is a share-level operation, so it needs account-level credentials at runtime; a share- or file-scoped SAS fails.
+Gets the properties of the bound share (quota, tier, protocols). This is a share-level operation, so it needs account-level credentials at runtime; a share- or file-scoped SAS fails.
 
 **Returns:** `ShareProperties|Error`
 
@@ -319,7 +319,7 @@ Creates a directory in the bound share.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `directoryPath` | <code>string</code> | Yes | The share-relative path of the directory to create. |
-| `options` | <code>DirectoryCreateOptions</code> | No | Optional creation options (metadata, permission, SMB properties). See [DirectoryCreateOptions](#directorycreateoptions). |
+| `options` | <code>DirectoryCreateOptions</code> | No | Optional creation options (metadata). See [DirectoryCreateOptions](#directorycreateoptions). |
 
 **Returns:** `Error?`
 
@@ -416,8 +416,7 @@ files:DirectoryProperties properties = check fileShare->getDirectoryProperties("
 {
     eTag: "\"0x8DDA1B2C3D4E5F6\"",
     lastModified: [1770307200, 0.0],
-    isServerEncrypted: true,
-    smbProperties: {fileId: "13835093239654252544"}
+    isServerEncrypted: true
 }
 ```
 
@@ -505,7 +504,7 @@ Renames or moves a directory within the bound share, together with its entire co
 |------|------|----------|-------------|
 | `sourcePath` | <code>string</code> | Yes | The current share-relative path of the directory. |
 | `destinationPath` | <code>string</code> | Yes | The new share-relative path. |
-| `options` | <code>RenameOptions</code> | No | Optional rename options (overwrite, permission, metadata). See [RenameOptions](#renameoptions). |
+| `options` | <code>RenameOptions</code> | No | Optional rename options (overwrite, metadata). See [RenameOptions](#renameoptions). |
 
 **Returns:** `Error?`
 
@@ -536,7 +535,7 @@ Creates an empty file, pre-allocated at a fixed size.
 |------|------|----------|-------------|
 | `path` | <code>string</code> | Yes | The share-relative path of the file to create. |
 | `sizeInBytes` | <code>int</code> | Yes | The size of the file, in bytes. |
-| `options` | <code>CreateOptions</code> | No | Optional creation options (headers, metadata, permission, SMB properties). See [CreateOptions](#createoptions). |
+| `options` | <code>CreateOptions</code> | No | Optional creation options (headers, metadata). See [CreateOptions](#createoptions). |
 
 **Returns:** `Error?`
 
@@ -675,7 +674,7 @@ check fileShare->setFileMetadata("/2026/q1/report.pdf", {reviewed: "true"});
 
 <div>
 
-Sets the content headers of a file, such as `Content-Type` and `Cache-Control`. The supplied record replaces the complete header set, so any header omitted from it is cleared; SMB properties, permission, and metadata are untouched.
+Sets the content headers of a file, such as `Content-Type` and `Cache-Control`. The supplied record replaces the complete header set, so any header omitted from it is cleared; metadata is untouched.
 
 **Parameters:**
 
@@ -712,7 +711,7 @@ Renames or moves a file within the bound share; a rename never crosses shares. I
 |------|------|----------|-------------|
 | `sourcePath` | <code>string</code> | Yes | The current share-relative path of the file. |
 | `destinationPath` | <code>string</code> | Yes | The new share-relative path. |
-| `options` | <code>RenameOptions</code> | No | Optional rename options (overwrite, permission, metadata). See [RenameOptions](#renameoptions). |
+| `options` | <code>RenameOptions</code> | No | Optional rename options (overwrite, metadata). See [RenameOptions](#renameoptions). |
 
 **Returns:** `Error?`
 
@@ -743,7 +742,7 @@ Uploads a local file to the bound share (disk to share).
 |------|------|----------|-------------|
 | `sourcePath` | <code>string</code> | Yes | The path of the local file to upload, including the file name. |
 | `destinationPath` | <code>string</code> | Yes | The share-relative path the file is written to, including the file name. |
-| `options` | <code>UploadOptions</code> | No | Optional upload options (headers, metadata, permission, SMB properties). See [UploadOptions](#uploadoptions). |
+| `options` | <code>UploadOptions</code> | No | Optional upload options (headers, metadata). See [UploadOptions](#uploadoptions). |
 
 **Returns:** `Error?`
 
@@ -762,13 +761,13 @@ check fileShare->uploadFile("./reports/q1.pdf", "/2026/q1/report.pdf");
 
 <div>
 
-Uploads in-memory content to the bound share. A `byte[]` is written as-is, an `xml` value as its textual form, and a `string[][]` as CSV rows. A `string` is written verbatim as raw UTF-8 text, never JSON-quoted; call `toJsonString()` first to store a JSON encoding of a string. A record (which includes any map of `anydata` members) or a record array is serialized per the format resolved from `UploadContentOptions.fileFormat` when set, else from the destination path's extension (`.json`, `.xml`, `.csv`): a record becomes a JSON or an XML document (never CSV), and a record array becomes CSV rows headed by the first record's field names, with nil members as empty cells. An unresolvable format, a record directed to CSV, or a record array directed to a non-CSV format fails with a client-side `Error`.
+Uploads in-memory content to the bound share. A `byte[]` is written as-is, and an `xml` value as its textual form. A `string` is written verbatim as raw UTF-8 text, never JSON-quoted; call `toJsonString()` first to store a JSON encoding of a string. A record (which includes any map of `anydata` members), a record array, or any other `json` value is serialized per the format resolved from `UploadContentOptions.fileFormat` when set, else from the destination path's extension (`.json`, `.xml`, `.csv`): a record becomes a JSON or an XML document (never CSV), a record array becomes CSV rows headed by the union of the records' field names in first-seen order (nil or absent members as empty cells), and any other `json` value (an array, a scalar, or nil) becomes a JSON document. An unresolvable format, a record directed to CSV, a record array directed to a non-CSV format, or a non-mapping `json` value directed to a non-JSON format fails with a client-side `Error`.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `content` | <code>UploadContent</code> | Yes | The content to upload: <code>byte[]&#124;string&#124;xml&#124;string[][]&#124;record {}&#124;record {}[]</code>. |
+| `content` | <code>UploadContent</code> | Yes | The content to upload: <code>byte[]&#124;string&#124;json&#124;xml&#124;record {}&#124;record {}[]</code>. |
 | `destinationPath` | <code>string</code> | Yes | The share-relative path the content is written to, including the file name. |
 | `options` | <code>UploadContentOptions</code> | No | Every [UploadOptions](#uploadoptions) field plus `fileFormat` (`JSON`, `XML`, or `CSV`), the record serialization format override. |
 
@@ -777,7 +776,7 @@ Uploads in-memory content to the bound share. A `byte[]` is written as-is, an `x
 **Sample code:**
 
 ```ballerina
-check fileShare->uploadContent({"revenue": 1250000, "growth": 0.12}, "/2026/q1/metrics.json");
+check fileShare->uploadContent(<map<json>>{"revenue": 1250000, "growth": 0.12}, "/2026/q1/metrics.json");
 ```
 
 </div>
@@ -798,7 +797,7 @@ Uploads a byte stream to the bound share. `contentLength` is required up front, 
 | `content` | <code>stream&lt;byte[], error?&gt;</code> | Yes | The byte stream to upload. |
 | `contentLength` | <code>int</code> | Yes | The total length of the content, in bytes. |
 | `destinationPath` | <code>string</code> | Yes | The share-relative path the content is written to, including the file name. |
-| `options` | <code>UploadOptions</code> | No | Optional upload options (headers, metadata, permission, SMB properties). See [UploadOptions](#uploadoptions). |
+| `options` | <code>UploadOptions</code> | No | Optional upload options (headers, metadata). See [UploadOptions](#uploadoptions). |
 
 **Returns:** `Error?`
 
@@ -845,7 +844,7 @@ check fileShare->downloadFile("/2026/q1/report.pdf", "./reports/q1.pdf");
 
 <div>
 
-Retrieves the file's content in the form the target type selects: `byte[]` (raw, materialized), `string` (UTF-8 text; invalid UTF-8 fails client-side), `json`, `xml`, `string[][]` (CSV rows, every row kept), `record {}`/`record {}[]` (bound per the resolved format), `stream<byte[], error?>` (a lazy byte stream), or `stream<record {}, error?>` (lazy CSV rows). Record-shaped targets resolve their format from `options.fileFormat` when set, else the path's extension (`.json`, `.xml`, `.csv`): a single record binds from JSON or XML (never CSV), a record array from a JSON array or CSV rows (never XML), and an unresolvable format fails with a client-side `Error`. Binding is strict.
+Retrieves the file's content in the form the target type selects: `byte[]` (raw, materialized), `string` (UTF-8 text; invalid UTF-8 fails client-side), `json`, `xml`, `record {}`/`record {}[]` (bound per the resolved format), `stream<byte[], error?>` (a lazy byte stream), or `stream<record {}, error?>` (lazy CSV rows). Record-shaped targets resolve their format from `options.fileFormat` when set, else the path's extension (`.json`, `.xml`, `.csv`): a single record binds from JSON or XML (never CSV), a record array from a JSON array or CSV rows (never XML), and an unresolvable format fails with a client-side `Error`. CSV content binds to record array and record stream targets only; for positional or headerless rows, read the content as `string` or `byte[]` and parse it with the `data.csv` module. Binding is strict.
 
 **Parameters:**
 
@@ -853,7 +852,7 @@ Retrieves the file's content in the form the target type selects: `byte[]` (raw,
 |------|------|----------|-------------|
 | `path` | <code>string</code> | Yes | The source share-relative path. |
 | `options` | <code>GetFileOptions</code> | No | Every [DownloadOptions](#downloadoptions) field plus `fileFormat` (`JSON`, `XML`, or `CSV`), the record binding format. |
-| `targetType` | <code>typedesc&lt;RetrievableContent&gt;</code> | No | The form to retrieve the content in, inferred from the assignment target. |
+| `targetType` | <code>typedesc&lt;RetrievableType&gt;</code> | No | The form to retrieve the content in, inferred from the assignment target. |
 
 **Returns:** `targetType|Error`
 
@@ -1235,639 +1234,6 @@ files:RangeDiff diff = check fileShare->listRangesDiff("/2026/q1/data.bin", "202
 
 </details>
 
-#### Lease operations
-
-Write and delete locks on the bound share or on a single file. Share leases are fixed-duration (15 to 60 seconds) or infinite (-1) and renewable; file leases are infinite-only, so `acquireLease` takes no duration and no file-level renew exists.
-
-<details>
-<summary>acquireShareLease</summary>
-
-<div>
-
-Acquires a lease on the bound share, locking it against deletion by anyone not holding the lease id. The duration is 15 to 60 seconds, or -1 for an infinite lease.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `leaseDurationSeconds` | <code>int</code> | Yes | The lease duration: 15 to 60 seconds, or -1 for an infinite lease. |
-| `proposedLeaseId` | <code>string</code> | No | A proposed lease id (a UUID string); when absent, the service generates one. |
-
-**Returns:** `string|Error`
-
-**Sample code:**
-
-```ballerina
-string leaseId = check fileShare->acquireShareLease(-1);
-```
-
-**Sample response:**
-
-```ballerina
-"f8f9f4b5-8b1a-4c6e-9d2e-3f1a2b3c4d5e"
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>renewShareLease</summary>
-
-<div>
-
-Renews a fixed-duration lease on the bound share, restarting its duration; only share leases can be renewed, as file leases are infinite.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `leaseId` | <code>string</code> | Yes | The id of the lease to renew. |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->renewShareLease("f8f9f4b5-8b1a-4c6e-9d2e-3f1a2b3c4d5e");
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>releaseShareLease</summary>
-
-<div>
-
-Releases a lease on the bound share, unlocking it immediately.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `leaseId` | <code>string</code> | Yes | The id of the lease to release. |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->releaseShareLease("f8f9f4b5-8b1a-4c6e-9d2e-3f1a2b3c4d5e");
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>breakShareLease</summary>
-
-<div>
-
-Breaks the lease on the bound share without needing its id, and returns the remaining seconds until the lease is broken.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `breakPeriodSeconds` | <code>int</code> | No | How long the lease keeps running before it is broken; when absent, the lease's own remaining time applies (0 for infinite). |
-
-**Returns:** `int|Error`
-
-**Sample code:**
-
-```ballerina
-int remainingSeconds = check fileShare->breakShareLease();
-```
-
-**Sample response:**
-
-```ballerina
-0
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>changeShareLease</summary>
-
-<div>
-
-Changes the id of the active lease on the bound share.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `leaseId` | <code>string</code> | Yes | The current lease id. |
-| `proposedLeaseId` | <code>string</code> | Yes | The new lease id (a UUID string). |
-
-**Returns:** `string|Error`
-
-**Sample code:**
-
-```ballerina
-string newLeaseId = check fileShare->changeShareLease(
-    "f8f9f4b5-8b1a-4c6e-9d2e-3f1a2b3c4d5e",
-    "0aa2b7d1-4f3c-49e8-8d5a-9c1e2f3a4b5c"
-);
-```
-
-**Sample response:**
-
-```ballerina
-"0aa2b7d1-4f3c-49e8-8d5a-9c1e2f3a4b5c"
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>acquireLease</summary>
-
-<div>
-
-Acquires a lease on a file, locking it against writes and deletion by anyone not holding the lease id. A file lease is always infinite, so this operation takes no duration and there is no file-level renew.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the file. |
-| `proposedLeaseId` | <code>string</code> | No | A proposed lease id (a UUID string); when absent, the service generates one. |
-
-**Returns:** `string|Error`
-
-**Sample code:**
-
-```ballerina
-string leaseId = check fileShare->acquireLease("/2026/q1/report.pdf");
-```
-
-**Sample response:**
-
-```ballerina
-"7d2f5c1a-3b4e-46f8-9a0d-1e2f3a4b5c6d"
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>releaseLease</summary>
-
-<div>
-
-Releases a lease on a file, unlocking it immediately.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the file. |
-| `leaseId` | <code>string</code> | Yes | The id of the lease to release. |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->releaseLease("/2026/q1/report.pdf", "7d2f5c1a-3b4e-46f8-9a0d-1e2f3a4b5c6d");
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>breakLease</summary>
-
-<div>
-
-Breaks the lease on a file without needing its id; the break is immediate.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the file. |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->breakLease("/2026/q1/report.pdf");
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>changeLease</summary>
-
-<div>
-
-Changes the id of the active lease on a file.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the file. |
-| `leaseId` | <code>string</code> | Yes | The current lease id. |
-| `proposedLeaseId` | <code>string</code> | Yes | The new lease id (a UUID string). |
-
-**Returns:** `string|Error`
-
-**Sample code:**
-
-```ballerina
-string newLeaseId = check fileShare->changeLease(
-    "/2026/q1/report.pdf",
-    "7d2f5c1a-3b4e-46f8-9a0d-1e2f3a4b5c6d",
-    "4e5f6a7b-8c9d-40e1-b2f3-a4b5c6d7e8f9"
-);
-```
-
-**Sample response:**
-
-```ballerina
-"4e5f6a7b-8c9d-40e1-b2f3-a4b5c6d7e8f9"
-```
-
-</div>
-
-</details>
-
-#### SMB handle operations
-
-Inspect and force-close open SMB sessions. These operations apply to SMB shares only; calling them on an NFS share fails at runtime.
-
-<details>
-<summary>listFileHandles</summary>
-
-<div>
-
-Lists the open SMB handles on a file.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the file. |
-
-**Returns:** `HandleInfo[]|Error`
-
-**Sample code:**
-
-```ballerina
-files:HandleInfo[] handles = check fileShare->listFileHandles("/2026/q1/report.pdf");
-```
-
-**Sample response:**
-
-```ballerina
-[
-    {
-        handleId: "7194",
-        path: "/2026/q1/report.pdf",
-        sessionId: "9297571480349828096",
-        clientIp: "192.0.2.10",
-        openTime: [1770307200, 0.0]
-    }
-]
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>forceCloseFileHandles</summary>
-
-<div>
-
-Force-closes open SMB handles on a file: one handle by id, or all handles on the file when no id is given.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the file. |
-| `handleId` | <code>string</code> | No | The id of one handle to close (from `listFileHandles`); when absent, all handles on the file are closed. |
-
-**Returns:** `CloseHandlesInfo|Error`
-
-**Sample code:**
-
-```ballerina
-files:CloseHandlesInfo result = check fileShare->forceCloseFileHandles("/2026/q1/report.pdf");
-```
-
-**Sample response:**
-
-```ballerina
-{closedHandles: 1, failedHandles: 0}
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>listDirectoryHandles</summary>
-
-<div>
-
-Lists the open SMB handles on a directory.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `directoryPath` | <code>string</code> | Yes | The share-relative path of the directory. |
-
-**Returns:** `HandleInfo[]|Error`
-
-**Sample code:**
-
-```ballerina
-files:HandleInfo[] handles = check fileShare->listDirectoryHandles("/2026/q1");
-```
-
-**Sample response:**
-
-```ballerina
-[
-    {
-        handleId: "7201",
-        path: "/2026/q1",
-        sessionId: "9297571480349828096",
-        clientIp: "192.0.2.10",
-        openTime: [1770307200, 0.0]
-    }
-]
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>forceCloseDirectoryHandles</summary>
-
-<div>
-
-Force-closes open SMB handles on a directory, optionally recursing into its files and subdirectories.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `directoryPath` | <code>string</code> | Yes | The share-relative path of the directory. |
-| `handleId` | <code>string</code> | No | The id of one handle to close (from `listDirectoryHandles`); when absent, all handles on the directory are closed. |
-| `recursive` | <code>boolean</code> | No | Also close handles on the directory's files and subdirectories. Defaults to `false`. |
-
-**Returns:** `CloseHandlesInfo|Error`
-
-**Sample code:**
-
-```ballerina
-files:CloseHandlesInfo result = check fileShare->forceCloseDirectoryHandles("/2026/q1", recursive = true);
-```
-
-**Sample response:**
-
-```ballerina
-{closedHandles: 3, failedHandles: 0}
-```
-
-</div>
-
-</details>
-
-#### Property update operations
-
-Post-create updates to quota, tier, SMB attributes, permission, and size. Only what is set in the options is changed.
-
-<details>
-<summary>setShareProperties</summary>
-
-<div>
-
-Changes the bound share's quota or access tier; only what is set is changed. This is a share-level administrative operation, so it needs account-level credentials at runtime; a share- or file-scoped SAS fails.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `options` | <code>ShareSetPropertiesOptions</code> | Yes | The properties to change. See [ShareSetPropertiesOptions](#sharesetpropertiesoptions). |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->setShareProperties({quotaInGb: 200});
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>setFileProperties</summary>
-
-<div>
-
-Updates a file's properties after creation: content headers, SMB properties, permission, or size. Only what is set is changed.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the file. |
-| `options` | <code>FileSetPropertiesOptions</code> | Yes | The properties to change. See [FileSetPropertiesOptions](#filesetpropertiesoptions). |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->setFileProperties("/2026/q1/report.pdf", {newFileSizeBytes: 1048576});
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>setDirectoryProperties</summary>
-
-<div>
-
-Updates a directory's properties after creation: SMB properties or permission. Only what is set is changed.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `directoryPath` | <code>string</code> | Yes | The share-relative path of the directory. |
-| `options` | <code>DirectorySetPropertiesOptions</code> | Yes | The properties to change. See [DirectorySetPropertiesOptions](#directorysetpropertiesoptions). |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->setDirectoryProperties("/2026/q1", {filePermission: "O:BAG:SYD:(A;;FA;;;SY)"});
-```
-
-</div>
-
-</details>
-
-#### Access policy operations
-
-Stored access policies on the bound share, which share SAS tokens can reference by identifier.
-
-<details>
-<summary>getShareAccessPolicy</summary>
-
-<div>
-
-Gets the bound share's stored access policies.
-
-**Returns:** `SignedIdentifier[]|Error`
-
-**Sample code:**
-
-```ballerina
-files:SignedIdentifier[] policies = check fileShare->getShareAccessPolicy();
-```
-
-**Sample response:**
-
-```ballerina
-[
-    {
-        id: "quarterly-read",
-        accessPolicy: {expiresOn: [1772985600, 0.0], permissions: "rl"}
-    }
-]
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>setShareAccessPolicy</summary>
-
-<div>
-
-Replaces the bound share's stored access policies. Removing or editing a policy immediately affects every SAS token minted against it.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `identifiers` | <code>SignedIdentifier[]</code> | Yes | The complete set of policies the share should carry. See [SignedIdentifier](#signedidentifier). |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->setShareAccessPolicy([
-    {
-        id: "quarterly-read",
-        accessPolicy: {
-            expiresOn: time:utcAddSeconds(time:utcNow(), 604800),
-            permissions: "rl"
-        }
-    }
-]);
-```
-
-</div>
-
-</details>
-
-#### Permission operations
-
-SDDL security descriptors in the bound share's permission store, used for SMB ACLs. These operations apply to SMB shares only; calling them on an NFS share fails at runtime.
-
-<details>
-<summary>getSharePermission</summary>
-
-<div>
-
-Gets a security descriptor (SDDL string) from the bound share's permission store.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `permissionKey` | <code>string</code> | Yes | The key of the stored permission. |
-
-**Returns:** `string|Error`
-
-**Sample code:**
-
-```ballerina
-string sddl = check fileShare->getSharePermission("1005827081824437120*7960784075439575549");
-```
-
-**Sample response:**
-
-```ballerina
-"O:BAG:SYD:(A;;FA;;;SY)(A;;FA;;;BA)"
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>createSharePermission</summary>
-
-<div>
-
-Stores a security descriptor (SDDL string) in the bound share's permission store and returns its key.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `sddlPermission` | <code>string</code> | Yes | The SDDL (Security Descriptor Definition Language) string to store. |
-
-**Returns:** `string|Error`
-
-**Sample code:**
-
-```ballerina
-string permissionKey = check fileShare->createSharePermission("O:BAG:SYD:(A;;FA;;;SY)(A;;FA;;;BA)");
-```
-
-**Sample response:**
-
-```ballerina
-"1005827081824437120*7960784075439575549"
-```
-
-</div>
-
-</details>
-
 #### SAS generation
 
 These are ordinary methods, not remote functions: they sign locally without a service call, so invoke them with `.` rather than `->`. `generateShareSas` and `generateSas` require the client to hold a `SharedKeyConfig` (or a connection string carrying an account key); the user-delegation variants sign with a `UserDelegationKey` obtained from `AdminClient.getUserDelegationKey`.
@@ -2019,95 +1385,6 @@ string sasToken = check fileShare.generateUserDelegationSas("/2026/q1/report.pdf
 </div>
 
 </details>
-
-#### NFS link operations
-
-Hard and symbolic links. These operations work on NFS shares only; calling them on an SMB share fails at runtime.
-
-<details>
-<summary>createHardLink</summary>
-
-<div>
-
-Creates a hard link to an existing file.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the new link. |
-| `targetPath` | <code>string</code> | Yes | The share-relative path of the existing file to link to. |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->createHardLink("/releases/latest.tar.gz", "/releases/v2.4.1.tar.gz");
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>createSymbolicLink</summary>
-
-<div>
-
-Creates a symbolic link; the target need not exist.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the new link. |
-| `linkTarget` | <code>string</code> | Yes | The path the link points to. |
-
-**Returns:** `Error?`
-
-**Sample code:**
-
-```ballerina
-check fileShare->createSymbolicLink("/releases/current", "/releases/v2.4.1");
-```
-
-</div>
-
-</details>
-
-<details>
-<summary>getSymbolicLink</summary>
-
-<div>
-
-Reads the target of a symbolic link.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | <code>string</code> | Yes | The share-relative path of the link. |
-
-**Returns:** `string|Error`
-
-**Sample code:**
-
-```ballerina
-string target = check fileShare->getSymbolicLink("/releases/current");
-```
-
-**Sample response:**
-
-```ballerina
-"/releases/v2.4.1"
-```
-
-</div>
-
-</details>
-
----
 
 ## AdminClient
 
@@ -2465,16 +1742,6 @@ Options for `AdminClient.createShare`.
 | `enabledProtocols` | <code>ShareProtocol[]</code> | <code>[SMB]</code> | The protocols to enable on the share (SMB and/or NFS). |
 | `rootSquash` | <code>NfsRootSquash</code> | <code>()</code> | The NFS root-squash setting (NFS shares only); when absent, NFS shares default to `NO_ROOT_SQUASH`. |
 
-### ShareSetPropertiesOptions
-
-Options for `Client.setShareProperties`: administrative quota and tier changes.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `quotaInGb` | <code>int</code> | <code>()</code> | The new provisioned capacity of the share, in GiB; when absent, the quota is unchanged. |
-| `accessTier` | <code>ShareAccessTier</code> | <code>()</code> | The new access tier for the share; when absent, the tier is unchanged. |
-| `leaseId` | <code>string</code> | <code>()</code> | The active lease id, required when the share is leased. |
-
 ### ShareDeleteOptions
 
 Options for `AdminClient.deleteShare`.
@@ -2492,9 +1759,6 @@ Options for `Client.createDirectory`.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `metadata` | <code>map&lt;string&gt;</code> | <code>()</code> | User-defined metadata to set on the new directory. |
-| `filePermission` | <code>string</code> | <code>()</code> | An SDDL (Security Descriptor Definition Language) permission string to apply. |
-| `smbProperties` | <code>SmbProperties</code> | <code>()</code> | SMB properties to apply. |
-| `posixProperties` | <code>PosixProperties</code> | <code>()</code> | POSIX owner, group, and mode to apply (NFS shares only). |
 
 ### ListOptions
 
@@ -2515,8 +1779,6 @@ Options for `Client.renameFile` and `Client.renameDirectory`.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `replaceIfExists` | <code>boolean</code> | <code>false</code> | If a file already occupies the destination path, delete it and give its path to the renamed entry. A directory occupying the destination always fails the operation regardless of this flag. |
-| `ignoreReadOnly` | <code>boolean</code> | <code>false</code> | Rename even if the destination has the read-only attribute set (requires `replaceIfExists`). |
-| `filePermission` | <code>string</code> | <code>()</code> | An SDDL permission string to apply to the renamed entry; when absent, the existing permission is preserved. |
 | `metadata` | <code>map&lt;string&gt;</code> | <code>()</code> | User-defined metadata to set on the renamed entry (replaces all existing metadata); when absent, the existing metadata is preserved. |
 
 ### CreateOptions
@@ -2527,9 +1789,6 @@ Options for `Client.createFile` (creating an empty file of a given size).
 |-------|------|---------|-------------|
 | `contentHeaders` | <code>ContentHeaders</code> | <code>()</code> | Content headers to set on the file, such as `Content-Type` and `Cache-Control`. |
 | `metadata` | <code>map&lt;string&gt;</code> | <code>()</code> | User-defined metadata to set on the file. |
-| `filePermission` | <code>string</code> | <code>()</code> | An SDDL permission string to apply. |
-| `smbProperties` | <code>SmbProperties</code> | <code>()</code> | SMB properties to apply. |
-| `posixProperties` | <code>PosixProperties</code> | <code>()</code> | POSIX owner, group, and mode to apply (NFS shares only). |
 
 ### UploadOptions
 
@@ -2539,9 +1798,6 @@ Options for the upload operations (`uploadFile` and `uploadFromStream`; `uploadC
 |-------|------|---------|-------------|
 | `contentHeaders` | <code>ContentHeaders</code> | <code>()</code> | Content headers to set on the file, such as `Content-Type` and `Cache-Control`. |
 | `metadata` | <code>map&lt;string&gt;</code> | <code>()</code> | User-defined metadata to set on the file. |
-| `filePermission` | <code>string</code> | <code>()</code> | An SDDL permission string to apply. |
-| `smbProperties` | <code>SmbProperties</code> | <code>()</code> | SMB properties to apply. |
-| `posixProperties` | <code>PosixProperties</code> | <code>()</code> | POSIX owner, group, and mode to apply (NFS shares only). |
 
 ### UploadContentOptions
 
@@ -2549,7 +1805,7 @@ Options for `uploadContent`: every [UploadOptions](#uploadoptions) field, plus t
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `fileFormat` | <code>FileFormat</code> | <code>()</code> | The serialization format for record and record array content: `JSON`, `XML`, or `CSV`. When absent, the format is inferred from the destination path's extension (`.json`, `.xml`, `.csv`). |
+| `fileFormat` | <code>FileFormat</code> | <code>()</code> | The serialization format for `json`, record, and record array content: `JSON`, `XML`, or `CSV`. When absent, the format is inferred from the destination path's extension (`.json`, `.xml`, `.csv`). |
 
 ### DownloadOptions
 
@@ -2567,10 +1823,6 @@ Options for `Client.copyFile` and `Client.copyFileFromUrl`.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `metadata` | <code>map&lt;string&gt;</code> | <code>()</code> | User-defined metadata to set on the destination; when absent, the metadata is copied from the source file. |
-| `filePermission` | <code>string</code> | <code>()</code> | An SDDL permission string to apply to the destination; setting it requires `permissionCopyMode` to be `OVERRIDE`. |
-| `smbProperties` | <code>SmbProperties</code> | <code>()</code> | SMB properties to apply to the destination. |
-| `permissionCopyMode` | <code>PermissionCopyMode</code> | <code>()</code> | How the destination file's permission is determined; when absent, the security descriptor is copied from the source file (`SOURCE` behavior). |
-| `ignoreReadOnly` | <code>boolean</code> | <code>false</code> | Copy even if the destination has the read-only attribute set; when `false`, a read-only file at the destination fails the copy. |
 
 ### RangeListOptions
 
@@ -2579,28 +1831,6 @@ Options for `Client.listRanges` and `Client.listRangesDiff`.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `range` | <code>Range</code> | <code>()</code> | Restrict the listing to this byte range. |
-
-### FileSetPropertiesOptions
-
-Options for `Client.setFileProperties`. Only what is set is changed; every omitted field leaves the file's current value in place.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `contentHeaders` | <code>ContentHeaders</code> | <code>()</code> | Content headers to set on the file. |
-| `smbProperties` | <code>SmbProperties</code> | <code>()</code> | SMB properties to apply. |
-| `filePermission` | <code>string</code> | <code>()</code> | An SDDL (Security Descriptor Definition Language) permission string to apply. |
-| `newFileSizeBytes` | <code>int</code> | <code>()</code> | A new size for the file, in bytes. |
-| `posixProperties` | <code>PosixProperties</code> | <code>()</code> | POSIX owner, group, and mode to apply (NFS shares only). |
-
-### DirectorySetPropertiesOptions
-
-Options for `Client.setDirectoryProperties`. Only what is set is changed.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `smbProperties` | <code>SmbProperties</code> | <code>()</code> | SMB properties to apply. |
-| `filePermission` | <code>string</code> | <code>()</code> | An SDDL (Security Descriptor Definition Language) permission string to apply. |
-| `posixProperties` | <code>PosixProperties</code> | <code>()</code> | POSIX owner, group, and mode to apply (NFS shares only). |
 
 ### ShareSasSignatureValues
 
@@ -2749,8 +1979,6 @@ Properties of a directory, as returned by `Client.getDirectoryProperties`.
 | `lastModified` | <code>time:Utc</code> | The last-modified time (UTC). |
 | `metadata` | <code>map&lt;string&gt;</code> | User-defined metadata. |
 | `isServerEncrypted` | <code>boolean</code> | Whether the service has encrypted the directory at rest. |
-| `smbProperties` | <code>SmbProperties</code> | SMB-specific properties; populated on SMB shares, absent on NFS shares. |
-| `posixProperties` | <code>PosixProperties</code> | POSIX/NFS-specific properties (NFS shares only). |
 
 ### FileProperties
 
@@ -2774,8 +2002,6 @@ Properties of a file, as returned by `Client.getFileProperties`.
 | `copyStatus` | <code>CopyStatus</code> | The status of the most recent copy operation, if any. |
 | `copyId` | <code>string</code> | The identifier of the most recent copy operation, if any. |
 | `copyProgress` | <code>CopyProgress</code> | Progress of the most recent copy operation, if any. |
-| `smbProperties` | <code>SmbProperties</code> | SMB-specific properties. |
-| `posixProperties` | <code>PosixProperties</code> | POSIX/NFS-specific properties (NFS shares only). |
 
 ### CopyInfo
 
@@ -2835,48 +2061,6 @@ One share snapshot, as returned by `Client.createShareSnapshot` and `Client.list
 | `eTag` | <code>string</code> | The entity tag of the share at the moment of the snapshot. |
 | `lastModified` | <code>time:Utc</code> | The last-modified time of the share at the moment of the snapshot (UTC). |
 
-### HandleInfo
-
-One open SMB handle on a file or directory.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `handleId` | <code>string</code> | The handle identifier; pass to the force-close operations to close just this handle. |
-| `path` | <code>string</code> | The share-relative path the handle is open on. |
-| `fileId` | <code>string</code> | The identifier of the file or directory the handle is open on. |
-| `sessionId` | <code>string</code> | The SMB session identifier the handle belongs to. |
-| `clientIp` | <code>string</code> | The IP address of the client holding the handle. |
-| `openTime` | <code>time:Utc</code> | When the handle was opened (UTC). |
-| `lastReconnectTime` | <code>time:Utc</code> | When the client last reconnected the handle (UTC). |
-
-### CloseHandlesInfo
-
-The result of force-closing SMB handles.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `closedHandles` | <code>int</code> | The number of handles that were closed. |
-| `failedHandles` | <code>int</code> | The number of handles that could not be closed. |
-
-### SignedIdentifier
-
-A stored access policy with its identifier. Share SAS tokens can reference the policy by `id`.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | <code>string</code> | The policy identifier referenced by SAS tokens (at most 64 characters). |
-| `accessPolicy` | <code>AccessPolicy</code> | The policy itself: validity window and permissions. |
-
-### AccessPolicy
-
-A stored access policy's validity window and permissions.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `startsOn` | <code>time:Utc</code> | The start of the policy's validity period (UTC); omit for immediately valid. |
-| `expiresOn` | <code>time:Utc</code> | The end of the policy's validity period (UTC); omit for no expiry. |
-| `permissions` | <code>string</code> | The permission string, in the service's fixed letter order (e.g. `rwdl` for read, write, delete, list). |
-
 ### ServiceProperties
 
 The account's file-service configuration: request-metrics collection and cross-origin resource sharing rules.
@@ -2933,45 +2117,16 @@ A key for signing user-delegation SAS tokens, obtained via `AdminClient.getUserD
 | `signedVersion` | <code>string</code> | The storage service version the key was issued for. |
 | `value` | <code>string</code> | The key itself, base64-encoded. |
 
-### SmbProperties
-
-SMB-specific properties of a file or directory. Populated on SMB shares and absent on NFS shares.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `ntfsFileAttributes` | <code>NtfsFileAttribute[]</code> | The NTFS attributes of the file or directory. More than one attribute can be set at a time (e.g. read-only and hidden). |
-| `filePermissionKey` | <code>string</code> | The key of a permission (SDDL string) stored in the share's permission store. |
-| `fileCreationTime` | <code>time:Utc</code> | The creation time (UTC). |
-| `fileLastWriteTime` | <code>time:Utc</code> | The last-write time (UTC): the last time data was written to the file, excluding metadata changes. |
-| `fileChangeTime` | <code>time:Utc</code> | The change time (UTC): the last time the file's content or metadata (permissions, size, attributes) was modified. |
-| `fileId` | <code>string</code> | The file identifier. |
-| `parentId` | <code>string</code> | The parent directory identifier. |
-
-### PosixProperties
-
-POSIX/NFS-specific properties of a file or directory. Present only on NFS shares.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `owner` | <code>string</code> | The owner user id (UID). |
-| `group` | <code>string</code> | The owning group id (GID). |
-| `fileMode` | <code>string</code> | The file mode (permissions), octal or symbolic. |
-| `fileType` | <code>NfsFileType</code> | The NFS file type (regular file, directory, or symbolic link). |
-| `linkCount` | <code>int</code> | The number of hard links to the file (number of references to the file). |
-
 ### Enums
 
 - `ShareAccessTier`: `HOT`, `COOL`, `TRANSACTION_OPTIMIZED`, `PREMIUM`.
 - `ShareProtocol`: `SMB`, `NFS`.
 - `ShareSnapshotsDeleteOption`: `INCLUDE`, `INCLUDE_LEASED`.
 - `NfsRootSquash`: `NO_ROOT_SQUASH`, `ROOT_SQUASH`, `ALL_SQUASH`.
-- `NfsFileType`: `REGULAR`, `DIRECTORY`, `SYMLINK`.
-- `NtfsFileAttribute`: `READ_ONLY`, `HIDDEN`, `SYSTEM`, `NORMAL`, `DIRECTORY`, `ARCHIVE`, `TEMPORARY`, `OFFLINE`, `NOT_CONTENT_INDEXED`, `NO_SCRUB_DATA`.
 - `CopyStatus`: `PENDING`, `SUCCESS`, `ABORTED`, `FAILED`.
 - `LeaseState`: `AVAILABLE`, `LEASED`, `EXPIRED`, `BREAKING`, `BROKEN`.
 - `LeaseStatus`: `LOCKED`, `UNLOCKED`.
 - `LeaseDuration`: `INFINITE`, `FIXED`.
-- `PermissionCopyMode`: `SOURCE`, `OVERRIDE`.
 - `SasProtocol`: `HTTPS`, `HTTPS_HTTP`.
 - `RetryPolicyType`: `EXPONENTIAL`, `FIXED`.
 - `ProxyType`: `HTTP`, `SOCKS4`, `SOCKS5`.

@@ -77,9 +77,9 @@ The `byte[]` form of `onFile` loads the whole file into memory; prefer the strea
 |----------|-----------|-------------|
 | `onFile` | <code>remote function onFile(byte[] content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched file, delivering the raw content. Also accepts the content as <code>stream&lt;byte[], error?&gt;</code> for streaming large files. |
 | `onFileText` | <code>remote function onFileText(string content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.txt` file, delivering the content as a string. |
-| `onFileJson` | <code>remote function onFileJson(map&lt;json&gt; content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.json` file, delivering the parsed content. Also binds to a bare <code>json</code>, a user-defined record, a <code>map&lt;json&gt;[]</code>, or a record array. |
+| `onFileJson` | <code>remote function onFileJson(json content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.json` file, delivering the parsed content. Also binds to a user-defined record. |
 | `onFileXml` | <code>remote function onFileXml(xml content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.xml` file, delivering the document. Also binds to a user-defined record. |
-| `onFileCsv` | <code>remote function onFileCsv(string[][] content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.csv` file, delivering the rows. Also binds to a record array or a stream of rows or records. |
+| `onFileCsv` | <code>remote function onFileCsv(MyRow[] content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.csv` file, delivering the rows bound to a record array. Also binds to a stream of records. |
 | `onError` | <code>remote function onError(files:Error err, files:Caller caller) returns error?</code> | Invoked when a poll fails or when a file's content cannot be bound to the typed parameter of a content handler. |
 
 :::note
@@ -87,7 +87,7 @@ The trailing parameters are optional. A content handler declares its content par
 :::
 
 :::note
-Each content parameter is declared with exactly one of its accepted types. `onFile` takes `byte[]` or `stream<byte[], error?>`. `onFileJson` takes `json`, `map<json>`, a record, or an array of those forms. `onFileXml` takes `xml` or a record. `onFileCsv` takes `string[][]`, a record array, `stream<string[], error?>`, or a stream of records. The CSV string and stream-of-rows forms include the header row; the record forms consume the file's first row as the header.
+Each content parameter is declared with exactly one of its accepted types. `onFile` takes `byte[]` or `stream<byte[], error?>`. `onFileJson` takes a `json` value or a record. `onFileXml` takes `xml` or a record. `onFileCsv` takes a record array or a stream of records; both map each row's fields through the file's first row, the header.
 :::
 
 ### Full usage example
@@ -190,7 +190,7 @@ The type of the optional `@files:FunctionConfig` annotation on individual handle
 | `moveTo` | <code>string</code> | Required | The target directory; the file keeps its name and the directory is created if absent. |
 | `preserveSubDirs` | <code>boolean</code> | <code>true</code> | Recreate the file's sub-path under the target directory on recursive watches. |
 
-A move onto an existing same-named file fails.
+A move onto an existing same-named file replaces it.
 
 ### `Caller`
 

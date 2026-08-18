@@ -223,7 +223,7 @@ Select **Save** to register the `onFileJson` handler on the service.
 
 #### Step 8: Add a log statement to the handler
 
-After the handler is saved, WSO2 Integrator opens the handler's flow canvas. The handler receives the parsed file content as an input named `content` of type `map<json>`.
+After the handler is saved, WSO2 Integrator opens the handler's flow canvas. The handler receives the parsed file content as an input named `content` of type `json`.
 
 1. Select the **+** inside the handler flow and choose **Log Info** from the **Logging** section in the side panel.
 2. In the expression editor, select `content` from the **Inputs** list, then append `.toJsonString()`.

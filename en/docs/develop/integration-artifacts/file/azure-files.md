@@ -257,8 +257,13 @@ remote function onFileJson(Order 'order, files:FileInfo file) returns error? {
 **CSV streaming handler (large files):**
 
 ```ballerina
-remote function onFileCsv(stream<string[], error?> content, files:FileInfo file) returns error? {
-    check content.forEach(function(string[] row) {
+type Row record {|
+    string orderId;
+    int quantity;
+|};
+
+remote function onFileCsv(stream<Row, error?> content, files:FileInfo file) returns error? {
+    check content.forEach(function(Row row) {
         // Process each row without loading the whole file into memory
     });
 }
@@ -292,9 +297,9 @@ The **Format** chosen on an On Create handler determines the function name and t
 | Format | Handler function | Routed extension | Content type | Use when |
 |---|---|---|---|---|
 | **Text** | `onFileText` | `.txt` | `string` | Files are plain text (logs, EDI, custom formats). |
-| **JSON** | `onFileJson` | `.json` | `json`, `map<json>`, a typed record, or an array of those | Files are JSON documents. |
+| **JSON** | `onFileJson` | `.json` | `json` or a typed record | Files are JSON documents. |
 | **XML** | `onFileXml` | `.xml` | `xml` or a typed record | Files are XML documents. |
-| **CSV** | `onFileCsv` | `.csv` | `string[][]`, `record[]`, or a stream variant | Files are comma-separated values. Use a typed record to map rows automatically; use a stream for large files. |
+| **CSV** | `onFileCsv` | `.csv` | `record[]` or `stream<record, error?>` | Files are comma-separated values. Rows map through the header row into your record type; use a stream for large files. |
 | **Raw Bytes** | `onFile` | any other extension | `byte[]` or `stream<byte[], error?>` | Binary files or when you need raw byte access. |
 
 Routing rules:
@@ -362,9 +367,9 @@ remote function onFileJson(Order 'order, files:FileInfo file) returns error? {
 
 ### Typed content and streaming
 
-JSON, XML, and CSV handlers can receive their payload as a free-form value (`map<json>`, `xml`, `string[][]`) or as a typed record you define. CSV and Raw Bytes handlers can additionally receive the content as a `stream<T, error?>`, so the handler never holds the whole file in memory. The **Format** picker on the handler form selects the base delivery type; to bind typed records or streams, edit the handler's content parameter type in the code view.
+JSON and XML handlers can receive their payload as a free-form value (`json`, `xml`) or as a typed record you define; CSV handlers bind typed records only. CSV and Raw Bytes handlers can additionally receive the content as a `stream<T, error?>`, so the handler never holds the whole file in memory. The **Format** picker on the handler form selects the base delivery type; to bind typed records or streams, edit the handler's content parameter type in the code view.
 
-**Typed CSV rows** — the file's first row is consumed as the header and maps each row's fields; the `string[][]` and `stream<string[], error?>` forms keep every row instead:
+**Typed CSV rows** — the file's first row is always consumed as the header and maps each row's fields:
 
 ```ballerina
 type Order record {|
@@ -438,10 +443,10 @@ For most use cases, the typed handler parameters and the `@files:FunctionConfig`
 
 | Operation | Return type | Description |
 |---|---|---|
-| `caller->getFile(path, options)` | `T\|Error` | Retrieve a file's content in the form the assignment target selects — `byte[]`, `string`, `json`, `xml`, CSV rows, a typed record or record array, or a lazy stream |
+| `caller->getFile(path, options)` | `T\|Error` | Retrieve a file's content in the form the assignment target selects — `byte[]`, `string`, `json`, `xml`, a typed record or record array, or a lazy stream |
 | `caller->downloadFile(sourcePath, destinationPath, options)` | `Error?` | Download a file to a local path |
 | `caller->uploadFile(sourcePath, destinationPath, options)` | `Error?` | Upload a local file to the share |
-| `caller->uploadContent(content, destinationPath, options)` | `Error?` | Upload in-memory content — `byte[]`, `string`, `xml`, CSV rows, a record, or a record array |
+| `caller->uploadContent(content, destinationPath, options)` | `Error?` | Upload in-memory content — `byte[]`, `string`, `json`, `xml`, a record, or a record array |
 
 **File management:**
 
@@ -498,8 +503,13 @@ listener files:Listener invoicesListener = new (shareName,
     auth = {accountName, accountKey}
 );
 
+type OrderRow record {|
+    string orderId;
+    int quantity;
+|};
+
 service /orders on ordersListener {
-    remote function onFileCsv(string[][] content, files:FileInfo file) returns error? {
+    remote function onFileCsv(OrderRow[] content, files:FileInfo file) returns error? {
         // Process order CSVs from /orders
     }
 }
@@ -520,13 +530,18 @@ For the general concept, see [Services and listeners](../../../get-started/conce
 The optional `@files:ServiceConfig` annotation controls what the service watches — recursion into subdirectories, file-name filtering, and a minimum file age. It does not carry a path: the watched path is the service's attach point, so where the [FTP/SFTP service](ftp-sftp.md#service-configuration) sets a `path` field, the Azure Files service is declared as `service /incoming on shareListener`.
 
 ```ballerina
+type OrderRow record {|
+    string orderId;
+    int quantity;
+|};
+
 @files:ServiceConfig {
     recursive: false,
     fileNamePattern: ".*\\.csv",
     minFileAgeSeconds: 30
 }
 service /incoming/orders on shareListener {
-    remote function onFileCsv(string[][] content, files:FileInfo file) returns error? {
+    remote function onFileCsv(OrderRow[] content, files:FileInfo file) returns error? {
         // Process order CSVs
     }
 }
