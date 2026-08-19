@@ -1,6 +1,6 @@
 ---
 title: FTP / SFTP
-description: Process files from FTP, SFTP, and FTPS servers using polling, pattern matching, and typed content retrieval.
+description: Process files from FTP, SFTP, and FTPS servers using polling, pattern matching, and data binding.
 ---
 
 import Tabs from '@theme/Tabs';
@@ -345,10 +345,9 @@ In the **Service Designer**, click **+ Add File Handler** and pick **onCreate**,
 | Field | Description |
 |---|---|
 | **File Format** | (onCreate only) The format of incoming files. Determines the handler function name and the type of the `content` parameter. Options: **TEXT**, **JSON**, **XML**, **CSV**, **RAW**. See [Content types](#content-types). |
-| **Rows** | (CSV only) The content schema is defined per row — each CSV row maps to a record type (Row schema). |
-| **Stream (Large Files)** | (CSV and RAW) Process the file content in chunks instead of loading it all into memory. See [Typed content and streaming](#typed-content-and-streaming). |
-| **+ Define Row Schema** | (CSV only) Map CSV rows to a typed record. See [Typed content and streaming](#typed-content-and-streaming). |
-| **+ Define Content Schema** | (JSON, XML only) Map the document to a typed record. See [Typed content and streaming](#typed-content-and-streaming). |
+| **+ Define Content Schema** | (JSON, XML only) Binds the document to a record type you build in a form. See [Data binding](#data-binding). |
+| **+ Define Row Schema** | (CSV only) Binds each row to a record type you build in a form. See [Data binding](#data-binding). |
+| **Stream (Large Files)** | (CSV, RAW only) Hands the handler the file a piece at a time instead of loading it all into memory. See [Streaming large files](#streaming-large-files). |
 | **After File Processing — Success** | Action to take when the handler completes without error: **Move** to a destination path or **Delete** the file. See [Post-processing](#post-processing-moving-or-deleting-files). |
 | **After File Processing — Error** | Action to take when the handler returns an error: **Move** to an error directory or **Delete** the file. |
 
@@ -374,7 +373,7 @@ remote function onFileText(string content, ftp:FileInfo fileInfo) returns error?
 }
 ```
 
-**JSON file handler (typed record):**
+**JSON file handler (bound to a record type):**
 
 ```ballerina
 type Order record {|
@@ -432,9 +431,9 @@ The **File Format** chosen on an onCreate handler determines the function name a
 | File Format | Handler function | Content type | Use when |
 |---|---|---|---|
 | **TEXT** | `onFileText` | `string` | Files are plain text (logs, EDI, custom formats). |
-| **JSON** | `onFileJson` | `json` or a typed record | Files are JSON documents. |
-| **XML** | `onFileXml` | `xml` or a typed record | Files are XML documents. |
-| **CSV** | `onFileCsv` | `string[][]`, `record[]`, or a stream variant | Files are comma-separated values. Use a typed record to map rows automatically. Enable **Stream** for large files. |
+| **JSON** | `onFileJson` | `json` or a record type | Files are JSON documents. |
+| **XML** | `onFileXml` | `xml` or a record type | Files are XML documents. |
+| **CSV** | `onFileCsv` | `string[][]`, `record[]`, or a stream variant | Files are comma-separated values. Define a row schema to bind each row to a record type. Enable **Stream** for large files. |
 | **RAW** | `onFile` | `byte[]` or `stream<byte[], error?>` | Binary files or when you need raw byte access. Enable **Stream** for large files. |
 
 ### Post-processing: moving or deleting files
@@ -486,32 +485,40 @@ remote function onFileText(string content, ftp:FileInfo fileInfo) returns error?
 </TabItem>
 </Tabs>
 
-### Typed content and streaming
+### Data binding
 
-CSV, JSON, and XML handlers can receive their payload as a free-form type (`string[][]`, `json`, `xml`) or as a typed record you define. CSV and RAW can additionally deliver the content as a `stream<T, error?>` so the handler never holds the whole file in memory. Both options are set on the Add File Handler form.
+A handler can take the file content in a generic shape (`json`, `xml`, or a list of raw CSV values), or bound to a **record type** you define. Binding to a record type is what lets you refer to `order.quantity` in the handler instead of picking values out of a raw document, and it catches misspelled fields and wrong value types before the integration ever runs.
+
+> **New to record types?** A record type is just a named shape for your data — a list of the fields it holds and the kind of value in each. If your CSV has the columns `orderId`, `product`, and `quantity`, the record type names those three fields and says which holds text and which holds a number. You build it from a form in the Visual Designer, so there is nothing to write by hand. For the language-level detail, see [Type System & Records](../../../reference/language/type-system.md#records).
 
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-**Map the payload to a typed record.** Click the button exposed by the selected **File Format**:
+On the Add File Handler form, the **File Format** you pick decides which button appears:
 
 | File Format | Button | What it does |
 |---|---|---|
-| **CSV** | **+ Define Row Schema** | Opens a record builder for a single CSV row; the handler's `content` parameter becomes `YourRow[]`. |
-| **JSON** | **+ Define Content Schema** | Opens a record builder for the whole JSON document; the handler's `content` parameter becomes `YourRecord`. |
-| **XML** | **+ Define Content Schema** | Same as JSON — the handler receives a typed record mapped from the XML document. |
-| **TEXT**, **RAW** | — | Content is always a `string` or `byte[]`; no schema to define. |
+| **JSON** | **+ Define Content Schema** | Builds a record type for the whole JSON document. Skip it and the handler receives plain `json`. |
+| **XML** | **+ Define Content Schema** | Builds a record type for the whole XML document. Skip it and the handler receives plain `xml`. |
+| **CSV** | **+ Define Row Schema** | Builds a record type for **one row**; each row of the file then arrives as one filled-in record. Skip it and every row arrives as a list of raw text values. |
+| **TEXT**, **RAW** | — | Nothing to define — the content is always plain text or raw bytes. |
 
-The record builder lets you add fields one at a time. Each field gets a name and a Ballerina type (`string`, `int`, `decimal`, `boolean`, or another record). Saving the schema updates the handler signature so you get type-checked field access inside the body.
+The button opens a record builder. Add one field at a time, giving each a name and a type:
 
-**Stream the content for large files.** On CSV and RAW handlers, tick **Stream (Large Files)**. The `content` parameter becomes a `stream<T, error?>` and the runtime pipes the file to the handler incrementally — iterate with `content.forEach(...)` instead of holding the whole payload.
+| Pick this type | For values like |
+|---|---|
+| `string` | Text — names, IDs, reference codes |
+| `int` | Whole numbers — quantities, counts |
+| `decimal` | Numbers with a fractional part — prices, rates |
+| `boolean` | True/false flags |
+| Another record | A nested object inside the document |
 
-Stream combines with Define Row Schema (CSV) — ticking both produces `stream<YourRow, error?>`. JSON and XML always parse the entire document at once and do not offer streaming.
+Field names have to match what is in the file — the JSON keys, the XML element names, or the CSV column headers. Once you save the schema the handler is rewritten to use it, and the fields become available by name in the expression editor everywhere you use the content.
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
 
-**Typed CSV rows:**
+**CSV rows bound to a record:**
 
 ```ballerina
 type Order record {|
@@ -522,12 +529,12 @@ type Order record {|
 
 remote function onFileCsv(Order[] orders, ftp:FileInfo fileInfo) returns error? {
     foreach Order 'order in orders {
-        // typed field access: 'order.orderId, 'order.quantity, ...
+        // field access is type-checked: 'order.orderId, 'order.quantity, ...
     }
 }
 ```
 
-**Typed JSON document:**
+**A JSON document bound to a record:**
 
 ```ballerina
 type OrderBatch record {|
@@ -540,6 +547,37 @@ remote function onFileJson(OrderBatch batch, ftp:FileInfo fileInfo) returns erro
 }
 ```
 
+An `onFileXml` handler binds the same way. Leave the parameter as `json`, `xml`, or `string[][]` to skip binding altogether.
+
+</TabItem>
+</Tabs>
+
+### Streaming large files
+
+The runtime normally reads the whole file into memory before calling the handler. For a large file — a multi-gigabyte CSV export, say — that can exhaust the memory the integration has to work with. Streaming avoids it: the runtime hands the handler the file a piece at a time and the handler works through the pieces in order.
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+Tick **Stream (Large Files)** on the Add File Handler form. The option only appears for the **CSV** and **RAW** formats:
+
+| File Format | What the handler receives when streaming is on |
+|---|---|
+| **CSV** | One row at a time. Combine it with **+ Define Row Schema** and each row arrives as a filled-in record. |
+| **RAW** | The file in 8 KB blocks. |
+
+**JSON** and **XML** offer no streaming option — both have to be read in full before they can be parsed.
+
+Two things to keep in mind:
+
+- Leave the option off unless the files really are large. A handler that gets the whole content is simpler to build.
+- Streamed content can only be read once, start to finish. If the handler needs to go over the content twice, or look at the end before the beginning, don't stream it.
+
+</TabItem>
+<TabItem value="code" label="Ballerina Code">
+
+Streaming turns the content parameter into a `stream<T, error?>`. Iterate it with `forEach`:
+
 **Streaming CSV rows:**
 
 ```ballerina
@@ -549,6 +587,8 @@ remote function onFileCsv(stream<Order, error?> orders, ftp:FileInfo fileInfo) r
     });
 }
 ```
+
+Use `stream<string[], error?>` instead when you have not defined a row schema — each row then arrives as an array of raw column values.
 
 **Streaming raw bytes:**
 
@@ -580,7 +620,7 @@ Each handler receives an `ftp:FileInfo` parameter with metadata about the incomi
 
 ### Caller operations
 
-For most use cases, the typed handler parameters (`string`, `json`, `xml`, records, streams) and `@ftp:FunctionConfig` post-processing actions are sufficient. When you need additional control — such as reading a related file, writing output to a different path, or managing files manually — add the `ftp:Caller` parameter to your handler. It provides typed read and write operations on the connected server using the same session.
+For most use cases, the handler content parameter (`string`, `json`, `xml`, records, streams) and `@ftp:FunctionConfig` post-processing actions are sufficient. When you need additional control — such as reading a related file, writing output to a different path, or managing files manually — add the `ftp:Caller` parameter to your handler. It provides typed read and write operations on the connected server using the same session.
 
 **Reading files:**
 

@@ -1,6 +1,6 @@
 ---
 title: SMB
-description: Process files from SMB network shares — Windows file servers, NAS appliances, and Samba hosts — using polling, pattern matching, and typed content retrieval.
+description: Process files from SMB network shares — Windows file servers, NAS appliances, and Samba hosts — using polling, pattern matching, and data binding.
 ---
 
 import Tabs from '@theme/Tabs';
@@ -140,6 +140,9 @@ In the service designer, select **+ Handler**, then pick **On Create**, **On Del
 | Field | Description |
 |---|---|
 | **Format** | (On Create only) The format of incoming files. Determines the handler function name and the type of the `content` parameter. Options: **Text**, **JSON**, **XML**, **CSV**, **Raw Bytes**. See [Content types](#content-types). |
+| **+ Define Content Schema** | (JSON, XML only) Binds the document to a record type you build in a form. See [Data binding](#data-binding). |
+| **+ Define Row Schema** | (CSV only) Binds each row to a record type you build in a form. See [Data binding](#data-binding). |
+| **Stream (Large Files)** | (CSV, Raw Bytes only) Hands the handler the file a piece at a time instead of loading it all into memory. See [Streaming large files](#streaming-large-files). |
 | **On Success** | Action to take when the handler completes without returning an error: **Move** the file to another directory, or **Delete** it. See [Post-processing](#post-processing-moving-or-deleting-files). |
 | **On Error** | Action to take when the handler returns an error. Same choices as **On Success**. |
 | **Move To** | Destination directory, required when **Move** is selected. |
@@ -172,7 +175,7 @@ remote function onFileText(string content, smb:FileInfo fileInfo) returns error?
 }
 ```
 
-**JSON file handler (typed record):**
+**JSON file handler (bound to a record type):**
 
 ```ballerina
 type Order record {|
@@ -230,9 +233,9 @@ The **Format** chosen on an On Create handler determines the function name and t
 | Format | Handler function | Content type | Use when |
 |---|---|---|---|
 | **Text** | `onFileText` | `string` | Files are plain text (logs, EDI, custom formats). |
-| **JSON** | `onFileJson` | `json` or a typed record | Files are JSON documents. |
-| **XML** | `onFileXml` | `xml` or a typed record | Files are XML documents. |
-| **CSV** | `onFileCsv` | `string[][]`, a record array, or a stream variant | Files are comma-separated values. Use a typed record to map rows automatically. |
+| **JSON** | `onFileJson` | `json` or a record type | Files are JSON documents. |
+| **XML** | `onFileXml` | `xml` or a record type | Files are XML documents. |
+| **CSV** | `onFileCsv` | `string[][]`, a record array, or a stream variant | Files are comma-separated values. Define a row schema to bind each row to a record type. |
 | **Raw Bytes** | `onFile` | `byte[]` or `stream<byte[], error?>` | Binary files, or when you need raw byte access. |
 
 ### Post-processing: moving or deleting files
@@ -291,6 +294,126 @@ afterProcess: {
 </TabItem>
 </Tabs>
 
+### Data binding
+
+A handler can take the file content in a generic shape (`json`, `xml`, or a list of raw CSV values), or bound to a **record type** you define. Binding to a record type is what lets you refer to `order.quantity` in the handler instead of picking values out of a raw document, and it catches misspelled fields and wrong value types before the integration ever runs.
+
+> **New to record types?** A record type is just a named shape for your data — a list of the fields it holds and the kind of value in each. If your CSV has the columns `orderId`, `product`, and `quantity`, the record type names those three fields and says which holds text and which holds a number. You build it from a form in the Visual Designer, so there is nothing to write by hand. For the language-level detail, see [Type System & Records](../../../reference/language/type-system.md#records).
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+On the Add File Handler form, the **Format** you pick decides which button appears:
+
+| Format | Button | What it does |
+|---|---|---|
+| **JSON** | **+ Define Content Schema** | Builds a record type for the whole JSON document. Skip it and the handler receives plain `json`. |
+| **XML** | **+ Define Content Schema** | Builds a record type for the whole XML document. Skip it and the handler receives plain `xml`. |
+| **CSV** | **+ Define Row Schema** | Builds a record type for **one row**; each row of the file then arrives as one filled-in record. Skip it and every row arrives as a list of raw text values. |
+| **Text**, **Raw Bytes** | — | Nothing to define — the content is always plain text or raw bytes. |
+
+The button opens a record builder. Add one field at a time, giving each a name and a type:
+
+| Pick this type | For values like |
+|---|---|
+| `string` | Text — names, IDs, reference codes |
+| `int` | Whole numbers — quantities, counts |
+| `decimal` | Numbers with a fractional part — prices, rates |
+| `boolean` | True/false flags |
+| Another record | A nested object inside the document |
+
+Field names have to match what is in the file — the JSON keys, the XML element names, or the CSV column headers. Once you save the schema the handler is rewritten to use it, and the fields become available by name in the expression editor everywhere you use the content.
+
+</TabItem>
+<TabItem value="code" label="Ballerina Code">
+
+**CSV rows bound to a record:**
+
+```ballerina
+type Order record {|
+    string orderId;
+    string product;
+    int quantity;
+|};
+
+remote function onFileCsv(Order[] orders, smb:FileInfo fileInfo) returns error? {
+    foreach Order 'order in orders {
+        // field access is type-checked: 'order.orderId, 'order.quantity, ...
+    }
+}
+```
+
+**A JSON document bound to a record:**
+
+```ballerina
+type OrderBatch record {|
+    string batchId;
+    Order[] orders;
+|};
+
+remote function onFileJson(OrderBatch batch, smb:FileInfo fileInfo) returns error? {
+    // batch.batchId and batch.orders are typed
+}
+```
+
+An `onFileXml` handler binds the same way. Leave the parameter as `json`, `xml`, or `string[][]` to skip binding altogether.
+
+</TabItem>
+</Tabs>
+
+### Streaming large files
+
+The runtime normally reads the whole file into memory before calling the handler. For a large file — a multi-gigabyte CSV export, say — that can exhaust the memory the integration has to work with. Streaming avoids it: the runtime hands the handler the file a piece at a time and the handler works through the pieces in order.
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+Tick **Stream (Large Files)** on the Add File Handler form. The option only appears for the **CSV** and **Raw Bytes** formats:
+
+| Format | What the handler receives when streaming is on |
+|---|---|
+| **CSV** | One row at a time. Combine it with **+ Define Row Schema** and each row arrives as a filled-in record. |
+| **Raw Bytes** | The file in 64 KB blocks. |
+
+**JSON** and **XML** offer no streaming option — both have to be read in full before they can be parsed.
+
+Two things to keep in mind:
+
+- Leave the option off unless the files really are large. A handler that gets the whole content is simpler to build.
+- Streamed content can only be read once, start to finish. If the handler needs to go over the content twice, or look at the end before the beginning, don't stream it.
+
+</TabItem>
+<TabItem value="code" label="Ballerina Code">
+
+Streaming turns the content parameter into a `stream<T, error?>`. Iterate it with `forEach`:
+
+**Streaming CSV rows:**
+
+```ballerina
+remote function onFileCsv(stream<Order, error?> orders, smb:FileInfo fileInfo) returns error? {
+    check orders.forEach(function(Order 'order) {
+        // process each row as it arrives
+    });
+}
+```
+
+Use `stream<string[], error?>` instead when you have not defined a row schema — each row then arrives as an array of raw column values.
+
+**Streaming raw bytes:**
+
+```ballerina
+remote function onFile(stream<byte[], error?> content, smb:FileInfo fileInfo) returns error? {
+    check content.forEach(function(byte[] chunk) {
+        // process each chunk
+    });
+}
+```
+
+Chunks are a fixed 64 KB for the listener; the listener's `bufferSize` setting does not affect them, as it governs client-side reads and writes.
+
+</TabItem>
+</Tabs>
+
 ### FileInfo
 
 Enable **File Metadata (fileInfo)** to receive an `smb:FileInfo` parameter describing the incoming file.
@@ -313,7 +436,7 @@ Enable **File Metadata (fileInfo)** to receive an `smb:FileInfo` parameter descr
 
 ### Caller operations
 
-For most cases the typed content parameter and the post-processing annotation are enough. When you need more control — reading a related file, writing output elsewhere, or managing files yourself — enable **SMB Connection (caller)** to add an `smb:Caller` parameter. It reuses the listener's session.
+For most cases the content parameter and the post-processing annotation are enough. When you need more control — reading a related file, writing output elsewhere, or managing files yourself — enable **SMB Connection (caller)** to add an `smb:Caller` parameter. It reuses the listener's session.
 
 **Reading files:**
 
