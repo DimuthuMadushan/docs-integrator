@@ -160,15 +160,18 @@ service on tracker {
         }
     }
 
+    // Fires on a failed poll and on a file that was listed but could not be read.
+    // Deliberately unannotated: an @files:FunctionConfig here would consume the file,
+    // and a tracker must never alter the share it observes.
     remote function onError(files:Error err) returns error? {
-        log:printError("change tracker poll failed", 'error = err);
+        log:printError("change tracker listener error", 'error = err);
     }
 }
 ```
 
-Note what this service does **not** do: it never deletes or moves the files it observes. Most listener integrations consume each file after processing it; a tracker is the opposite, a pure observer, which is exactly why the unchanged-file absorption in Step 2 is essential.
+Note what this service does **not** do: it never deletes or moves the files it observes. Most listener integrations consume each file after processing it; a tracker is the opposite, a pure observer, which is exactly why the unchanged-file absorption in Step 2 is essential. Keep it that way in the annotations too: `@files:FunctionConfig` is accepted on `onError` as well as on the content handlers, and any `afterProcess` or `afterError` there would delete or move the file, manufacturing a false deletion on the next sweep.
 
-The `onError` handler keeps trouble visible: if a poll fails (an expired credential, a network problem), you hear about it instead of the event stream going silently quiet.
+The `onError` handler keeps trouble visible. It fires on three things: a failed poll (an expired credential, a network problem), a file that was listed but whose content could not be read, and a content-binding failure. The middle one matters for a tracker: a file that cannot be read is never dispatched to `onFile`, so its created or modified event waits for a poll whose read succeeds, but because the *listing* still saw it, the sweep will not misreport it as deleted. Without `onError` you would see neither the delay nor its cause.
 
 ## Step 4: Catch deletions with a scheduled sweep
 
@@ -244,7 +247,7 @@ isolated function onFileDeleted(string path) {
 
 **Restart behavior.** The snapshot lives in memory, so a restart re-baselines: every present file is reported as created again, and deletions that happened while the tracker was down are missed. If that matters for your integration, persist the snapshot map (as JSON to a local file, or even to a file on the share itself): load it at startup, save it after each sweep. The event hooks make natural save points.
 
-**Delivery semantics.** The derived events are best-effort, weaker than the listener's own at-least-once file delivery: `observe` and `reconcile` commit the snapshot state before your hook runs, so a crash between the commit and the hook drops that one event, while a restart re-baselines the snapshot and replays every present file as created. Plan for both directions. Make the hooks idempotent so replays are harmless downstream, and if an event must never be lost, persist the snapshot only after the hook has handed the event off durably, so a crash replays the event instead of dropping it.
+**Delivery semantics.** The derived events are best-effort, weaker than the listener's own at-least-once file delivery: `observe` and `reconcile` commit the snapshot state before your hook runs, so a crash between the commit and the hook drops that one event, while a restart re-baselines the snapshot and replays every present file as created. A third gap is narrower but now visible: a file the listener lists and then fails to read is not dispatched, so its event waits for a later poll. `onError` reports it, and because the sweep works off the listing rather than the read, that file is never mistaken for a deletion. Plan for all three. Make the hooks idempotent so replays are harmless downstream, and if an event must never be lost, persist the snapshot only after the hook has handed the event off durably, so a crash replays the event instead of dropping it.
 
 **Interval tuning.** The listener's poll and the sweep run on independent schedules; 5 seconds each makes a responsive demo. For large shares, lengthen both, and remember each tick lists the share, so the cost scales with the share's file count, not with how much changed.
 

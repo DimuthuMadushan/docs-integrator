@@ -117,10 +117,13 @@ Select **Save Connection** to persist the connection. The form closes and `azFil
 
 ![Completed Azure Files automation flow](/img/connectors/catalog/storage-file/azure.storage.files/azure_files_screenshot_06_completed_flow.png)
 
-<!-- ### Try it yourself
-     No published integration sample exists for this connector yet.
-     When one is published, restore the heading and add the Devant badge and source link:
-     integrator-default-profile/connectors/azure_files_connector_sample -->
+### Try it yourself
+
+Try this sample in WSO2 Integration Platform.
+
+[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/connectors/azure.storage.files_connector_sample)
+
+[View source on GitHub](https://github.com/wso2/integration-samples/tree/main/integrator-default-profile/connectors/azure.storage.files_connector_sample)
 
 ---
 
@@ -203,7 +206,7 @@ In the left panel, select **Configurations** again, and set a value for each con
 
 #### Step 6: Add a file handler
 
-Return to the integration service view (select **files:Service** under **Entry Points**) and select **+ Add Handler**. The handler picker offers **On Create**, which fires for files appearing on the monitoring path; select it. The handler's **Format** setting then selects how the content is delivered: **JSON**, **XML**, **CSV**, **Text**, or **Raw Bytes**, generating the `onFileJson`, `onFileXml`, `onFileCsv`, `onFileText`, or `onFile` callback respectively. An `onError` handler for poll and content-binding failures can be added in code; see the [Trigger Reference](trigger-reference.md).
+Return to the integration service view (select **files:Service** under **Entry Points**) and select **+ Add Handler**. The handler picker offers **On Create**, which fires for files appearing on the monitoring path; select it. The handler's **Format** setting then selects how the content is delivered: **JSON**, **XML**, **CSV**, **Text**, or **Raw Bytes**, generating the `onFileJson`, `onFileXml`, `onFileCsv`, `onFileText`, or `onFile` callback respectively. An `onError` handler for poll, read, and content-binding failures can be added in code; see the [Trigger Reference](trigger-reference.md). Note that declaring one moves the disposal of content-binding failures onto `onError`'s own `@files:FunctionConfig`, so the **On Error** action configured here would no longer apply to them.
 
 ![Handler picker with the On Create handler](/img/connectors/catalog/storage-file/azure.storage.files/azure_files_trigger_screenshots_03_add_handler_panel.png)
 
@@ -213,7 +216,7 @@ In the **New On Create Configuration** panel, set:
 
 - **Format** : **JSON**, so the handler receives the parsed content
 - **After File Processing → On Success** : **Delete**, so a processed file is removed from the drop folder
-- **After File Processing → On Error** : **Move** with **Move To** `/failed`, so a file that cannot be parsed leaves the watched path instead of firing again on every poll
+- **After File Processing → On Error** : **Move** with **Move To** `/failed`, so a file that cannot be parsed leaves the watched path instead of firing again on every poll. (This service declares no `onError` handler, so the binding failure is disposed of by this action.)
 
 These options generate the `onFileJson` handler carrying the `@files:FunctionConfig` annotation's `afterProcess` and `afterError` actions. See the [Trigger Reference](trigger-reference.md) for the full annotation surface.
 
@@ -243,12 +246,15 @@ Select **Run Integration** in the WSO2 Integrator toolbar to start the integrati
 1. In the [Azure portal](https://portal.azure.com/), open your storage account and navigate to **Data storage** > **File shares**.
 2. Open the share, browse into the `incoming` directory, and select **Upload** to add a small `.json` file.
 
-On the next poll (every 60 seconds by default, or the interval you set on the listener), the `onFileJson` handler fires and logs the parsed content to the console, and the listener deletes the file from the drop folder. A malformed `.json` file moves to `/failed` instead.
+On the next poll (every 60 seconds by default, or the interval you set on the listener), the `onFileJson` handler fires and logs the parsed content to the console, and the listener deletes the file from the drop folder. A malformed `.json` file moves to `/failed` instead, because this service declares no `onError` handler.
 
-<!-- ### Try it yourself
-     No published integration sample exists for this connector yet.
-     When one is published, restore the heading and add the Devant badge and source link:
-     integrator-default-profile/connectors/azure_files_trigger_sample -->
+### Try it yourself
+
+Try this sample in WSO2 Integration Platform.
+
+[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/connectors/azure.storage.files_trigger_sample)
+
+[View source on GitHub](https://github.com/wso2/integration-samples/tree/main/integrator-default-profile/connectors/azure.storage.files_trigger_sample)
 
 ## More code examples
 

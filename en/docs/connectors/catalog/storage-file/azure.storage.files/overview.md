@@ -11,7 +11,7 @@ description: "Overview of the ballerinax/azure.storage.files connector for WSO2 
 
 - Share-scoped `Client` for directory and file operations, transfers, copies, and byte ranges
 - Account-level `AdminClient` for creating, listing, deleting, and restoring shares
-- Polling `Listener` that routes files arriving on a watched path to raw, typed, or streaming content handlers, with an optional `onError` notification handler
+- Polling `Listener` that routes files arriving on a watched path to raw, typed, or streaming content handlers, with an optional `onError` error handler
 - Share snapshots
 - Authentication with shared key, SAS tokens, connection strings, and Microsoft Entra ID
 - GraalVM compatible for native image builds
@@ -38,7 +38,7 @@ Triggers let your integration react to files arriving on a file share. The conne
 | JSON file (`.json`) | `onFileJson` | Receives the parsed JSON content |
 | XML file (`.xml`) | `onFileXml` | Receives the parsed XML content |
 | CSV file (`.csv`) | `onFileCsv` | Receives the parsed rows |
-| Listener error | `onError` | Receives poll and content-binding failures |
+| Listener error | `onError` | Receives poll failures, content-read failures, and content-binding failures |
 
 See the **[Trigger Reference](trigger-reference.md)** for listener configuration, the service model, and callback signatures.
 

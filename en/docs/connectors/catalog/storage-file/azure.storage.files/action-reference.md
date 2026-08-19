@@ -776,7 +776,8 @@ Uploads in-memory content to the bound share. A `byte[]` is written as-is, and a
 **Sample code:**
 
 ```ballerina
-check fileShare->upload(<map<json>>{"revenue": 1250000, "growth": 0.12}, "/2026/q1/metrics.json");
+Metrics metrics = {revenue: 1250000, growth: 0.12};
+check fileShare->upload(metrics, "/2026/q1/metrics.json");
 ```
 
 </div>
@@ -844,17 +845,17 @@ check fileShare->download("/2026/q1/report.pdf", "./reports/q1.pdf");
 
 <div>
 
-Retrieves the file's content in the form the target type selects: `byte[]` (raw, materialized), `string` (UTF-8 text; invalid UTF-8 fails client-side), `json`, `xml`, `record {}`/`record {}[]` (bound per the resolved format), `stream<byte[], error?>` (a lazy byte stream), or `stream<record {}, error?>` (lazy CSV rows). Record-shaped targets resolve their format from `options.fileFormat` when set, else the path's extension (`.json`, `.xml`, `.csv`): a single record binds from JSON or XML (never CSV), a record array from a JSON array or CSV rows (never XML), and an unresolvable format fails with a client-side `Error`. CSV content binds to record array and record stream targets only; for positional or headerless rows, read the content as `string` or `byte[]` and parse it with the `data.csv` module. Binding is strict.
+Retrieves the file's content in the form the target type selects: `byte[]` (raw, materialized), `string` (UTF-8 text; invalid UTF-8 fails client-side), `json`, `xml`, `record {}`/`record {}[]`, which includes any map of `anydata` members and arrays of them (bound per the resolved format), `stream<byte[], error?>` (a lazy byte stream), or `stream<record {}, error?>` (lazy CSV rows, where a row that fails to bind surfaces as that pull's error entry). Record-shaped targets resolve their format from `options.fileFormat` when set, else the path's extension (`.json`, `.xml`, `.csv`): a single record binds from JSON or XML (never CSV), a record array from a JSON array or CSV rows (never XML), and an unresolvable format fails with a client-side `Error`. CSV content binds to record array and record stream targets only; for positional or headerless rows, read the content as `string` or `byte[]` and parse it with the `data.csv` module. Binding is strict.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `path` | <code>string</code> | Yes | The source share-relative path. |
-| `options` | <code>GetFileOptions</code> | No | Every [DownloadOptions](#downloadoptions) field plus `fileFormat` (`JSON`, `XML`, or `CSV`), the record binding format. |
-| `targetType` | <code>typedesc&lt;RetrievableType&gt;</code> | No | The form to retrieve the content in, inferred from the assignment target. |
+| `options` | <code>GetFileOptions</code> | No | Optional retrieval options (range, snapshot, record binding format). See [GetFileOptions](#getfileoptions). |
+| `targetType` | <code>typedesc&lt;RetrievableType&gt;</code> | No | The expected return type, used for automatic data binding; inferred from the assignment target. Accepts <code>byte[]&#124;string&#124;json&#124;xml&#124;record {}&#124;record {}[]&#124;stream&lt;byte[], error?&gt;&#124;stream&lt;record {}, error?&gt;</code>. |
 
-**Returns:** `targetType|Error`
+**Returns:** `targetType|Error` — the content in the requested form, or an `Error` on a failed retrieval or a data binding failure.
 
 **Sample code:**
 
@@ -885,7 +886,7 @@ Copies a file within the bound share. The copy is asynchronous; inspect the retu
 |------|------|----------|-------------|
 | `sourcePath` | <code>string</code> | Yes | The source share-relative path. |
 | `destinationPath` | <code>string</code> | Yes | The destination share-relative path. |
-| `options` | <code>CopyOptions</code> | No | Optional copy options (metadata, permission handling). See [CopyOptions](#copyoptions). |
+| `options` | <code>CopyOptions</code> | No | Optional copy options (metadata). See [CopyOptions](#copyoptions). |
 
 **Returns:** `CopyInfo|Error`
 
@@ -923,7 +924,7 @@ Copies a file from an external URL into the bound share. A cross-account file so
 |------|------|----------|-------------|
 | `sourceUrl` | <code>string</code> | Yes | The URL of the source file. |
 | `destinationPath` | <code>string</code> | Yes | The destination share-relative path. |
-| `options` | <code>CopyOptions</code> | No | Optional copy options (metadata, permission handling). See [CopyOptions](#copyoptions). |
+| `options` | <code>CopyOptions</code> | No | Optional copy options (metadata). See [CopyOptions](#copyoptions). |
 
 **Returns:** `CopyInfo|Error`
 
@@ -1394,7 +1395,7 @@ Account-level administration: share lifecycle and existence checks, file-service
 
 The `AdminClient` takes the same `ClientConfiguration` as the `Client`; see the [Client configuration](#configuration) tables above.
 
-Under Microsoft Entra ID credentials, the `AdminClient` operations authorize against the storage account's management permissions (the `Microsoft.Storage/storageAccounts/fileServices/shares/` actions, carried by roles such as Contributor); the Storage File Data Privileged roles alone do not cover them. See the [Setup Guide](setup-guide.md) for the role split.
+Under Microsoft Entra ID credentials, the `AdminClient` operations authorize against the storage account's management permissions (the `Microsoft.Storage/storageAccounts/fileServices/shares/` actions, carried by roles such as Contributor); the Storage File Data Privileged roles alone do not cover them. The one exception is `getUserDelegationKey`, which requires the `Storage File Delegator` role instead. See the [Setup Guide](setup-guide.md) for the role split.
 
 ### Initializing the client
 
@@ -1816,6 +1817,14 @@ Options for `download`, included by `getFile`'s `GetFileOptions`.
 | `range` | <code>Range</code> | <code>()</code> | Download only this byte range instead of the whole file. |
 | `snapshotId` | <code>string</code> | <code>()</code> | Read from the share snapshot with this id instead of the live share. |
 
+### GetFileOptions
+
+Options for `getFile`: every [DownloadOptions](#downloadoptions) field, plus the record binding format override.
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `fileFormat` | <code>FileFormat</code> | <code>()</code> | The binding format for `record {}` and `record {}[]` targets: `JSON`, `XML`, or `CSV`. When absent, the format is inferred from the path's extension (`.json`, `.xml`, `.csv`). |
+
 ### CopyOptions
 
 Options for `Client.copyFile` and `Client.copyFileFromUrl`.
@@ -2121,6 +2130,7 @@ A key for signing user-delegation SAS tokens, obtained via `AdminClient.getUserD
 
 - `ShareAccessTier`: `HOT`, `COOL`, `TRANSACTION_OPTIMIZED`, `PREMIUM`.
 - `ShareProtocol`: `SMB`, `NFS`.
+- `FileFormat`: `JSON`, `XML`, `CSV`.
 - `ShareSnapshotsDeleteOption`: `INCLUDE`, `INCLUDE_LEASED`.
 - `NfsRootSquash`: `NO_ROOT_SQUASH`, `ROOT_SQUASH`, `ALL_SQUASH`.
 - `CopyStatus`: `PENDING`, `SUCCESS`, `ABORTED`, `FAILED`.
@@ -2133,4 +2143,10 @@ A key for signing user-delegation SAS tokens, obtained via `AdminClient.getUserD
 
 ### Errors
 
-Every operation returns the module's `Error` on failure. A client-side failure is the generic root `Error` and carries no detail fields. An error the Azure service raised is a `ServiceError` and always carries `httpStatus` and `errorCode`; its subtypes are `NotFoundError` (404), `ConflictError` (409), `AuthorizationError` (403), `PreconditionFailedError` (412), `RangeNotSatisfiableError` (416), and `QuotaExceededError` (403, the share is full). An unmapped service code lands on the generic `ServiceError`.
+Every operation returns the module's `Error` on failure. The hierarchy splits by origin:
+
+- **`Error`**: the root type, and the type of every client-side failure (invalid configuration, local I/O, content that fails to bind). It carries no detail fields, with one exception:
+  - **`ContentBindingError`**: a listener-only error raised when a dispatched file's content does not bind to its handler's declared type. It is delivered to the service's `onError` handler and carries the file's share-relative path in `filePath` and, when the content had been downloaded before binding failed, its raw bytes in `content`. See the [Trigger Reference](trigger-reference.md#contentbindingerror).
+- **`ServiceError`**: any error the Azure service raised, always carrying `httpStatus` and `errorCode`. Its subtypes are `NotFoundError` (404), `ConflictError` (409), `AuthorizationError` (403), `PreconditionFailedError` (412), `RangeNotSatisfiableError` (416), and `QuotaExceededError` (403, the share is full). An unmapped service code lands on the generic `ServiceError`.
+
+The mapping keys on the Azure error-code string rather than the HTTP status alone, so `ShareSizeLimitReached` (403) becomes a `QuotaExceededError` while an auth failure (also 403) becomes an `AuthorizationError`. Check the more specific error types before the general ones.

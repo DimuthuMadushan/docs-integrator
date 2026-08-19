@@ -196,7 +196,7 @@ A file handler is a `remote function` that WSO2 Integrator calls for each file t
 | Handler | Trigger |
 |---|---|
 | **onCreate** (`onFileText` / `onFileJson` / `onFileXml` / `onFileCsv` / `onFile`) | A file on the watched path matches the service's filters. The function name depends on the content type — one typed variant per file format, with `onFile` as the raw-bytes catch-all. |
-| **onError** | A poll failed, or a file's content could not be bound to a typed handler's content parameter — for example, a JSON handler received malformed JSON. |
+| **onError** | A poll failed, a listed file's content could not be read, or a file's content could not be bound to a typed handler's content parameter — for example, a JSON handler received malformed JSON. A binding failure arrives as a `files:ContentBindingError` naming the file. |
 
 At least one content handler is required — a service with only an `onError` handler is not valid.
 
@@ -217,7 +217,7 @@ There is no delete handler: the listener dispatches the files present on the sha
    |---|---|
    | **Format** | The format of incoming files. Determines the handler function name and the type of the `content` parameter. Options: **JSON**, **XML**, **CSV**, **Text**, **Raw Bytes**. See [Content types](#content-types). |
    | **After File Processing — On Success** | Action to take when the handler completes without error: **Move** to a destination path or **Delete** the file. See [Post-processing](#post-processing-moving-or-deleting-files). |
-   | **After File Processing — On Error** | Action to take when the handler returns an error or the content fails to bind: **Move** to an error directory or **Delete** the file. |
+   | **After File Processing — On Error** | Action to take when the handler returns an error: **Move** to an error directory or **Delete** the file. It also covers a content-binding failure, unless the service declares an `onError` handler in code, in which case the binding failure's disposition follows `onError`'s own actions instead. See [Post-processing](#post-processing-moving-or-deleting-files). |
 
    ![On Create handler configuration with the format and post-processing actions](/img/connectors/catalog/storage-file/azure.storage.files/azure_files_trigger_screenshots_04_handler_config.png)
 
@@ -225,7 +225,7 @@ There is no delete handler: the listener dispatches the files present on the sha
 
    ![Service view with the registered handler](/img/connectors/catalog/storage-file/azure.storage.files/azure_files_trigger_screenshots_06_service_view_final.png)
 
-An `onError` handler for poll and content-binding failures is added in the code view — see the Ballerina Code tab.
+An `onError` handler for poll, read, and content-binding failures is added in the code view — see the Ballerina Code tab. Declaring one changes how content-binding failures are post-processed; see [Post-processing](#post-processing-moving-or-deleting-files).
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
@@ -277,15 +277,21 @@ remote function onFile(byte[] content, files:FileInfo file) returns error? {
 }
 ```
 
-**Error handler** — fires when a poll fails or when content cannot be bound to a typed handler (for example, a JSON handler receiving malformed JSON):
+**Error handler** — fires on every listener-side failure: a failed poll, a listed file whose content could not be read, and a typed handler's content-binding failure (for example, a JSON handler receiving malformed JSON). A binding failure arrives as a `files:ContentBindingError`, whose detail carries the file's `filePath` and, when the content had been downloaded before binding failed, its raw `content`:
 
 ```ballerina
 remote function onError(files:Error err) returns error? {
+    if err is files:ContentBindingError {
+        log:printError("file did not bind", path = err.detail().filePath, 'error = err);
+        return;
+    }
     log:printError("file processing error", 'error = err);
 }
 ```
 
-The trailing parameters are optional. A content handler declares its content parameter first, then either, both, or neither of `files:FileInfo` and `files:Caller` — the accepted shapes are `(content)`, `(content, FileInfo)`, `(content, Caller)`, and `(content, FileInfo, Caller)`; when both are present, `FileInfo` must precede `Caller`. `onError` accepts `(error)` or `(error, Caller)`.
+A read failure always leaves the file for the next poll, so the notification repeats while the read keeps failing. Errors a content handler itself returns do not reach `onError`.
+
+The trailing parameters are optional. A content handler declares its content parameter first, then either, both, or neither of `files:FileInfo` and `files:Caller` — the accepted shapes are `(content)`, `(content, FileInfo)`, `(content, Caller)`, and `(content, FileInfo, Caller)`; when both are present, `FileInfo` must precede `Caller`. `onError` accepts `(error)` or `(error, Caller)`, and may carry its own `@files:FunctionConfig` to dispose of the binding failures it handles.
 
 </TabItem>
 </Tabs>
@@ -299,14 +305,14 @@ The **Format** chosen on an On Create handler determines the function name and t
 | **Text** | `onFileText` | `.txt` | `string` | Files are plain text (logs, EDI, custom formats). |
 | **JSON** | `onFileJson` | `.json` | `json` or a typed record | Files are JSON documents. |
 | **XML** | `onFileXml` | `.xml` | `xml` or a typed record | Files are XML documents. |
-| **CSV** | `onFileCsv` | `.csv` | `record[]` or `stream<record, error?>` | Files are comma-separated values. Rows map through the header row into your record type; use a stream for large files. |
+| **CSV** | `onFileCsv` | `.csv` | `record {}[]` or `stream<record {}, error?>` | Files are comma-separated values. Rows map through the header row into your record type; use a stream for large files. |
 | **Raw Bytes** | `onFile` | any other extension | `byte[]` or `stream<byte[], error?>` | Binary files or when you need raw byte access. |
 
 Routing rules:
 
 - A per-handler `@files:FunctionConfig` with a `fileNamePattern` overrides extension routing for that handler. When several patterns match one file name, the handlers are checked in the fixed order `onFileText`, `onFileJson`, `onFileXml`, `onFileCsv`, then `onFile`. At most one handler runs per file.
 - A file whose extension maps to a handler the service does not declare falls back to `onFile`; if `onFile` is also absent, the file is skipped and logged.
-- A file routed to a typed handler whose content is malformed raises a content-binding error — it never falls through to `onFile`. The error notifies `onError`, and the handler's `afterError` action applies.
+- A file routed to a typed handler whose content is malformed raises a `files:ContentBindingError` — it never falls through to `onFile`. Its detail carries the file's path in `filePath`, and its raw bytes in `content` when the download had already completed. When the service declares an `onError` handler, the error is delivered there and the file's fate follows **`onError`'s own** `@files:FunctionConfig`; the content handler's `afterError` is not applied. When the service declares no `onError`, the error is logged and the content handler's `afterError` applies.
 
 ### Post-processing: moving or deleting files
 
@@ -327,6 +333,8 @@ Common combinations:
 - **Delete on success, move on error** — discard processed files, quarantine failures for review. Set an error destination like `/failed`.
 - **Move on success, move on error** — archive processed files and quarantine failures. Set separate destinations like `/processed` and `/failed`.
 - **Leave the file alone for an outcome** — skip the action for that side; the file stays on the watched path and fires again on the next poll.
+
+These actions cover errors the handler returns. If the service also declares an `onError` handler in the code view, content-binding failures are disposed of by `onError`'s own actions instead, so annotate `onError` to quarantine files that fail to bind.
 
 The choices update the handler's `@files:FunctionConfig` annotation; switch to the code view to review the generated annotation.
 
@@ -349,9 +357,11 @@ remote function onFileJson(Order 'order, files:FileInfo file) returns error? {
 
 | Field | Type | Description |
 |---|---|---|
-| `fileNamePattern` | `string?` | Regular expression matched against the file name, routing matching files to this handler. Overrides extension routing. |
+| `fileNamePattern` | `string?` | Regular expression matched against the file name, routing matching files to this handler. Overrides extension routing. Ignored on `onError`, which is never routed a file. |
 | `afterProcess` | `files:DELETE\|files:Move?` | Action to take when the handler returns without error. Omit the field to leave the file in place. |
-| `afterError` | `files:DELETE\|files:Move?` | Action to take when the handler returns an error or the content fails to bind. Same shape as `afterProcess`. |
+| `afterError` | `files:DELETE\|files:Move?` | Action to take when the handler returns an error or panics. Also covers the handler's content-binding failures, but only when the service declares no `onError` handler. Same shape as `afterProcess`. |
+
+The annotation may also sit on `onError`, where `afterProcess` and `afterError` dispose of the binding failures it handles.
 
 `files:Move` fields:
 
@@ -360,7 +370,17 @@ remote function onFileJson(Order 'order, files:FileInfo file) returns error? {
 | `moveTo` | `string` | — | The target directory the file is moved into. The file keeps its name, and the directory is created if it does not exist. A move onto an existing same-named file replaces it. |
 | `preserveSubDirs` | `boolean` | `true` | On recursive watches, recreate the file's sub-path (relative to the watched path) under `moveTo`. |
 
-`afterError` also applies to content-binding failures and takes a failing file out of automatic redelivery; without it, the file stays on the watched path and fires again on every poll.
+`afterError` also covers the handler's content-binding failures, but only when the service declares no `onError` handler. With an `onError` declared, a binding failure becomes its to dispose of: annotate `onError` itself to quarantine the file.
+
+```ballerina
+// Quarantines every file that fails to bind, and logs the failure.
+@files:FunctionConfig {afterProcess: {moveTo: "/failed"}}
+remote function onError(files:Error err) returns error? {
+    log:printError("listener error", 'error = err);
+}
+```
+
+On `onError`, `afterProcess` applies when it returns normally and `afterError` when it returns an error; `fileNamePattern` is ignored. The actions cover binding failures only — a file whose content could not be read always stays for the next poll, whatever `onError` returns. Setting neither leaves the file on the watched path to fire again on every poll.
 
 </TabItem>
 </Tabs>
@@ -418,7 +438,7 @@ remote function onFile(stream<byte[], error?> content, files:FileInfo file) retu
 }
 ```
 
-A content value that does not match the declared parameter type is a content-binding error. To relax the record binding — treating a null value as an optional field and an absent field as a nilable field — set `laxDataBinding: true` on the [listener configuration](#listener-configuration).
+A content value that does not match the declared parameter type is a `files:ContentBindingError`, delivered to `onError`. To relax the record binding — treating a null value as an optional field and an absent field as a nilable field — set `laxDataBinding: true` on the [listener configuration](#listener-configuration).
 
 ### FileInfo
 
