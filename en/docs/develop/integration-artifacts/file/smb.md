@@ -206,8 +206,8 @@ remote function onFile(byte[] content, smb:FileInfo fileInfo) returns error? {
 **Delete handler:**
 
 ```ballerina
-remote function onFileDelete(smb:FileInfo fileInfo) returns error? {
-    // Called when a tracked file disappears from the monitored directory
+remote function onFileDelete(string deletedFile) returns error? {
+    // deletedFile is the path of the file that disappeared from the monitored directory
 }
 ```
 
