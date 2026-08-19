@@ -12,11 +12,7 @@ SMB [file integrations](../../../get-started/concepts/core.md#file-integration) 
 
 The listener speaks SMB dialects 2.0.2 through 3.1.1 and authenticates with NTLMv2 credentials or Kerberos. It can optionally require message signing and encrypt data in transit.
 
-> **Note:** SMB doesn't support the distributed coordination that FTP/SFTP offers. Run a single listener instance against a given share, or partition the work by monitoring different directories.
-
 ## Creating an SMB service
-
-Default port: `445`. Paths are relative to the share root, not the server root.
 
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
