@@ -83,7 +83,7 @@ The `byte[]` form of `onFile` loads the whole file into memory; prefer the strea
 | `onError` | <code>remote function onError(files:Error err, files:Caller caller) returns error?</code> | Invoked when a poll fails, when a listed file's content cannot be read, or when a file's content cannot be bound to the typed parameter of a content handler. Declaring it also makes it responsible for consuming files that fail to bind; see [Error handling](#error-handling). |
 
 :::note
-The trailing parameters are optional. A content handler declares its content parameter first, then either, both, or neither of `FileInfo` and `Caller`, so the accepted shapes are `(content)`, `(content, FileInfo)`, `(content, Caller)`, and `(content, FileInfo, Caller)`; when both are present, `FileInfo` must precede `Caller`. `onError` accepts `(error)` or `(error, Caller)`. Declare its first parameter as `error` or `files:Error`: a narrower subtype such as `files:ContentBindingError` compiles but cannot receive poll failures.
+The trailing parameters are optional. A content handler declares its content parameter first, then either, both, or neither of `FileInfo` and `Caller`, so the accepted shapes are `(content)`, `(content, FileInfo)`, `(content, Caller)`, and `(content, FileInfo, Caller)`; when both are present, `FileInfo` must precede `Caller`. `onError` accepts `(error)` or `(error, Caller)`. Its first parameter must be declared as `error` or `files:Error`; a narrower subtype such as `files:ContentBindingError` is rejected at compile time, because `onError` has to be able to receive poll, read, and binding failures alike.
 :::
 
 :::note
@@ -147,8 +147,8 @@ A step-by-step walkthrough of building this integration in the WSO2 Integrator I
 
 A service may declare an `onError` handler. It is notified on every listener-side failure:
 
-- A failed poll, for example when the credential lacks access to the watched path.
-- A failed content read: the file was listed, but its content could not be downloaded for dispatch. The file stays on the watched path, so the notification repeats while the read keeps failing.
+- A failed poll, with the mapped typed error, for example an `AuthorizationError` when the credential lacks access to the watched path.
+- A failed content read, also with the mapped typed error: the file was listed, but its content could not be downloaded for dispatch. The file stays on the watched path, so the notification repeats while the read keeps failing.
 - A typed handler's content-binding failure, with a [`ContentBindingError`](#contentbindingerror) whose detail names the file.
 
 A malformed file routed to a typed handler is a content-binding error; it never falls through to `onFile`. Errors a content handler itself returns do not notify `onError`, and neither does a CSV row that fails to bind lazily while a handler drains a record stream: that error belongs to the handler doing the draining. `onError` is not a content handler, so it does not satisfy the service's at-least-one-handler requirement.

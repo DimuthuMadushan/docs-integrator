@@ -277,7 +277,7 @@ remote function onFile(byte[] content, files:FileInfo file) returns error? {
 }
 ```
 
-**Error handler** — fires on every listener-side failure: a failed poll, a listed file whose content could not be read, and a typed handler's content-binding failure (for example, a JSON handler receiving malformed JSON). A binding failure arrives as a `files:ContentBindingError`, whose detail carries the file's `filePath` and, when the content had been downloaded before binding failed, its raw `content`:
+**Error handler** — fires on every listener-side failure: a failed poll, a listed file whose content could not be read, and a typed handler's content-binding failure (for example, a JSON handler receiving malformed JSON). Poll and read failures arrive as the mapped typed error, such as a `files:AuthorizationError`. A binding failure arrives as a `files:ContentBindingError`, whose detail carries the file's `filePath` and, when the content had been downloaded before binding failed, its raw `content`:
 
 ```ballerina
 remote function onError(files:Error err) returns error? {
