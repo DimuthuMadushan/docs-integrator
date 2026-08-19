@@ -115,6 +115,8 @@ credentialsDbPassword = "icp_password"
 | `credentialsDbPassword` | `string`  | —                  | Database password                                 |
 | `credentialsDbUseTLS`   | `boolean` | `false`            | Connect over TLS. Set to `true` for Oracle TCPS endpoints |
 
-The credentials database is independent of the main database, so the two can use different engines. For Oracle, initialize it with `credentials_oracle_init.sql`.
+The credentials database is independent of the main database, so the two can use different engines.
+
+For Oracle, initialize it with `credentials_oracle_init.sql`. That script also contains PL/SQL blocks, so run it with SQL\*Plus or SQLcl, and grant its schema user `CREATE SESSION`, `CREATE TABLE`, `CREATE SEQUENCE`, `CREATE TRIGGER`, and a tablespace quota. `credentialsDbUseTLS` behaves like `dbUseTLS`: the connection uses one-way TLS with no wallet, so the database certificate must be trusted by the JVM that runs ICP.
 
 For H2, the credentials database is a file named after `credentialsDbName`, so the default is `<ICP_HOME>/bin/database/credentials_db.mv.db`.
