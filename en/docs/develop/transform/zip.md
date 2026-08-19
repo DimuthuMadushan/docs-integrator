@@ -252,13 +252,12 @@ An omitted field means no limit, so `limits` left at its default applies none of
 
 ## Handling Errors
 
-Every function returns a subtype of `zip:Error`. Match on the specific type when the recovery differs — a corrupt archive is a dead letter, but a limit breach may be worth flagging to a human.
+On failure, these functions return a subtype of `zip:Error` (`compress`/`decompress`: `zip:Error?`, `listEntries`: `zip:Entry[]|zip:Error`). Match on the specific type when the recovery differs — a corrupt archive is a dead letter, but a limit breach may be worth flagging to a human.
 
 | Error | Raised when |
 |---|---|
 | `zip:InvalidArchiveError` | The file is not a valid ZIP archive |
 | `zip:FileSystemError` | Reading or writing the file system failed |
-| `zip:EntryNotFoundError` | A requested entry is not in the archive |
 | `zip:UnsafePathError` | An entry name would write outside the target directory |
 | `zip:LimitExceededError` | An entry or the archive exceeds the configured limits |
 | `zip:UnsupportedEntryError` | An entry is encrypted or uses an unsupported compression method |
