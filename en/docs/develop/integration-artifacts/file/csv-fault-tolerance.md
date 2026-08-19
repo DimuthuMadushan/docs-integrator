@@ -20,12 +20,12 @@ Real-world CSV files rarely arrive perfectly clean. A single bad row (a stray co
 :::note[Fault tolerance needs a typed row schema]
 Fault tolerance only skips rows that fail **typed binding**. If your handler is generated with the default `string[][]` content type, every row is valid as a string array and nothing is ever dropped.
 
-On the **Add File Handler** form, click **+ Define Row Schema** and describe each column as a field on a Ballerina record. This flips the handler parameter to a typed array (for example `Order[]`), and rows that don't match trigger binding errors that fault tolerance can skip. See the [row-schema step in Streaming large files](streaming-large-files.md#enabling-streaming) for a walkthrough.
+On the **Add File Handler** form, click **+ Define Row Schema** and describe each column as a field on a Ballerina record. This flips the handler parameter to a typed array (for example `Order[]`), and rows that don't match trigger binding errors that fault tolerance can skip. See the [row-schema step in Streaming large files](ftp-sftp.md#streaming-large-files) for a walkthrough.
 :::
 
 Fault tolerance combines cleanly with:
 
-- **Streaming** — works with [streamed CSV](streaming-large-files.md). A bad row no longer terminates the stream; processing continues through the rest of the file.
+- **Streaming** — works with [streamed CSV](ftp-sftp.md#streaming-large-files). A bad row no longer terminates the stream; processing continues through the rest of the file.
 - **Move / Delete post-processing** — because the handler completes successfully, the file follows the **After Success** action as it would for a clean run.
 
 ## Configuration
@@ -119,7 +119,7 @@ The listener's **After Success** and **After Error** branches are picked based o
 
 ## What's next
 
-- [Streaming large files](streaming-large-files.md) — combine fault tolerance with row-by-row streaming for large CSVs
+- [Streaming large files](ftp-sftp.md#streaming-large-files) — combine fault tolerance with row-by-row streaming for large CSVs
 - [CSV & flat file processing](../../transform/csv-flat-file.md) — parse, transform, and write CSV when you need control beyond what the handler offers
 - [FTP / SFTP](ftp-sftp.md) — listener and handler configuration reference
 - [`ftp:Listener` reference](https://central.ballerina.io/ballerina/ftp/latest#Listener) — the full `csvFailSafe` field schema

@@ -414,6 +414,12 @@ Chunks are a fixed 64 KB for the listener; the listener's `bufferSize` setting d
 </TabItem>
 </Tabs>
 
+:::note When a row fails to parse
+A bad row (malformed CSV or wrong type) stops the stream right there. The handler returns an error, so the file takes the **On Error** path you configured under [Post-processing](#post-processing-moving-or-deleting-files). Anything your handler already did for earlier rows (database writes, API calls, published messages) stays.
+
+When you retry the file, those rows run again. To stay safe, make your handler idempotent (check before you write) or track which rows you've already processed per file. If you'd rather skip bad rows and keep going, set **CSV Fail Safe** on the listener — see [Listener configuration](#listener-configuration).
+:::
+
 ### FileInfo
 
 Enable **File Metadata (fileInfo)** to receive an `smb:FileInfo` parameter describing the incoming file.

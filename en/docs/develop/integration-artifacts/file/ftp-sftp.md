@@ -568,9 +568,11 @@ Tick **Stream (Large Files)** on the Add File Handler form. The option only appe
 
 **JSON** and **XML** offer no streaming option — both have to be read in full before they can be parsed.
 
+![Add File Handler form with Stream (Large Files) selected](/img/develop/integration-artifacts/file/ftp-sftp/step-stream-option.png)
+
 Two things to keep in mind:
 
-- Leave the option off unless the files really are large. A handler that gets the whole content is simpler to build.
+- Leave the option off unless the files really are large — under roughly 50 MB, a handler that gets the whole content is simpler to build.
 - Streamed content can only be read once, start to finish. If the handler needs to go over the content twice, or look at the end before the beginning, don't stream it.
 
 </TabItem>
@@ -600,8 +602,16 @@ remote function onFile(stream<byte[], error?> content, ftp:FileInfo fileInfo) re
 }
 ```
 
+Chunks are a fixed 8 KB for the listener.
+
 </TabItem>
 </Tabs>
+
+:::note When a row fails to parse
+A bad row (malformed CSV or wrong type) stops the stream right there, and the file goes to your **After Error** destination. Anything your handler already did for earlier rows (database writes, API calls, published messages) stays.
+
+When you retry the file, those rows run again. To stay safe, make your handler idempotent (check before you write) or track which rows you've already processed per file. If you'd rather skip bad rows and keep going, turn on [CSV fault tolerance](csv-fault-tolerance.md).
+:::
 
 ### FileInfo
 
@@ -981,6 +991,7 @@ listener ftp:Listener ftpListener = new (
 
 ## What's next
 
+- [CSV fault tolerance](csv-fault-tolerance.md) — skip malformed rows instead of failing the whole file
 - [Local files](local-files.md) — monitor a local directory instead of a remote server
 - [Connections](../supporting/connections.md) — reuse FTP connection credentials across services
 - [Data Mapper](../supporting/data-mapper/data-mapper.md) — transform incoming file payloads between formats

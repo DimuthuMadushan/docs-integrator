@@ -178,7 +178,6 @@ const sidebars: SidebarsConfig = {
                   items: [
                     'develop/integration-artifacts/file/high-availability-and-coordination',
                     'develop/integration-artifacts/file/dependency-and-trigger-conditions',
-                    'develop/integration-artifacts/file/streaming-large-files',
                     'develop/integration-artifacts/file/csv-fault-tolerance',
                   ],
                 },
