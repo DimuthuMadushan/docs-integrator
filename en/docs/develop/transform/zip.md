@@ -22,13 +22,13 @@ Archive handling shows up wherever integrations move files in bulk: a partner dr
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-1. **Add a Function Call step** — In the flow designer, click **+** and select **Call Function**. Search for `compress` under **zip** and configure:
+1. **Add a Function Call step** — In the flow designer, click **+** and select **Statement** → **Call Function**. In the function picker, search for `compress` under **zip** and configure:
    - **Source Path***: `./reports` — path of the file or directory to archive
    - **Target Path***: `./reports.zip` — path of the ZIP file to create
 
    ![The zip : compress configuration form showing Source Path, Target Path, and the Options record under Advanced Configurations](/img/develop/transform/zip/zip-compress-form.png)
 
-2. **Handle the error return** — `compress` returns `zip:Error?`. Either mark the enclosing function `returns error?` and let the call propagate, or wrap the step in a **Try/Catch** block from the **Control** section.
+2. **Handle the error return** — `compress` returns `zip:Error?`. Either mark the enclosing function `returns error?` and let the call propagate, or wrap the step in an **ErrorHandler** block from the **Error Handling** section.
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
@@ -53,7 +53,7 @@ Set `includeSourceDirectory` to `false` when you want the directory's *contents*
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-1. **Add a Function Call step** — Click **+** and select **Call Function**, then search for `compress` under **zip**.
+1. **Add a Function Call step** — Click **+** and select **Statement** → **Call Function**, then search for `compress` under **zip**.
 
 2. **Open Advanced Configurations** — Select **Expand** next to **Advanced Configurations** to reveal the **Options** field. It takes the whole `CompressOptions` record, so enter the fields you need as a record literal:
 
@@ -102,9 +102,16 @@ Set `overwrite` to `true` for a job that regenerates the same archive on every r
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-1. **Add a Function Call step** — Click **+** and select **Call Function**. Search for `listEntries` under **zip** and set **Path*** to `./reports.zip`. Name the result variable `entries`; its type is `zip:Entry[]`.
+1. **Add a Function Call step** — Click **+** and select **Statement** → **Call Function**. In the function picker, search for `listEntries` under **zip** and configure:
+   - **Path***: `./reports.zip` — path of the ZIP file to read
+   - **Result***: `entries`
+   - **Result Type*** is fixed at `zip:Entry[]`
 
-2. **Add a Foreach step** — Click **+** and select **Foreach** under **Control**. Set the **Collection** to `entries` and the **Variable Name** to `entry`. Inside the loop, read `entry.name`, `entry.isDirectory`, and `entry.uncompressedSize` to decide how to handle each item.
+   ![The zip : listEntries configuration form showing the Path field and the entries result variable typed as zip:Entry[]](/img/develop/transform/zip/zip-listentries-form.png)
+
+2. **Add a Foreach step** — Click **+** and select **Foreach** under **Control**. Set the **Collection** to `entries` and the **Variable Name** to `entry`.
+
+3. **Read each entry inside the loop** — Within the Foreach body, use `entry.name`, `entry.isDirectory`, and `entry.uncompressedSize` to decide how to handle each item. Skip directory entries with an **If** node, or pass the name straight to a downstream step.
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
@@ -139,7 +146,7 @@ Each `zip:Entry` also carries `compressedSize`, `method`, `modifiedTime`, `crc32
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-1. **Add a Function Call step** — Click **+** and select **Call Function**. Search for `decompress` under **zip** and configure:
+1. **Add a Function Call step** — Click **+** and select **Statement** → **Call Function**. In the function picker, search for `decompress` under **zip** and configure:
    - **Source Path***: `./reports.zip` — path of the ZIP file to extract
    - **Target Path***: `./extracted` — path of the directory to extract into, created if it is missing
 
@@ -169,11 +176,30 @@ entry 'orders.csv' would overwrite '/data/extracted/orders.csv'
 
 The alternatives are `zip:REPLACE`, which overwrites the existing file, and `zip:SKIP`, which leaves it in place and continues. Choose `zip:SKIP` for a retryable job that may re-process the same archive, and `zip:REPLACE` when the archive is the source of truth.
 
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+1. **Open the decompress step** — Select the existing `zip : decompress` node in the flow to reopen its configuration form.
+
+2. **Set the write mode in Options** — Select **Expand** next to **Advanced Configurations**, then set **Options** to a `DecompressOptions` record carrying the mode you want:
+
+   ```
+   {fileWriteMode: zip:SKIP}
+   ```
+
+   Combine it with `limits` in the same record when the archive is also untrusted.
+
+</TabItem>
+<TabItem value="code" label="Ballerina Code">
+
 ```ballerina
 check zip:decompress("./reports.zip", "./extracted", {
     fileWriteMode: zip:SKIP
 });
 ```
+
+</TabItem>
+</Tabs>
 
 ### Guarding Against Hostile Archives
 
@@ -182,7 +208,7 @@ An archive from outside your own system is untrusted input. A small ZIP can expa
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-1. **Add a Function Call step** — Click **+** and select **Call Function**, then search for `decompress` under **zip**.
+1. **Add a Function Call step** — Click **+** and select **Statement** → **Call Function**, then search for `decompress` under **zip**.
 
 2. **Open Advanced Configurations** — Select **Expand**, then set **Options** to a `DecompressOptions` record carrying the nested `limits`:
 
@@ -192,7 +218,7 @@ An archive from outside your own system is untrusted input. A small ZIP can expa
 
    ![The zip : decompress configuration form with Advanced Configurations expanded to show the Options record](/img/develop/transform/zip/zip-decompress-form.png)
 
-3. **Handle the failure path** — Wrap the step in a **Try/Catch** block and route a `zip:LimitExceededError` to your quarantine or alerting logic rather than retrying it.
+3. **Handle the failure path** — Wrap the step in an **ErrorHandler** block from the **Error Handling** section and route a `zip:LimitExceededError` to your quarantine or alerting logic rather than retrying it.
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
