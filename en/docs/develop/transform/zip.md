@@ -171,7 +171,7 @@ public function main() returns error? {
 `fileWriteMode` controls what happens when an entry's target path is already occupied. It defaults to `zip:FAIL_IF_EXISTS`, which stops the extraction and reports the conflicting path:
 
 ```
-entry 'orders.csv' would overwrite '/data/extracted/orders.csv'
+cannot extract entry 'orders.csv': file '/data/extracted/orders.csv' already exists
 ```
 
 The alternatives are `zip:REPLACE`, which overwrites the existing file, and `zip:SKIP`, which leaves it in place and continues. Choose `zip:SKIP` for a retryable job that may re-process the same archive, and `zip:REPLACE` when the archive is the source of truth.
