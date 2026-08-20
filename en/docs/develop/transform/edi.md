@@ -23,7 +23,7 @@ The workflow is the same for every standard: convert the source spec into the Ba
 For the complete CLI command and flag reference, see the [EDI tool](../tools/integration-tools/edi-tool.md) page.
 
 :::info
-For standard **EDIFACT D03A** message types, prebuilt packages are published under the `ballerinax` organization — you can import them directly without generating any code. See [EDI reference → Prebuilt EDIFACT packages](../../reference/data-formats/edi.md#prebuilt-edifact-packages). Use the `bal edi` tool described below when you need X12, a non-D03A EDIFACT version, or a custom format.
+For standard **EDIFACT D03A** message types, prebuilt packages are published under the `ballerinax` organization — you can import them directly to parse a single message body without generating any code. They predate the envelope-aware API, so they cannot read interchange headers or split a batch; see [EDI reference → Prebuilt EDIFACT packages](../../reference/data-formats/edi.md#prebuilt-edifact-packages). Use the `bal edi` tool described below when you need envelope handling, X12, a non-D03A EDIFACT version, or a custom format.
 :::
 
 ## Setting up the EDI tool
