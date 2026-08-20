@@ -42,11 +42,13 @@ bal edi --help
 
 ## Generating code from an EDIFACT spec
 
-For standard EDI formats like EDIFACT, you don't need to write a schema by hand. The `bal edi` tool has built-in knowledge of EDIFACT message types. Run the following command to generate a JSON schema for the EDIFACT ORDERS message (version D03A):
+For standard EDI formats like EDIFACT, you don't need to write a schema by hand — the `bal edi` tool builds it from the standard's own specification. Download the release archive for the version you need from the [UN/EDIFACT directory downloads](https://unece.org/trade/uncefact/unedifact/download), then convert the message type you are interested in. The following generates a JSON schema for the EDIFACT ORDERS message in version D03A:
 
 ```bash
-bal edi convertEdifactSchema -v d03a -t ORDERS -o schema
+bal edi convertEdifactSchema -v d03a -t ORDERS -i d03a.zip -o schema
 ```
+
+`-i` accepts the archive as downloaded, or a directory it was extracted to. Omit `-t` to convert every message type in the directory.
 
 This writes a ready-to-use JSON schema to `schema/ORDERS.json`. Then generate Ballerina record types and parser/serializer functions from it. Let's add the generated code into a separate library.
 
@@ -81,13 +83,40 @@ The generated file contains:
 - **`getSchema`**: returns the EDI schema as an `EdiSchema` object.
 - **`fromEdiStringWithSchema`** / **`toEdiStringWithSchema`**: variants that accept a pre-loaded `EdiSchema`, useful when the same code must handle multiple schemas selected at runtime.
 
-## Generating code from an X12 schema
+## Adjusting a schema for a trading partner
 
-X12 is the ANSI ASC X12 EDI standard widely used in North America for purchase orders, invoices, advance ship notices, and many other transaction sets. The `bal edi convertX12Schema` command converts an X12 schema file into the Ballerina EDI JSON schema format.
+Trading partners routinely use variations of a standard format: an extra segment, a segment the standard marks optional but the partner always sends, a different delimiter set, or a field the partner sends as a number where the standard says text. Because `convertEdifactSchema` and `convertX12Schema` write the schema out as JSON before any code is generated, a partner's deviations are handled by editing that file and re-running `codegen` — the standard specification itself is never touched.
+
+The fields most often adjusted are:
+
+- **`delimiters`** — the segment, field, component, and repetition separators, and the decimal separator when the partner uses `,`.
+- **`minOccurances` / `maxOccurances`** — tighten a segment the partner always sends, or relax one it never does. `-1` means unlimited.
+- **`dataType`** — `string`, `int`, `float`, or `composite` for a field the partner formats differently.
+- **`ignoreSegments`** — segment codes to skip instead of failing on, for segments a partner adds that the integration does not care about.
+
+After editing, regenerate the code from the edited schema:
 
 ```bash
-bal edi convertX12Schema -i path/to/x12-schema.json -o schema
+bal edi codegen -i schema/ORDERS.json -o orders.bal
 ```
+
+Keep the edited schema in version control alongside the integration: it is the source of truth for what that partner sends. When several partners deviate from the same standard, keep one schema per partner and generate a module for each — or bundle them into a single package with [`libgen`](#building-a-reusable-library-package).
+
+For the full schema grammar — segments and segment groups, fields, components, sub-components, the `envelope` declaration, and every configuration option — see the [Ballerina EDI specification](https://ballerina.io/spec/edi/#7-schema-definition).
+
+## Generating code from an X12 schema
+
+X12 is the ANSI ASC X12 EDI standard widely used in North America for purchase orders, invoices, advance ship notices, and many other transaction sets.
+
+X12 message specifications are licensed from ASC X12, so — unlike EDIFACT — the tool cannot download one for you and no prebuilt X12 packages are published. The workflow starts from the schema your organization is licensed to use, which `bal edi convertX12Schema` converts into the Ballerina EDI JSON schema format.
+
+```bash
+bal edi convertX12Schema -i path/to/850.xsd -o schema
+```
+
+:::info
+If you are working with an X12 transaction set and need help mapping your licensed specification, [contact us](https://wso2.com/contact/).
+:::
 
 The command supports three optional flags for tuning how the schema is interpreted:
 
