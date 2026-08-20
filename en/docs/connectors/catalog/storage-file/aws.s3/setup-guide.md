@@ -78,4 +78,4 @@ If you do not specify a region, the connector defaults to **US East (N. Virginia
 
 ## What's next
 
-- [Action reference](actions.md): Available operations
+- [Action reference](action-reference.md): Available operations
