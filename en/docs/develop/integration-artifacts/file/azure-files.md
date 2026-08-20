@@ -9,19 +9,9 @@ import TabItem from '@theme/TabItem';
 
 # Azure Files
 
-Azure Files [file integrations](../../../get-started/concepts/core.md#file-integration) poll a directory on an Azure file share for files and process them as they arrive. Use them for drop-folder processing, ETL pipelines, and batch integrations where applications exchange data as CSV, XML, JSON, or binary files through a shared SMB or NFS file share. The integration is powered by the `ballerinax/azure.storage.files` connector — see the [Azure Files connector documentation](../../../connectors/catalog/storage-file/azure.storage.files/overview.md) for the client-side operations and the full reference material.
+Azure Files [file integrations](../../../get-started/concepts/core.md#file-integration) poll a directory on an Azure file share and process files as they arrive. Use them for drop-folder processing, ETL pipelines, and batch integrations where applications exchange data as CSV, XML, JSON, or binary files through a share mounted over SMB or NFS.
 
-The listener authenticates to the storage account with any one of five credential kinds:
-
-| Authentication method | Description | Use when |
-|---|---|---|
-| **Shared Key** | Signs every request with one of the storage account's access keys. | You have the account key and want the simplest setup. Grants full access to the account's file service. |
-| **SAS token** | A bare shared access signature token scoped to specific resources and permissions. | You want to hand the integration a narrow, time-limited credential instead of the account key. |
-| **SAS URL** | A full file-service SAS URL carrying the endpoint and the SAS token in one string, as issued by the Azure portal. | You copied the SAS URL directly from the portal. |
-| **Connection string** | An Azure Storage connection string carrying the account name, a credential, and the service endpoints. | Your infrastructure tooling already provisions connection strings. |
-| **Microsoft Entra ID** | Token-based authentication as an Entra ID identity — the default credential chain, a managed identity, a service principal (secret or certificate), or a workload identity. | You want identity-based, secretless access. The identity must hold the `Storage File Data Privileged Reader` or `Storage File Data Privileged Contributor` role. |
-
-For creating the storage account, the file share, and the credentials, see the [connector setup guide](../../../connectors/catalog/storage-file/azure.storage.files/setup-guide.md).
+The listener authenticates to the storage account with a shared key, a SAS token, a SAS URL, a connection string, or a Microsoft Entra ID identity. For creating the storage account, the file share, and the credentials, see the [Azure Files setup guide](../../../connectors/catalog/storage-file/azure.storage.files/setup-guide.md).
 
 ## Creating an Azure Files service
 
@@ -200,7 +190,7 @@ A file handler is a `remote function` that WSO2 Integrator calls for each file t
 
 At least one content handler is required — a service with only an `onError` handler is not valid.
 
-There is no delete handler: the listener dispatches the files present on the share and keeps no per-file state. To detect deletions and modifications by comparing scans, see the [Azure Files change tracker](../../../guides/howtoguides/azure-files-change-tracker.md) guide.
+There is no delete handler: the listener dispatches the files present on the share and keeps no per-file state.
 
 ### Adding a file handler
 
@@ -624,5 +614,4 @@ Each poll with `recursive: true` issues a full recursive listing and downloads e
 ## What's next
 
 - [Local files](local-files.md) — monitor a local directory instead of a file share
-- [Azure Files connector reference](../../../connectors/catalog/storage-file/azure.storage.files/overview.md) — client operations, setup, and the full trigger reference
-- [Azure Files change tracker](../../../guides/howtoguides/azure-files-change-tracker.md) — detect created, modified, and deleted files by diffing scheduled scans
+- [Azure Files connector reference](../../../connectors/catalog/storage-file/azure.storage.files/overview.md) — setup, operations, and the full trigger reference
