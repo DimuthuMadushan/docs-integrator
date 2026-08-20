@@ -243,6 +243,7 @@ const sidebars: SidebarsConfig = {
             'develop/transform/edi',
             'develop/transform/pdf',
             'develop/transform/freemarker',
+            'develop/transform/zip',
             'develop/transform/yaml-toml'
           ],
         },
