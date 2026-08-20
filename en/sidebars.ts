@@ -178,12 +178,12 @@ const sidebars: SidebarsConfig = {
                   items: [
                     'develop/integration-artifacts/file/high-availability-and-coordination',
                     'develop/integration-artifacts/file/dependency-and-trigger-conditions',
-                    'develop/integration-artifacts/file/streaming-large-files',
                     'develop/integration-artifacts/file/csv-fault-tolerance',
                   ],
                 },
-                'develop/integration-artifacts/file/azure-files',
+                'develop/integration-artifacts/file/smb',
                 'develop/integration-artifacts/file/local-files',
+                'develop/integration-artifacts/file/azure-files'
               ],
             },
             {
@@ -1814,6 +1814,17 @@ const sidebars: SidebarsConfig = {
             'connectors/catalog/productivity-collaboration/smartsheet/setup-guide',
             'connectors/catalog/productivity-collaboration/smartsheet/actions',
             'connectors/catalog/productivity-collaboration/smartsheet/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'SMB',
+          link: { type: 'doc', id: 'connectors/catalog/storage-file/smb/overview' },
+          items: [
+            'connectors/catalog/storage-file/smb/setup-guide',
+            'connectors/catalog/storage-file/smb/action-reference',
+            'connectors/catalog/storage-file/smb/trigger-reference',
+            'connectors/catalog/storage-file/smb/example',
           ],
         },
         {

@@ -380,7 +380,7 @@ public function main() returns error? {
 }
 ```
 
-For file-arrival events, both modules also expose a Listener. For the file-streaming deep dive, see [Streaming Large Files](../develop/integration-artifacts/file/streaming-large-files.md) and [FTP / SFTP](../develop/integration-artifacts/file/ftp-sftp.md).
+For file-arrival events, both modules also expose a Listener. For the file-streaming deep dive, see [FTP / SFTP](../develop/integration-artifacts/file/ftp-sftp.md#streaming-large-files).
 
 ## Streaming network protocols {#streaming-network-protocols}
 
@@ -487,7 +487,7 @@ See [Supported Protocols](supported-protocols.md) for the full protocol matrix.
 
 * [Query Expressions](language/query-expressions.md) — full clause reference
 * [CSV](data-formats/csv.md) — CSV format reference
-* [Streaming Large Files](../develop/integration-artifacts/file/streaming-large-files.md) — deep dive on file streaming
+* [Streaming large files](../develop/integration-artifacts/file/ftp-sftp.md#streaming-large-files) — deep dive on file streaming
 * [Build an Event-Driven Integration](../get-started/build-event-driven-integration.md) — quick start
 * Event-driven artifact pages: [Kafka](../develop/integration-artifacts/event/kafka.md), [RabbitMQ](../develop/integration-artifacts/event/rabbitmq.md), [MQTT](../develop/integration-artifacts/event/mqtt.md), [Azure Service Bus](../develop/integration-artifacts/event/azure-service-bus.md), [Solace](../develop/integration-artifacts/event/solace.md)
 * [Supported Protocols](supported-protocols.md) — complete protocol matrix
