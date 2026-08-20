@@ -182,6 +182,7 @@ const sidebars: SidebarsConfig = {
                     'develop/integration-artifacts/file/csv-fault-tolerance',
                   ],
                 },
+                'develop/integration-artifacts/file/azure-files',
                 'develop/integration-artifacts/file/local-files',
               ],
             },
@@ -526,6 +527,17 @@ const sidebars: SidebarsConfig = {
             'connectors/catalog/ai-ml/azure.ai.search.index/setup-guide',
             'connectors/catalog/ai-ml/azure.ai.search.index/actions',
             'connectors/catalog/ai-ml/azure.ai.search.index/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Azure Files',
+          link: { type: 'doc', id: 'connectors/catalog/storage-file/azure.storage.files/overview' },
+          items: [
+            'connectors/catalog/storage-file/azure.storage.files/setup-guide',
+            'connectors/catalog/storage-file/azure.storage.files/action-reference',
+            'connectors/catalog/storage-file/azure.storage.files/trigger-reference',
+            'connectors/catalog/storage-file/azure.storage.files/example',
           ],
         },
         {
