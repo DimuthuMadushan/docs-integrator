@@ -1,7 +1,7 @@
 ---
 connector: true
 connector_name: "smb"
-title: "SMB Overview"
+title: "SMB"
 description: "Overview of the ballerina/smb connector for WSO2 Integrator."
 ---
 

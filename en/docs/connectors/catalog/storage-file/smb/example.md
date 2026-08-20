@@ -1,7 +1,7 @@
 ---
 connector: true
 connector_name: "smb"
-title: "SMB Example"
+title: "Example"
 ---
 
 # Example

@@ -2,7 +2,7 @@
 connector: true
 connector_name: "smb"
 toc_max_heading_level: 4
-title: "SMB Action Reference"
+title: "Actions"
 ---
 
 # Actions

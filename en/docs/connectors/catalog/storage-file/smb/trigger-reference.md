@@ -1,7 +1,7 @@
 ---
 connector: true
 connector_name: "smb"
-title: "SMB Trigger Reference"
+title: "Triggers"
 ---
 
 # Triggers

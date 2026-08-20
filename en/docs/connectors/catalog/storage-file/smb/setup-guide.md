@@ -1,7 +1,7 @@
 ---
 connector: true
 connector_name: "smb"
-title: "SMB Setup Guide"
+title: "Setup Guide"
 description: "How to set up and configure the ballerina/smb connector."
 ---
 
