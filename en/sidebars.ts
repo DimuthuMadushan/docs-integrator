@@ -183,6 +183,7 @@ const sidebars: SidebarsConfig = {
                 },
                 'develop/integration-artifacts/file/smb',
                 'develop/integration-artifacts/file/local-files',
+                'develop/integration-artifacts/file/azure-files'
               ],
             },
             {
@@ -238,6 +239,7 @@ const sidebars: SidebarsConfig = {
             'develop/transform/json',
             'develop/transform/xml',
             'develop/transform/csv-flat-file',
+            'develop/transform/xlsx',
             'develop/transform/edi',
             'develop/transform/pdf',
             'develop/transform/freemarker',
@@ -525,6 +527,17 @@ const sidebars: SidebarsConfig = {
             'connectors/catalog/ai-ml/azure.ai.search.index/setup-guide',
             'connectors/catalog/ai-ml/azure.ai.search.index/actions',
             'connectors/catalog/ai-ml/azure.ai.search.index/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Azure Files',
+          link: { type: 'doc', id: 'connectors/catalog/storage-file/azure.storage.files/overview' },
+          items: [
+            'connectors/catalog/storage-file/azure.storage.files/setup-guide',
+            'connectors/catalog/storage-file/azure.storage.files/action-reference',
+            'connectors/catalog/storage-file/azure.storage.files/trigger-reference',
+            'connectors/catalog/storage-file/azure.storage.files/example',
           ],
         },
         {
@@ -2468,6 +2481,7 @@ const sidebars: SidebarsConfig = {
             'reference/data-formats/protocol-buffers',
             'reference/data-formats/toml',
             'reference/data-formats/xml',
+            'reference/data-formats/xlsx',
             'reference/data-formats/yaml',
           ],
         },
