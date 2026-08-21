@@ -472,10 +472,10 @@ const sidebars: SidebarsConfig = {
         {
           type: 'category',
           label: 'AWS S3',
-          link: { type: 'doc', id: 'connectors/catalog/storage-file/aws.s3/aws-s3-connector-overview' },
+          link: { type: 'doc', id: 'connectors/catalog/storage-file/aws.s3/overview' },
           items: [
             'connectors/catalog/storage-file/aws.s3/setup-guide',
-            'connectors/catalog/storage-file/aws.s3/actions',
+            'connectors/catalog/storage-file/aws.s3/action-reference',
             'connectors/catalog/storage-file/aws.s3/example',
           ],
         },
