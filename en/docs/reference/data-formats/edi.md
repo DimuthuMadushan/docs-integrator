@@ -29,7 +29,7 @@ import ballerinax/edifact.d03a.finance.mINVOIC;
 
 public function main() returns error? {
     string ediText = check io:fileReadString("resources/invoice.edi");
-    mINVOIC:EDI_INVOIC_Invoice_message invoiceMsg = check mINVOIC:fromEdiString(ediText);
+    mINVOIC:EDI_INVOIC_INVOIC invoice = check mINVOIC:fromEdiString(ediText);
     // Process the typed invoice data
 }
 ```
@@ -314,12 +314,12 @@ EDI schemas are JSON documents that define how to parse and serialize EDI data. 
 
 ## Prebuilt EDIFACT packages
 
-The following prebuilt EDIFACT D03A packages provide ready-made EDI schemas and Ballerina types for common business document standards. Each package includes `fromEdiString()`, `toEdiString()`, and `getEDINames()` functions for its supported message types.
+The following prebuilt EDIFACT D03A packages provide ready-made EDI schemas and Ballerina types for common business document standards. Each package has a root module exposing `getEDINames()`, `hasEnvelope()`, and message-name-dispatched conversion functions, plus one submodule per message type (for example `mINVOIC`) whose `fromEdiString()`, `toEdiString()`, `headersFromEdiString()`, `interchangeFromEdiString()`, and `interchangeToEdiString()` functions are typed to that message's records.
 
 These packages are published under the `ballerinax` organization and can be imported directly into your integration project.
 
-:::warning
-The prebuilt packages predate the envelope-aware EDI API. They are published at version `0.9.0`, and their bundled schemas list `UNA`, `UNB`, `UNH`, `UNT`, and `UNZ` in `ignoreSegments` with no `envelope` declaration. As a result, `fromEdiString()` parses a single message body and discards the interchange around it — it cannot read the sender or control reference from `UNB`, and it fails outright on an interchange that carries more than one message. Generate your own module with `bal edi codegen` or `bal edi libgen` when you need to identify a trading partner from the envelope, process a batch, or serialize an interchange with recomputed counts.
+:::info
+Envelope support arrived in version `1.0.0`. The earlier `0.9.0` packages list `UNA`, `UNB`, `UNH`, `UNT`, and `UNZ` in `ignoreSegments` with no `envelope` declaration, so they parse a single message body and fail on an interchange that carries more than one message. Pin `1.0.0` or later to read interchange headers, process a batch, or serialize an interchange with recomputed counts.
 :::
 
 | Package | Description |
@@ -334,13 +334,22 @@ The prebuilt packages predate the envelope-aware EDI API. They are published at 
 
 ### Prebuilt package usage
 
+`fromEdiString()` reads a single message. To walk a full interchange, call `interchangeFromEdiString()` — each transaction's `body` is typed `Record|error`, so one malformed message can be quarantined without failing the batch.
+
 ```ballerina
 import ballerina/io;
 import ballerinax/edifact.d03a.finance.mINVOIC;
 
 public function main() returns error? {
     string ediText = check io:fileReadString("resources/invoice.edi");
-    mINVOIC:EDI_INVOIC_Invoice_message invoiceMsg = check mINVOIC:fromEdiString(ediText);
-    // Process the typed invoice data
+    mINVOIC:EDI_INVOIC_INVOICInterchange interchange = check mINVOIC:interchangeFromEdiString(ediText);
+    foreach mINVOIC:EDI_INVOIC_INVOICTransaction txn in interchange.transactions {
+        mINVOIC:EDI_INVOIC_INVOIC|error invoice = txn.body;
+        if invoice is error {
+            io:println("quarantined: ", invoice.message());
+            continue;
+        }
+        // Process the typed invoice data
+    }
 }
 ```
