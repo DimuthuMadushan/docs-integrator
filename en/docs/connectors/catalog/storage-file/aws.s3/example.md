@@ -12,7 +12,7 @@ This integration demonstrates how to connect to Amazon Web Services Simple Stora
 ```mermaid
 flowchart LR
     A((User)) --> B[Create Bucket]
-    B --> C[aws.s3 Connector]
+    B --> C[AWS S3 Connector]
     C --> D[(Amazon S3)]
 ```
 
@@ -22,23 +22,23 @@ flowchart LR
 - An AWS Access Key ID and Secret Access Key with at least `s3:CreateBucket` permission.
 - The target AWS region where the S3 bucket will be created (e.g., `us-east-1`).
 
-## Setting up the aws.s3 integration
+## Setting up the AWS S3 integration
 
 > **New to WSO2 Integrator?** Follow the [Create a New Integration](../../../../develop/create-integrations/create-a-new-integration.md) guide to set up your integration first, then return here to add the connector.
 
-## Adding the aws.s3 connector
+## Adding the AWS S3 connector
 
-### Step 1: Open the connector palette and select the aws.s3 connector
+### Step 1: Open the connector palette and select the AWS S3 connector
 
 1. Select **Add Connection** (or the **+** icon next to the **Connections** heading in the sidebar) to open the connector palette.
-2. In the palette search box, enter **aws.s3**.
+2. In the palette search box, enter **AWS S3**.
 3. Select the **ballerinax/aws.s3** connector card to open the connection configuration form.
 
 ![Connector palette open showing the search field and connector list before any search is entered](/img/connectors/catalog/storage-file/aws.s3/aws_s3_screenshot_01_palette.png)
 
-## Configuring the aws.s3 connection
+## Configuring the AWS S3 connection
 
-### Step 2: Bind the aws.s3 connection parameters to configurable variables
+### Step 2: Bind the AWS S3 connection parameters to configurable variables
 
 Select the **Config** field, switch to **Expression** mode, then use the **Configurables** tab in the helper panel to create one variable for each connection field:
 
@@ -50,7 +50,7 @@ After creating all three configurables, bind each connection field to its config
 
 ![Connection form showing all three parameters bound to configurable variables before saving](/img/connectors/catalog/storage-file/aws.s3/aws_s3_screenshot_02_connection_form.png)
 
-### Step 3: Save the aws.s3 connection
+### Step 3: Save the AWS S3 connection
 
 Select **Save Connection** to persist the connection. The S3 connector entry (`s3Client`) appears on the canvas.
 
@@ -65,7 +65,7 @@ Select **Save Connection** to persist the connection. The S3 connector entry (`s
 - **secretAccessKey** (string) : your AWS IAM secret access key
 - **region** (string) : the target AWS region for S3 operations (e.g., `us-east-1`). Defaults to `us-east-1` if not set.
 
-## Configuring the aws.s3 createBucket operation
+## Configuring the AWS S3 createBucket operation
 
 ### Step 5: Add an automation entry point
 
