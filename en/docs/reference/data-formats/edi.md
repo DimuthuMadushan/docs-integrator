@@ -318,10 +318,6 @@ The following prebuilt EDIFACT D03A packages provide ready-made EDI schemas and 
 
 These packages are published under the `ballerinax` organization and can be imported directly into your integration project.
 
-:::info
-Envelope support arrived in version `1.0.0`. The earlier `0.9.0` packages list `UNA`, `UNB`, `UNH`, `UNT`, and `UNZ` in `ignoreSegments` with no `envelope` declaration, so they parse a single message body and fail on an interchange that carries more than one message. Pin `1.0.0` or later to read interchange headers, process a batch, or serialize an interchange with recomputed counts.
-:::
-
 | Package | Description |
 |---------|-------------|
 | `ballerinax/edifact.d03a.finance` | Financial messages — credit/debit advices, payment orders, invoices, ledger entries, and tax declarations. |
