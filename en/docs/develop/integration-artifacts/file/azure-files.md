@@ -295,7 +295,7 @@ The **Format** chosen on an On Create handler determines the function name and t
 | **Text** | `onFileText` | `.txt` | `string` | Files are plain text (logs, EDI, custom formats). |
 | **JSON** | `onFileJson` | `.json` | `json` or a typed record | Files are JSON documents. |
 | **XML** | `onFileXml` | `.xml` | `xml` or a typed record | Files are XML documents. |
-| **CSV** | `onFileCsv` | `.csv` | `record {}[]` or `stream<record {}, error?>` | Files are comma-separated values. Rows map through the header row into your record type; use a stream for large files. |
+| **CSV** | `onFileCsv` | `.csv` | `string[][]`, `record {}[]`, or a stream of either row form | Files are comma-separated values. Record rows map through the header row into your record type; string rows keep every row of the file. Use a stream for large files. |
 | **Raw Bytes** | `onFile` | any other extension | `byte[]` or `stream<byte[], error?>` | Binary files or when you need raw byte access. |
 
 Routing rules:

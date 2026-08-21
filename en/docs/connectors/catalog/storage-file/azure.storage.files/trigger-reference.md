@@ -79,7 +79,7 @@ The `byte[]` form of `onFile` loads the whole file into memory; prefer the strea
 | `onFileText` | <code>remote function onFileText(string content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.txt` file, delivering the content as a string. |
 | `onFileJson` | <code>remote function onFileJson(json content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.json` file, delivering the parsed content. Also binds to a user-defined record. |
 | `onFileXml` | <code>remote function onFileXml(xml content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.xml` file, delivering the document. Also binds to a user-defined record. |
-| `onFileCsv` | <code>remote function onFileCsv(MyRow[] content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.csv` file, delivering the rows bound to a record array. Also binds to a stream of records. |
+| `onFileCsv` | <code>remote function onFileCsv(MyRow[] content, files:FileInfo file, files:Caller caller) returns error?</code> | Invoked for a dispatched `.csv` file, delivering the rows bound to a string matrix or a record array. Also binds to a stream of either row form. |
 | `onError` | <code>remote function onError(files:Error err, files:Caller caller) returns error?</code> | Invoked when a poll fails, when a listed file's content cannot be read, or when a file's content cannot be bound to the typed parameter of a content handler. Declaring it also makes it responsible for consuming files that fail to bind; see [Error handling](#error-handling). |
 
 :::note
@@ -87,7 +87,7 @@ The trailing parameters are optional. A content handler declares its content par
 :::
 
 :::note
-Each content parameter is declared with exactly one of its accepted types. `onFile` takes `byte[]` or `stream<byte[], error?>`. `onFileJson` takes a `json` value or a record. `onFileXml` takes `xml` or a record. `onFileCsv` takes a record array or a stream of records; both map each row's fields through the file's first row, the header.
+Each content parameter is declared with exactly one of its accepted types. `onFile` takes `byte[]` or `stream<byte[], error?>`. `onFileJson` takes a `json` value or a record. `onFileXml` takes `xml` or a record. `onFileCsv` takes a string matrix (`string[][]`), a record array, a `stream<string[], error?>`, or a `stream<record {}, error?>`. The record forms map each row's fields through the file's first row, the header; the string forms keep every row of the file, the header row included.
 :::
 
 ### Full usage example
