@@ -15,12 +15,16 @@ The `bal edi` tool covers all the standards commonly seen in B2B integration:
 
 - **EDIFACT**: the international UN/EDIFACT standard (`ORDERS`, `INVOIC`, `DESADV`, and many more).
 - **X12**: the ANSI ASC X12 standard widely used in North America for transactions such as `850` (purchase orders), `810` (invoices), and `856` (advance ship notices).
-- **ESL**: the Electronic Shelf Labeling format used in retail pricing and product information feeds.
+- **ESL**: the EDI Schema Language — a YAML schema definition that describes an EDI message's structure.
 - **Custom EDI**: any proprietary or non-standard delimited format, described in the tool's own JSON schema.
 
 The workflow is the same for every standard: convert the source spec into the Ballerina EDI JSON schema, then generate typed records and parser functions from it. After that, the integration code is identical regardless of which standard the data originally came from.
 
 For the complete CLI command and flag reference, see the [EDI tool](../tools/integration-tools/edi-tool.md) page.
+
+:::info
+For standard **EDIFACT D03A** message types, prebuilt packages are published under the `ballerinax` organization — you can import them directly and skip code generation. They are envelope-aware, so they read interchange headers and split a batch as well as parse a single message body; see [EDI reference → Prebuilt EDIFACT packages](../../reference/data-formats/edi.md#prebuilt-edifact-packages). Use the `bal edi` tool described below when you need X12, a non-D03A EDIFACT version, a custom format, or a partner-specific variation of a standard message.
+:::
 
 ## Setting up the EDI tool
 
@@ -36,13 +40,83 @@ Verify the installation:
 bal edi --help
 ```
 
-## Generating code from an X12 transaction set
+## Generating code from an EDIFACT spec
 
-X12 is the ANSI ASC X12 EDI standard widely used in North America for purchase orders, invoices, advance ship notices, and many other transaction sets. The `bal edi convertX12Schema` command converts an X12 schema file into the Ballerina EDI JSON schema format.
+For standard EDI formats like EDIFACT, you don't need to write a schema by hand — the `bal edi` tool builds it from the standard's own specification. Download the release archive for the version you need from the [UN/EDIFACT directory downloads](https://unece.org/trade/uncefact/unedifact/download), then convert the message type you are interested in. The following generates a JSON schema for the EDIFACT ORDERS message in version D03A:
 
 ```bash
-bal edi convertX12Schema -i path/to/x12-schema.json -o schema
+bal edi convertEdifactSchema -v d03a -t ORDERS -i d03a.zip -o schema
 ```
+
+`-i` accepts the archive as downloaded, or a directory it was extracted to. Omit `-t` to convert every message type in the directory.
+
+This writes a ready-to-use JSON schema to `schema/ORDERS.json`. Then generate Ballerina record types and parser/serializer functions from it. Let's add the generated code into a separate library.
+
+<Tabs>
+<TabItem value="ui" label="Visual Designer" default>
+
+1. After creating a new integration, click the **+ Add** icon.
+2. Select **Library** as the type, enter `orders` as the library name, and click **Add Library**.
+
+   ![Add New Library](/img/develop/transform/edi/add-new-library.png)
+
+3. Open the terminal and navigate to the `orders` directory.
+
+   ```bash
+   cd orders
+   ```
+
+4. Execute the following command to generate the necessary records and functions for the ORDERS schema.
+
+   ```bash
+   bal edi codegen -i ../schema/ORDERS.json -o orders.bal
+   ```
+
+</TabItem>
+</Tabs>
+
+The generated file contains:
+
+- **Record types**: one per segment in the ORDERS message (BGM, DTM, NAD, LIN, and so on).
+- **`fromEdiString`**: converts an EDI string to a typed Ballerina record.
+- **`toEdiString`**: converts a Ballerina record to an EDI string.
+- **`getSchema`**: returns the EDI schema as an `EdiSchema` object.
+- **`fromEdiStringWithSchema`** / **`toEdiStringWithSchema`**: variants that accept a pre-loaded `EdiSchema`, useful when the same code must handle multiple schemas selected at runtime.
+
+## Adjusting a schema for a trading partner
+
+Trading partners routinely use variations of a standard format: an extra segment, a segment the standard marks optional but the partner always sends, a different delimiter set, or a field the partner sends as a number where the standard says text. Because `convertEdifactSchema` and `convertX12Schema` write the schema out as JSON before any code is generated, a partner's deviations are handled by editing that file and re-running `codegen` — the standard specification itself is never touched.
+
+The fields most often adjusted are:
+
+- **`delimiters`** — the segment, field, component, and repetition separators, and the decimal separator when the partner uses `,`.
+- **`minOccurances` / `maxOccurances`** — tighten a segment the partner always sends, or relax one it never does. `-1` means unlimited.
+- **`dataType`** — `string`, `int`, `float`, or `composite` for a field the partner formats differently.
+- **`ignoreSegments`** — segment codes to skip instead of failing on, for segments a partner adds that the integration does not care about.
+
+After editing, regenerate the code from the edited schema:
+
+```bash
+bal edi codegen -i schema/ORDERS.json -o orders.bal
+```
+
+Keep the edited schema in version control alongside the integration: it is the source of truth for what that partner sends. When several partners deviate from the same standard, keep one schema per partner and generate a module for each — or bundle them into a single package with [`libgen`](#building-a-reusable-library-package).
+
+For the full schema grammar — segments and segment groups, fields, components, sub-components, the `envelope` declaration, and every configuration option — see the [Ballerina EDI specification](https://ballerina.io/spec/edi/#7-schema-definition).
+
+## Generating code from an X12 schema
+
+X12 is the ANSI ASC X12 EDI standard widely used in North America for purchase orders, invoices, advance ship notices, and many other transaction sets.
+
+X12 message specifications are licensed from ASC X12, so — unlike EDIFACT — the tool cannot download one for you and no prebuilt X12 packages are published. The workflow starts from the schema your organization is licensed to use, which `bal edi convertX12Schema` converts into the Ballerina EDI JSON schema format.
+
+```bash
+bal edi convertX12Schema -i path/to/850.xsd -o schema
+```
+
+:::info
+If you are working with an X12 transaction set and need help mapping your licensed specification, [contact us](https://wso2.com/contact/).
+:::
 
 The command supports three optional flags for tuning how the schema is interpreted:
 
@@ -50,29 +124,15 @@ The command supports three optional flags for tuning how the schema is interpret
 - `-c, --collection`: treat the input as a collection of related schemas rather than a single transaction set.
 - `-d, --segdet`: point to an external segment-details file when the X12 schema references segment definitions stored separately.
 
-See the [EDI tool](../tools/integration-tools/edi-tool.md#bal-edi-convertx12schema) page for full flag details.
-
-Once the schema is converted, run `codegen` to produce typed records and parser functions:
+See the [EDI tool](../tools/integration-tools/edi-tool.md#bal-edi-convertx12schema) page for full flag details. Once converted, run `codegen` the same way as for EDIFACT:
 
 ```bash
 bal edi codegen -i schema/schema.json -o x12.bal
 ```
 
-## Generating code from an ESL schema
+## Generating code from a custom schema
 
-ESL (Electronic Shelf Labeling) schemas describe retail pricing and product information formats. They reference a base definitions file that lists the shared segment definitions; both inputs are required when converting.
-
-```bash
-bal edi convertESL -b path/to/base-definitions -i path/to/esl-schema -o schema
-```
-
-After conversion, run `codegen` the same way as for X12 to generate the records and functions.
-
-## Generating code from a custom EDI schema
-
-If you work with a non-standard or proprietary EDI format, you can define your own schema as a JSON file and generate Ballerina code from it. This is the same format that `convertEdifactSchema`, `convertX12Schema`, and `convertESL` all produce internally; skipping conversion lets you describe the format directly.
-
-Define your schema:
+For a proprietary or non-standard format that is neither X12 nor EDIFACT, describe its structure directly in the Ballerina EDI JSON schema format — the same format that `convertEdifactSchema`, `convertX12Schema`, and `convertESL` all produce internally, so you can skip conversion and write it by hand:
 
 ```json
 {
@@ -118,48 +178,13 @@ Then generate Ballerina code from it:
 bal edi codegen -i schema.json -o document.bal
 ```
 
-## Generating code from an EDIFACT spec
-
-For standard EDI formats like EDIFACT, you don't need to write a schema by hand. The `bal edi` tool has built-in knowledge of EDIFACT message types. Run the following command to generate a JSON schema for the EDIFACT ORDERS message (version D03A):
+If your format is already defined in **ESL (EDI Schema Language)** — a YAML schema definition with a separate base segment-definitions file — convert it to a Ballerina EDI schema first with `convertESL`, then run `codegen` as above:
 
 ```bash
-bal edi convertEdifactSchema -v d03a -t ORDERS -o schema
+bal edi convertESL -b path/to/base-definitions -i path/to/esl-schema -o schema
 ```
 
-This writes a ready-to-use JSON schema to `schema/ORDERS.json`. Then generate Ballerina record types and parser/serializer functions from it. Let's add the generated code into a separate library.
-
-<Tabs>
-<TabItem value="ui" label="Visual Designer" default>
-
-1. After creating a new integration, click the **+ Add** icon.
-2. Select **Library** as the type, enter `orders` as the library name, and click **Add Library**.
-
-   ![Add New Library](/img/develop/transform/edi/add-new-library.png)
-
-3. Open the terminal and navigate to the `orders` directory.
-
-   ```bash
-   cd orders
-   ```
-
-4. Execute the following command to generate the necessary records and functions for the ORDERS schema.
-
-   ```bash
-   bal edi codegen -i ../schema/ORDERS.json -o orders.bal
-   ```
-
-</TabItem>
-</Tabs>
-
-The generated file contains:
-
-- **Record types**: one per segment in the ORDERS message (BGM, DTM, NAD, LIN, and so on).
-- **`fromEdiString`**: converts an EDI string to a typed Ballerina record.
-- **`toEdiString`**: converts a Ballerina record to an EDI string.
-- **`getSchema`**: returns the EDI schema as an `EdiSchema` object.
-- **`fromEdiStringWithSchema`** / **`toEdiStringWithSchema`**: variants that accept a pre-loaded `EdiSchema`, useful when the same code must handle multiple schemas selected at runtime.
-
-The same generated artifacts are produced whether the source standard is EDIFACT, X12, ESL, or a custom schema. Once you have a generated module, the rest of this page applies unchanged.
+The same generated artifacts are produced whether the source is EDIFACT, X12, ESL, or a custom schema. Once you have a generated module, the rest of this page applies unchanged.
 
 If you need to handle several EDI schemas at once, you can bundle them into a single reusable package instead of generating each module by hand. See [Building a reusable library package](#building-a-reusable-library-package).
 
@@ -245,6 +270,33 @@ public function main() returns error? {
 
 </TabItem>
 </Tabs>
+
+### Parsing the full interchange
+
+A complete EDI file is an *interchange* — one or more transactions wrapped in envelope headers and trailers. `interchangeFromEdiString` parses the whole hierarchy into typed records, capturing any malformed transaction body as an `error` instead of failing the entire parse, so well-formed transactions can still be processed:
+
+```ballerina
+import ballerina/io;
+import ballerina/log;
+
+// Generated library from the EDIFACT ORDERS schema.
+import <add-org-name>/orders;
+
+public function main() returns error? {
+    string ediContent = check io:fileReadString("path/to/orders.edi");
+
+    orders:ORDERSInterchange interchange = check orders:interchangeFromEdiString(ediContent);
+    foreach var txn in interchange.transactions {
+        if txn.body is error {
+            log:printError("Quarantined malformed transaction", 'error = txn.body);
+            continue;
+        }
+        log:printInfo(txn.body.toString());
+    }
+}
+```
+
+To route or filter messages by trading partner without parsing the whole document, `orders:headersFromEdiString` returns just the envelope headers.
 
 ## Generating EDI output
 

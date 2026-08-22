@@ -24,11 +24,12 @@ In this example, `*` is the data element separator and `~` is the segment termin
 The fastest path for standard EDIFACT documents is to import a prebuilt package — no schema writing required. Prebuilt packages for common EDIFACT D03A message types are available under the `ballerinax` organization.
 
 ```ballerina
+import ballerina/io;
 import ballerinax/edifact.d03a.finance.mINVOIC;
 
 public function main() returns error? {
     string ediText = check io:fileReadString("resources/invoice.edi");
-    mINVOIC:EDI_INVOIC_Invoice invoiceMsg = check mINVOIC:fromEdiString(ediText);
+    mINVOIC:EDI_INVOIC_INVOIC invoice = check mINVOIC:fromEdiString(ediText);
     // Process the typed invoice data
 }
 ```
@@ -41,7 +42,7 @@ For EDIFACT or X12 documents not covered by prebuilt packages, use the [EDI Tool
 
 ## Module
 
-`ballerina/edi`
+`ballerina/edi` (v1.6.0)
 
 ## Usage
 
@@ -142,13 +143,45 @@ public function main() returns error? {
 }
 ```
 
+### Parse a full interchange
+
+When the schema declares an `envelope` (schemas generated from an X12 or EDIFACT spec do), `interchangeFromEdiString` parses the whole interchange hierarchy into typed records. Each transaction body is **fail-safe** — a malformed body is captured as an `error` on `EdiTransaction.body` instead of aborting the parse, so you can process what you can and quarantine the rest.
+
+```ballerina
+import ballerina/edi;
+import ballerina/io;
+
+public function main() returns error? {
+    edi:EdiSchema schema = check edi:getSchema(check io:fileReadJson("path/to/schema.json"));
+    string ediText = check io:fileReadString("path/to/interchange.edi");
+
+    edi:EdiInterchange interchange = check edi:interchangeFromEdiString(ediText, schema);
+    foreach var txn in interchange.transactions ?: [] {
+        if txn.body is error {
+            io:println("Quarantined: ", txn.body.message());
+            continue;
+        }
+        io:println(txn.body);
+    }
+}
+```
+
+To route or filter messages without a schema, `x12HeadersFromEdiString` and `edifactHeadersFromEdiString` extract just the envelope headers (X12 ISA/GS, EDIFACT UNB/UNH).
+
 ## Functions
 
 | Function | Signature | Description |
 |----------|-----------|-------------|
-| `fromEdiString` | `fromEdiString(string ediText, EdiSchema schema) returns json\|Error` | Parse EDI text into JSON using a schema. |
+| `fromEdiString` | `fromEdiString(string ediText, EdiSchema schema) returns json\|Error` | Parse a transaction body into JSON using a schema. |
 | `toEdiString` | `toEdiString(json msg, EdiSchema schema) returns string\|Error` | Serialize JSON into EDI text using a schema. |
+| `x12HeadersFromEdiString` / `x12HeadersFromEdiFile` | `... returns X12Headers\|Error` | Schema-free parse of X12 ISA/GS headers for routing and partner identification. |
+| `edifactHeadersFromEdiString` / `edifactHeadersFromEdiFile` | `... returns EdifactHeaders\|Error` | Schema-free parse of EDIFACT UNB/UNH headers. |
+| `headersFromEdiString` / `headersFromEdiFile` | `... returns json\|Error` | Schema-driven parse of just the envelope header segments. |
+| `interchangeFromEdiString` | `interchangeFromEdiString(string ediText, EdiSchema schema) returns EdiInterchange\|Error` | Parse the full envelope hierarchy into typed records, with fail-safe per-transaction bodies. |
+| `interchangeToEdiString` | `interchangeToEdiString(EdiInterchange msg, EdiSchema schema) returns string\|Error` | Serialize a full interchange back to EDI text (recomputes envelope counts). |
 | `getSchema` | `getSchema(string\|json schema) returns EdiSchema\|error` | Load and validate an EDI schema from a JSON string or object. |
+
+For full signatures, parameters, error types (`InvalidEnvelopeError`, `SchemaCompatibilityError`, `SerializationError`), and envelope processing semantics, see the [Module Specification](https://github.com/ballerina-platform/module-ballerina-edi/blob/main/docs/specs/ModuleSpecification.md).
 
 ## Custom EDI schemas
 
@@ -281,7 +314,7 @@ EDI schemas are JSON documents that define how to parse and serialize EDI data. 
 
 ## Prebuilt EDIFACT packages
 
-The following prebuilt EDIFACT D03A packages provide ready-made EDI schemas and Ballerina types for common business document standards. Each package includes `fromEdiString()`, `toEdiString()`, and `getEDINames()` functions for its supported message types.
+The following prebuilt EDIFACT D03A packages provide ready-made EDI schemas and Ballerina types for common business document standards. Each package has a root module exposing `getEDINames()`, `hasEnvelope()`, and message-name-dispatched conversion functions, plus one submodule per message type (for example `mINVOIC`) whose `fromEdiString()`, `toEdiString()`, `headersFromEdiString()`, `interchangeFromEdiString()`, and `interchangeToEdiString()` functions are typed to that message's records.
 
 These packages are published under the `ballerinax` organization and can be imported directly into your integration project.
 
@@ -297,12 +330,22 @@ These packages are published under the `ballerinax` organization and can be impo
 
 ### Prebuilt package usage
 
+`fromEdiString()` reads a single message. To walk a full interchange, call `interchangeFromEdiString()` — each transaction's `body` is typed `Record|error`, so one malformed message can be quarantined without failing the batch.
+
 ```ballerina
+import ballerina/io;
 import ballerinax/edifact.d03a.finance.mINVOIC;
 
 public function main() returns error? {
     string ediText = check io:fileReadString("resources/invoice.edi");
-    mINVOIC:EDI_INVOIC_Invoice invoiceMsg = check mINVOIC:fromEdiString(ediText);
-    // Process the typed invoice data
+    mINVOIC:EDI_INVOIC_INVOICInterchange interchange = check mINVOIC:interchangeFromEdiString(ediText);
+    foreach mINVOIC:EDI_INVOIC_INVOICTransaction txn in interchange.transactions {
+        mINVOIC:EDI_INVOIC_INVOIC|error invoice = txn.body;
+        if invoice is error {
+            io:println("quarantined: ", invoice.message());
+            continue;
+        }
+        // Process the typed invoice data
+    }
 }
 ```

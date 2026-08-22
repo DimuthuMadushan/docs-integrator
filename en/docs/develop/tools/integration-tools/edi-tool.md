@@ -28,25 +28,29 @@ EDIFACT is the international EDI standard used globally, with message types such
 
 ### Step 1: Convert the EDIFACT schema
 
-Convert an EDIFACT message type to the Ballerina EDI schema format by specifying the version and transaction type.
+Convert an EDIFACT message type to the Ballerina EDI schema format by specifying the version, the transaction type, and the directory the specification was downloaded from. Download the release archive for the version you need from the [UN/EDIFACT directory downloads](https://unece.org/trade/uncefact/unedifact/download); the archive can be passed as downloaded, or as a directory it was extracted to.
 
 ```bash
-bal edi convertEdifactSchema -v <version> -t <transaction-type> -o path/to/output/
+bal edi convertEdifactSchema -v <version> -t <transaction-type> -i <downloaded archive> -o path/to/output/
 ```
 
-For example, to convert an `ORDERS` message in version `d96a`:
+For example, to convert an `ORDERS` message in version `d03a`:
 
 ```bash
-bal edi convertEdifactSchema -v d96a -t ORDERS -o path/to/output
+bal edi convertEdifactSchema -v d03a -t ORDERS -i d03a.zip -o path/to/output
 ```
+
+Omit `-t` to convert every message type in the directory.
 
 ### Step 2: Generate Ballerina code
 
-Use `codegen` to generate typed Ballerina records and parser functions from the converted schema.
+Use `codegen` to generate typed Ballerina records and parser functions into the package's default module. `convertEdifactSchema` writes the schema into the output directory as `<transaction-type>.json`, so point `codegen` at that file:
 
 ```bash
-bal edi codegen -i path/to/output/schema.json -o modules/orders/main.bal
+bal edi codegen -i path/to/output/ORDERS.json -o orders.bal
 ```
+
+For larger projects, keep the generated EDI code in its own package within a Ballerina workspace alongside your integration.
 
 This generates the following functions in the output file along with the relevant record types.
 
@@ -55,6 +59,12 @@ This generates the following functions in the output file along with the relevan
 - `getSchema`: Get the EDI schema as an `EdiSchema` object.
 - `fromEdiStringWithSchema`: Convert an EDI string to a Ballerina record using a pre-loaded schema.
 - `toEdiStringWithSchema`: Convert a Ballerina record to an EDI string using a pre-loaded schema.
+
+When the schema carries an envelope definition — which schemas converted from an X12 or EDIFACT spec do — `codegen` additionally emits envelope-aware functions and the matching typed wrapper records (`<Name>Interchange`, `<Name>FunctionalGroup`, `<Name>Transaction`):
+
+- `headersFromEdiString`: Parse just the interchange/group/transaction headers.
+- `interchangeFromEdiString`: Parse the full interchange hierarchy, with a fail-safe `error` body per transaction.
+- `interchangeToEdiString`: Serialize a `<Name>Interchange` back to EDI text.
 
 ## Generating types from an X12 schema
 
@@ -73,7 +83,7 @@ bal edi convertX12Schema -i path/to/x12-schema -o path/to/output
 Use `codegen` to generate typed Ballerina records and parser functions from the converted schema.
 
 ```bash
-bal edi codegen -i path/to/output/schema.json -o modules/orders/main.bal
+bal edi codegen -i path/to/output/schema.json -o orders.bal
 ```
 
 ## Generating types from a custom schema
@@ -131,7 +141,7 @@ ITM*Stapler*2~
 Run `codegen` directly on the custom schema file:
 
 ```bash
-bal edi codegen -i path/to/schema.json -o modules/orders/main.bal
+bal edi codegen -i path/to/schema.json -o orders.bal
 ```
 
 This generates the corresponding Ballerina record types along with edi functions:
@@ -172,7 +182,7 @@ Generated packages can be published to Ballerina Central and reused across proje
 | --- | --- |
 | `bal edi codegen -i <schema> -o <output>` | Generate Ballerina records and functions from a schema file |
 | `bal edi libgen -p <org/package> -i <dir> -o <output>` | Generate a library package from a directory of schemas |
-| `bal edi convertEdifactSchema -v <version> -t <type> -o <output>` | Convert an EDIFACT spec to Ballerina EDI schema format |
+| `bal edi convertEdifactSchema -v <version> -t <type> -i <archive> -o <output>` | Convert an EDIFACT spec to Ballerina EDI schema format |
 | `bal edi convertX12Schema -i <input> -o <output>` | Convert an X12 schema to Ballerina EDI schema format |
 | `bal edi convertESL -b <definitions> -i <input> -o <output>` | Convert an ESL schema to Ballerina EDI schema format |
 
@@ -207,9 +217,10 @@ Generated packages can be published to Ballerina Central and reused across proje
 
 | Flag | Required | Description |
 | --- | --- | --- |
-| `-v`, `--version` | Yes | EDIFACT version (for example, `d96a`) |
-| `-t`, `--type` | Yes | Transaction type (for example, `ORDERS`, `INVOIC`) |
-| `-o`, `--output` | Yes | Output directory for the converted schema |
+| `-v`, `--version` | Yes | EDIFACT version (for example, `d03a`) |
+| `-t`, `--type` | No | Transaction type (for example, `ORDERS`, `INVOIC`). Omit it to convert every message type in the directory |
+| `-i`, `--input` | Yes | Path to the downloaded UN/EDIFACT directory archive, or to a directory it was extracted to |
+| `-o`, `--output` | Yes | Output directory for the converted schema, holding one `<transaction-type>.json` per message type |
 
 #### bal edi convertESL
 
