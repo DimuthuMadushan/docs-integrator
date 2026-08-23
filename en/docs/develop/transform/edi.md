@@ -83,7 +83,7 @@ The generated file contains:
 - **`getSchema`**: returns the EDI schema as an `EdiSchema` object.
 - **`fromEdiStringWithSchema`** / **`toEdiStringWithSchema`**: variants that accept a pre-loaded `EdiSchema`, useful when the same code must handle multiple schemas selected at runtime.
 
-## Adjusting a schema for a trading partner
+## Adapting the schema to a trading partner
 
 Trading partners routinely use variations of a standard format: an extra segment, a segment the standard marks optional but the partner always sends, a different delimiter set, or a field the partner sends as a number where the standard says text. Because `convertEdifactSchema` and `convertX12Schema` write the schema out as JSON before any code is generated, a partner's deviations are handled by editing that file and re-running `codegen` — the standard specification itself is never touched.
 
