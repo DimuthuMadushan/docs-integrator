@@ -286,7 +286,7 @@ public function main() returns error? {
     string ediContent = check io:fileReadString("path/to/orders.edi");
 
     orders:ORDERSInterchange interchange = check orders:interchangeFromEdiString(ediContent);
-    foreach var txn in interchange.transactions {
+    foreach orders:ORDERSTransaction txn in interchange.transactions {
         orders:ORDERS|error body = txn.body;
         if body is error {
             log:printError("Quarantined malformed transaction", 'error = body);

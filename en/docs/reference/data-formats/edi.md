@@ -156,7 +156,7 @@ public function main() returns error? {
     string ediText = check io:fileReadString("path/to/interchange.edi");
 
     edi:EdiInterchange interchange = check edi:interchangeFromEdiString(ediText, schema);
-    foreach var txn in interchange.transactions ?: [] {
+    foreach edi:EdiTransaction txn in interchange.transactions ?: [] {
         json|error body = txn.body;
         if body is error {
             io:println("Quarantined: ", body.message());
