@@ -15,7 +15,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 This integration triggers an action each time a file is uploaded to an Amazon S3 bucket. AWS does not have a built-in trigger for S3, and one of the recommended approaches is to publish these events to an AWS SQS queue. S3 publishes an object-created notification to the queue, and the AWS SQS trigger consumes it — so your service reacts within seconds of the upload without polling S3.
 
-**What you'll build:** A Ballerina integration that reacts every time a file is uploaded to an S3 bucket. S3 pushes a notification to an SQS queue; the `aws.sqs` listener picks it up and your service logs the bucket name, object key, and file size without polling S3 directly.
+**What you'll build:** A Ballerina integration that reacts every time a file is uploaded to an S3 bucket. S3 pushes a notification to an SQS queue; the `aws.sqs` listener picks it up and your service logs the S3 event details without polling S3 directly.
 
 ## How it works
 
@@ -26,7 +26,7 @@ S3 Bucket  ──(ObjectCreated)──►  SQS Queue  ──(poll)──►  sqs
 1. A file is uploaded to the S3 bucket.
 2. S3 sends a JSON event notification to the SQS queue.
 3. The `sqs:Listener` polls the queue, receives the message, and invokes `onMessage`.
-4. Your service parses the S3 event, logs the CSV file details, and deletes the message from the queue.
+4. Your service parses the S3 event and logs the event details.
 
 ## Before you begin
 
@@ -105,10 +105,10 @@ Upload any `.csv` file to the bucket. Open the SQS console, select **Send and re
 
 ### Step 5: Create the integration
 
-Create a new integration project in WSO2 Integrator. Name the project `s3-and-sqs-integration`.
+Create a new integration project in WSO2 Integrator. Add the `Integration Name` as `s3-file-event-listener`.
 
 <ThemedImage
-    alt="Create the s3-and-sqs-integration project"
+    alt="Create the s3-file-event-listener project"
     sources={{
         light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-and-sqs-integration.png'),
         dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-and-sqs-integration.png'),
@@ -121,58 +121,93 @@ Define the record types that map to the S3 event notification JSON structure. Th
 
 Add two **Record Type** artifacts to the project:
 
-**`S3EventRecord`** — represents a single event entry inside the notification:
+1. Go to **Add Artifact** and select **Type**. Select the **Import** tab and set the name to `S3EventRecord`. Provide a JSON sample like below:
 
-```ballerina
-type S3EventRecord record {
-    string eventSource;
-    string eventName;
-    string eventTime;
-    string awsRegion;
-    record {
-        record {string name; string arn;} bucket;
-        record {string key; int size; string eTag;} 'object;
-    } s3;
-};
-```
+    ```json
+    {
+      "eventSource": "aws:s3",
+      "eventName": "ObjectCreated:Put",
+      "eventTime": "2026-08-21T07:30:00Z",
+      "awsRegion": "us-east-1",
+      "s3": {
+        "bucket": {
+          "name": "my-example-bucket",
+          "arn": "arn:aws:s3:::my-example-bucket"
+        },
+        "object": {
+          "key": "documents/example.txt",
+          "size": 1024,
+          "eTag": "9b2cf535f27731c974343645a3985328"
+        }
+      }
+    }
+    ```
 
-**`S3Notification`** — the top-level wrapper that contains an array of event records:
+    <ThemedImage
+        alt="Import JSON to generate the S3EventRecord type"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-event-record-import.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-event-record-import.png'),
+        }}
+    />
 
-```ballerina
-type S3Notification record {
-    S3EventRecord[] Records;
-};
-```
+2. Select **Import** to generate the types. This creates the `S3EventRecord` type along with its nested types (`S3`, `Bucket`, and `Object`).
+
+    <ThemedImage
+        alt="Generated S3EventRecord type diagram"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-event-record-type.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-event-record-type.png'),
+        }}
+    />
+
+3. Select **+ Add Type** and choose **Create from scratch**. Set the name to `S3Notification`. Select the **+** icon on fields, set the field name to `events`, and set the type to `S3EventRecord[]`.
+
+    <ThemedImage
+        alt="Create S3Notification type from scratch"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-notification-create.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-notification-create.png'),
+        }}
+    />
+
+4. Select **Save**. The complete type diagram shows the `S3Notification` type linked to the `S3EventRecord` array and its nested types.
+
+    <ThemedImage
+        alt="Complete type diagram with S3Notification"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-notification-type.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-notification-type.png'),
+        }}
+    />
 
 ### Step 7: Add a Trigger artifact
 
-Add a **Trigger** artifact to the integration and search for `aws sqs`. Select the **AWS SQS** trigger to open the listener configuration form.
+1. Add a **Trigger** artifact to the integration and search for `aws sqs`. Select the **AWS SQS** trigger to open the listener configuration form.
 
-Fill in the connection parameters:
+2. Fill in the connection parameters:
 
-| Field | Value |
-|---|---|
-| Region | The AWS region where your SQS queue is located, for example `US_EAST_1` |
-| Access Key ID | Your AWS Access Key ID (use a configurable) |
-| Secret Access Key | Your AWS Secret Access Key (use a configurable) |
-| Queue URL | The full URL of your SQS queue, for example `https://sqs.us-east-1.amazonaws.com/<account-id>/s3-events` |
-| Poll Interval | `5` (seconds between polls) |
-| Wait Time | `20` (long-poll duration in seconds) |
-| Visibility Timeout | `30` (seconds a received message is hidden from other consumers) |
+    | Field | Value |
+    |---|---|
+    | Region | The AWS region where your SQS queue is located, for example `us-east-1` |
+    | Access Key ID | Your AWS Access Key ID (use a configurable) |
+    | Secret Access Key | Your AWS Secret Access Key (use a configurable) |
+    | Queue URL | The full URL of your SQS queue, for example `https://sqs.us-east-1.amazonaws.com/<account-id>/s3-events` |
+    | Poll Interval | `30` (seconds between polls) |
+    | Wait Time | `20` (long-poll duration in seconds) |
+    | Visibility Timeout | `30` (seconds a received message is hidden from other consumers) |
 
-:::tip Best practice
-Bind `accessKeyId`, `secretAccessKey`, and `queueUrl` to configurable variables rather than hardcoding them. In the expression editor, select **Configurables → New Configurable** to create a runtime-supplied value.
-:::
+    :::tip Best practice
+    Bind `accessKeyId`, `secretAccessKey`, and `queueUrl` to configurable variables rather than hardcoding them. In the expression editor, select **Configurables → New Configurable** to create a runtime-supplied value.
+    :::
 
-Set `autoDelete` to `false` so your service controls when the message is removed from the queue.
-
-<ThemedImage
-    alt="SQS trigger configurations"
-    sources={{
-        light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/sqs-trigger-configurations.png'),
-        dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/sqs-trigger-configurations.png'),
-    }}
-/>
+    <ThemedImage
+        alt="SQS trigger configurations"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/sqs-trigger-configurations.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/sqs-trigger-configurations.png'),
+        }}
+    />
 
 ### Step 8: Implement the service callbacks
 
@@ -181,61 +216,64 @@ Switch to the **Ballerina Code** tab to see the full source, or continue buildin
 <Tabs>
 <TabItem value="ui" label="Visual Designer" default>
 
-After adding the SQS Trigger artifact and configuring the listener as described in Step 7, select **+ Add Handler** and choose **On Message** to add the `onMessage` callback.
+1. After adding the SQS Trigger artifact and configuring the listener as described in Step 7, select **+ Add Handler** and choose **On Message** to add the `onMessage` callback.
 
-<ThemedImage
-    alt="Add the onMessage handler to the SQS trigger"
-    sources={{
-        light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/add-sqs-handler.png'),
-        dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/add-sqs-handler.png'),
-    }}
-/>
+    <ThemedImage
+        alt="Add the onMessage handler to the SQS trigger"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/add-sqs-handler.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/add-sqs-handler.png'),
+        }}
+    />
 
-Open the `onMessage` callback and add the following steps:
+2. Open the `onMessage` callback. Add a **Declare Variable** node — name it `notification`, set the type to `S3Notification`, and set the expression to `check message.body.cloneWithType(S3Notification)`. Add an **Error Handler** block to handle parse failures.
 
-1. **Declare Variable** — name it `notification`, set the type to `S3Notification`, and set the expression to `check message.body.cloneWithType(S3Notification)`. Add an **Error Handler** block to handle parse failures.
+    <ThemedImage
+        alt="Declare the notification variable"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
+        }}
+    />
 
-   <ThemedImage
-       alt="Declare the notification variable"
-       sources={{
-           light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
-           dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
-       }}
-   />
+3. Add a **Print** node with the value `"New S3 events are received"` to log when new events arrive.
 
-2. **Foreach** — set the collection to `notification.Records`, the variable name to `eventRecord`, and the variable type to `S3EventRecord`.
+4. Add a **Foreach** node — set the collection to `notification.events`, the variable name to `eventRecord`, and the variable type to `S3EventRecord`.
 
-   <ThemedImage
-       alt="Add a foreach loop over notification Records"
-       sources={{
-           light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
-           dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
-       }}
-   />
+    <ThemedImage
+        alt="Add a foreach loop over notification events"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
+        }}
+    />
 
-3. **Print** — inside the foreach loop, add an `io:println` node with the value `eventRecord`.
+5. Inside the foreach loop, add a **Print** node with the value `eventRecord`.
 
-   <ThemedImage
-       alt="Print each event record"
-       sources={{
-           light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
-           dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
-       }}
-   />
+    <ThemedImage
+        alt="Print each event record"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
+        }}
+    />
 
 </TabItem>
 <TabItem value="code" label="Ballerina Code">
 
-The integration produces two files. Create or update them as shown below.
+The integration produces the following files. Create or update them as shown below.
 
 **`Ballerina.toml`** — declares the SQS connector dependency:
 
 ```toml
 [package]
-org = "myorg"
-name = "s3_csv_event_processor"
+org = "wso2"
+name = "s3_file_event_listener"
 version = "0.1.0"
-distribution = "2201.13.0"
+distribution = "2201.13.4"
+
+[build-options]
+sticky = true
 ```
 
 **`Config.toml`** — supply your actual AWS credentials at runtime (never commit this file):
@@ -246,69 +284,75 @@ secretAccessKey = "<your-secret-access-key>"
 queueUrl = "https://sqs.us-east-1.amazonaws.com/<account-id>/s3-events"
 ```
 
-**`main.bal`** — the listener and service logic:
+**`types.bal`** — types that mirror the S3 event notification structure:
 
 ```ballerina
-import ballerina/io;
-import ballerinax/aws.auth;
-import ballerinax/aws.sqs;
+public type Bucket record {|
+    string name;
+    string arn;
+|};
 
-// ---------------------------------------------------------------------------
-// AWS credentials and queue URL — supplied via Config.toml at runtime
-// ---------------------------------------------------------------------------
-configurable string accessKeyId = ?;
-configurable string secretAccessKey = ?;
-configurable string queueUrl = ?;
+public type Object record {|
+    string 'key;
+    int size;
+    string eTag;
+|};
 
-// ---------------------------------------------------------------------------
-// Types that mirror the S3 event notification structure
-// ---------------------------------------------------------------------------
+public type S3 record {|
+    Bucket bucket;
+    Object 'object;
+|};
 
-type S3EventRecord record {
+public type S3EventRecord record {|
     string eventSource;
     string eventName;
     string eventTime;
     string awsRegion;
-    record {
-        record {string name; string arn;} bucket;
-        record {string key; int size; string eTag;} 'object;
-    } s3;
-};
+    S3 s3;
+|};
 
-type S3Notification record {
-    S3EventRecord[] Records;
-};
+type S3Notification record {|
+    S3EventRecord[] events;
+|};
+```
 
-// ---------------------------------------------------------------------------
-// Listener — polls the SQS queue every 5 seconds using long polling
-// ---------------------------------------------------------------------------
+**`config.bal`** — configurable variables supplied via Config.toml at runtime:
+
+```ballerina
+configurable string accessKeyId = ?;
+configurable string secretAccessKey = ?;
+configurable string queueUrl = ?;
+```
+
+**`main.bal`** — the listener and service logic:
+
+```ballerina
+import ballerina/io;
+import ballerinax/aws.sqs;
 
 listener sqs:Listener sqsListener = new (
     {
-        region: sqs:US_EAST_1,
+        region: "us-east-1",
         auth: {
-            accessKeyId: accessKeyId,
-            secretAccessKey: secretAccessKey
+            accessKeyId: string `${accessKeyId}`,
+            secretAccessKey: string `${secretAccessKey}`
         }
     },
-    pollingConfig = {
-        pollInterval: 5,   // seconds between polls
-        waitTime: 20,      // long-poll wait time (0–20 s)
+    {
+        pollInterval: 30,
+        waitTime: 20,
         visibilityTimeout: 30
     }
 );
 
-// ---------------------------------------------------------------------------
-// Service — attached to the listener, processes each message
-// ---------------------------------------------------------------------------
-
-@sqs:ServiceConfig {queueUrl: "https://sqs.us-east-1.amazonaws.com/<account-id>/s3-events"}
+@sqs:ServiceConfig {queueUrl: string `${queueUrl}`}
 service sqs:Service on sqsListener {
     remote function onMessage(sqs:Message message) returns error? {
         do {
             S3Notification notification = check message.body.cloneWithType(S3Notification);
-            foreach S3EventRecord eventRecord in notification.Records {
-                io:println(string `bucket=${eventRecord.s3.bucket.name} key=${eventRecord.s3.'object.key} size=${eventRecord.s3.'object.size}`);
+            io:println("New S3 events are received");
+            foreach S3EventRecord eventRecord in notification.events {
+                io:println(eventRecord);
             }
         } on fail error err {
             // handle error
@@ -328,18 +372,19 @@ service sqs:Service on sqsListener {
 
 1. Open **Configurations** in WSO2 Integrator and supply your AWS credentials and queue URL.
 2. Run the integration.
-3. Upload a `.csv` file to your S3 bucket.
+3. Upload a file to your S3 bucket.
 
 Within seconds the terminal should print output similar to:
 
 ```text
-bucket=my-csv-bucket key=reports/sales_q2.csv size=4096
+New S3 events are received
+{"eventSource":"aws:s3","eventName":"ObjectCreated:Put","eventTime":"2026-08-21T07:30:00Z","awsRegion":"us-east-1","s3":{"bucket":{"name":"my-example-bucket","arn":"arn:aws:s3:::my-example-bucket"},"object":{"key":"documents/example.txt","size":1024,"eTag":"9b2cf535f27731c974343645a3985328"}}}
 ```
 
 :::note Troubleshooting
 - **No messages appear** — verify the SQS access policy includes the S3 `SendMessage` permission and the `aws:SourceArn` condition matches your bucket ARN exactly.
 - **Parse error** — print the raw `message.body` value and compare it against the [S3 Event Message Structure](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html) to check if field names have changed.
-- **Test event causes a parse failure** — S3 sends a one-off `s3:TestEvent` message when you first configure event notifications. This message has a different structure and does not contain a `Records` array. You can safely delete it from the SQS console.
+- **Test event causes a parse failure** — S3 sends a one-off `s3:TestEvent` message when you first configure event notifications. This message has a different structure and does not contain an `events` array. You can safely delete it from the SQS console.
 :::
 
 ---
