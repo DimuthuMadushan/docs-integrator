@@ -157,11 +157,12 @@ public function main() returns error? {
 
     edi:EdiInterchange interchange = check edi:interchangeFromEdiString(ediText, schema);
     foreach var txn in interchange.transactions ?: [] {
-        if txn.body is error {
-            io:println("Quarantined: ", txn.body.message());
+        json|error body = txn.body;
+        if body is error {
+            io:println("Quarantined: ", body.message());
             continue;
         }
-        io:println(txn.body);
+        io:println(body);
     }
 }
 ```
@@ -185,7 +186,7 @@ For full signatures, parameters, error types (`InvalidEnvelopeError`, `SchemaCom
 
 ## Custom EDI schemas
 
-For EDI formats not covered by prebuilt packages — or when you need to tune a generated schema for partner-specific variations — define the structure as a JSON schema. The following JSON schema defines the structure of the simple order EDI format shown above.
+For a proprietary or non-standard format — one with no X12 or EDIFACT specification to convert from — define the structure directly as a JSON schema. The following JSON schema defines the structure of the simple order EDI format shown above. To handle a trading partner's variations on a *standard* format, start from the converted schema instead: see [Adapting the schema to a trading partner](../../develop/transform/edi.md#adapting-the-schema-to-a-trading-partner).
 
 ```json
 {
