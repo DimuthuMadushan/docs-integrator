@@ -6,10 +6,11 @@ keywords: [wso2 integrator, github connector, ballerinax github, rest api, repos
 
 # Overview
 
-GitHub is a widely used platform for version control and collaboration, allowing developers to work together on projects from anywhere. The Ballerina `ballerinax/github` connector (v5.1.0) provides programmatic access to GitHub through its REST API (version 2022-11-28), enabling you to automate tasks, manage repositories, issues, pull requests, and more directly from Ballerina integration flows.
+GitHub is a widely used platform for version control and collaboration, allowing developers to work together on projects from anywhere. The Ballerina `ballerinax/github` connector (v6.1.0) provides programmatic access to GitHub through its REST API (version 2022-11-28), enabling you to automate tasks, manage repositories, issues, pull requests, and more directly from Ballerina integration flows.
 
 ## Key features
 
+- Authentication using either a Personal Access Token or the OAuth2 refresh token grant, with automatic renewal of expiring GitHub App user access tokens
 - Full repository management: create, update, delete, list, and fork repositories
 - Issue tracking: create, update, list, and comment on issues with label and assignee management
 - Pull request management: create, update, list, merge, and review pull requests
@@ -58,7 +59,7 @@ See the **[Trigger Reference](triggers.md)** for listener configuration, service
 
 ## Documentation
 
-* **[Setup Guide](setup-guide.md)**: This guide walks you through creating a GitHub Personal Access Token (PAT) required to authenticate with the GitHub connector.
+* **[Setup Guide](setup-guide.md)**: This guide walks you through creating a GitHub Personal Access Token (PAT), or registering a GitHub App for the OAuth2 refresh token grant, to authenticate with the GitHub connector.
 
 * **[Action Reference](actions.md)**: Full reference for all clients: operations, parameters, return types, and sample code.
 
@@ -78,7 +79,7 @@ Check the issue tracker for open issues that interest you. We look forward to re
 
 ## What's next
 
-- [Setup Guide](setup-guide.md): create a GitHub Personal Access Token for authentication
+- [Setup Guide](setup-guide.md): create a Personal Access Token, or register a GitHub App for the OAuth2 refresh token grant
 - [Action Reference](actions.md): full list of operations, parameters, and sample code
 - [Example](example.md): step-by-step integration walkthroughs
 - [GitHub Webhooks](../../../../develop/integration-artifacts/event/github-webhooks.md): listen for GitHub events using webhooks
