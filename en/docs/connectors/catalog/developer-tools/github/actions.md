@@ -21,23 +21,52 @@ Provides access to the GitHub REST API (903 resource functions) for managing rep
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `auth` | `http:BearerTokenConfig` | Required | Authentication configuration. Supply a Personal Access Token (PAT) as a bearer token: `{token: "<PAT>"}`. |
+| `auth` | `http:BearerTokenConfig`\|`OAuth2RefreshTokenGrantConfig` | Required | Authentication configuration. Supply either a Personal Access Token as a bearer token (`{token: "<PAT>"}`) or GitHub App credentials for the OAuth2 refresh token grant. See [Authentication](#authentication). |
 | `httpVersion` | `http:HttpVersion` | `HTTP_2_0` | HTTP protocol version used by the client. |
-| `http1Settings` | `http:ClientHttp1Settings` | `()` | HTTP/1.x protocol settings including keep-alive and chunking behavior. |
-| `http2Settings` | `http:ClientHttp2Settings` | `()` | HTTP/2 protocol settings. |
-| `timeout` | `decimal` | `60` | Request timeout in seconds before the connection is closed. |
+| `http1Settings` | `http:ClientHttp1Settings` | `{}` | HTTP/1.x protocol settings including keep-alive and chunking behavior. |
+| `http2Settings` | `http:ClientHttp2Settings` | `{}` | HTTP/2 protocol settings. |
+| `timeout` | `decimal` | `30` | Request timeout in seconds before the connection is closed. |
 | `forwarded` | `string` | `"disable"` | Controls whether to set `forwarded` or `x-forwarded` headers. |
-| `poolConfig` | `http:PoolConfiguration` | `()` | Connection pool configuration for request pooling. |
-| `cache` | `http:CacheConfig` | `()` | HTTP caching configuration. |
+| `followRedirects` | `http:FollowRedirects` | *(optional)* | Redirection handling configuration. |
+| `poolConfig` | `http:PoolConfiguration` | *(optional)* | Connection pool configuration for request pooling. |
+| `cache` | `http:CacheConfig` | `{}` | HTTP caching configuration. |
 | `compression` | `http:Compression` | `COMPRESSION_AUTO` | Compression handling for `accept-encoding` headers. |
-| `circuitBreaker` | `http:CircuitBreakerConfig` | `()` | Circuit breaker configuration for fault tolerance. |
-| `retryConfig` | `http:RetryConfig` | `()` | Retry configuration for failed requests. |
-| `responseLimits` | `http:ResponseLimitConfigs` | `()` | Inbound response size limits. |
-| `secureSocket` | `http:ClientSecureSocket` | `()` | SSL/TLS configuration. |
-| `proxy` | `http:ProxyConfig` | `()` | Proxy server configuration. |
+| `circuitBreaker` | `http:CircuitBreakerConfig` | *(optional)* | Circuit breaker configuration for fault tolerance. |
+| `retryConfig` | `http:RetryConfig` | *(optional)* | Retry configuration for failed requests. |
+| `cookieConfig` | `http:CookieConfig` | *(optional)* | Cookie handling configuration. |
+| `responseLimits` | `http:ResponseLimitConfigs` | `{}` | Inbound response size limits. |
+| `secureSocket` | `http:ClientSecureSocket` | *(optional)* | SSL/TLS configuration. |
+| `proxy` | `http:ProxyConfig` | *(optional)* | Proxy server configuration. |
+| `socketConfig` | `http:ClientSocketConfig` | `{}` | Client socket configuration. |
 | `validation` | `boolean` | `true` | When enabled, validates response payloads against declared schemas using the `constraint` package. |
+| `laxDataBinding` | `boolean` | `true` | When enabled, `nil` values are treated as optional and absent fields are handled as `nilable` types. |
+
+### Authentication
+
+The connector supports two authentication methods. Pick the one that matches your use case:
+
+| Method | When to use |
+|--------|-------------|
+| **Personal Access Token (PAT)** | A static token bound to your own user account. Simplest option, suited for scripts and single-user automation. Also use this for an OAuth App token, which does not expire. |
+| **OAuth2 refresh token grant** | A GitHub App user access token, which expires after 8 hours and is renewed automatically by the connector. Suited for applications acting on behalf of other users. Requires a GitHub App with expiring user authorization tokens enabled — OAuth Apps do not issue refresh tokens. |
+
+For the OAuth2 refresh token grant, `auth` accepts the following fields:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `clientId` | `string` | Required | The GitHub App client ID. |
+| `clientSecret` | `string` | Required | The GitHub App client secret. |
+| `refreshToken` | `string` | Required | The refresh token issued alongside the user access token. |
+| `refreshUrl` | `string` | `"https://github.com/login/oauth/access_token"` | Token endpoint used to renew the access token. Override this only for GitHub Enterprise Server. |
+| `scopes` | `string[]` | *(optional)* | Not used by GitHub Apps, which derive access from the permissions granted to the app installation. |
+
+:::note
+GitHub rotates refresh tokens: every renewal returns a new refresh token and invalidates the previous one. The connector holds the new token in memory for the lifetime of the `github:Client` value and cannot persist it, so a process that restarts after a renewal must be reauthorized with a freshly obtained refresh token.
+:::
 
 ### Initializing the client
+
+Using a **Personal Access Token**:
 
 ```ballerina
 import ballerinax/github;
@@ -49,6 +78,37 @@ github:Client github = check new ({
         token: authToken
     }
 });
+```
+
+Using a **GitHub App with the OAuth2 refresh token grant**:
+
+```ballerina
+import ballerinax/github;
+
+configurable string clientId = ?;
+configurable string clientSecret = ?;
+configurable string refreshToken = ?;
+
+github:Client github = check new ({
+    auth: {
+        clientId,
+        clientSecret,
+        refreshToken
+    }
+});
+```
+
+The `refreshUrl` defaults to `https://github.com/login/oauth/access_token`, so it only needs to be set when targeting a GitHub Enterprise Server instance:
+
+```ballerina
+github:Client github = check new ({
+    auth: {
+        clientId,
+        clientSecret,
+        refreshToken,
+        refreshUrl: "https://github.example.com/login/oauth/access_token"
+    }
+}, "https://github.example.com/api/v3");
 ```
 
 ### Operations
