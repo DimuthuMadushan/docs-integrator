@@ -236,8 +236,51 @@ Ballerina by Example (BBE) is a collection of over 200 runnable code examples th
 | **[Read/Write CSV](https://ballerina.io/learn/by-example/io-csv/)** | CSV file processing |
 | **[Read/Write JSON](https://ballerina.io/learn/by-example/io-json/)** | JSON file processing |
 | **[Read/Write XML](https://ballerina.io/learn/by-example/io-xml/)** | XML file processing |
-| **[FTP Client](https://ballerina.io/learn/by-example/ftp-client-receive-file/)** | FTP file operations |
-| **[FTP Listener](https://ballerina.io/learn/by-example/ftp-service-receive-file/)** | FTP file event listener |
+| **[File Paths](https://ballerina.io/learn/by-example/filepaths/)** | Build and resolve OS-compatible paths |
+| **[Files](https://ballerina.io/learn/by-example/files/)** | File system operations |
+| **[Directories](https://ballerina.io/learn/by-example/directories/)** | Directory operations |
+| **[Temp Files and Directories](https://ballerina.io/learn/by-example/temp-files-directories/)** | Create temporary files and directories |
+| **[Directory Listener](https://ballerina.io/learn/by-example/directory-listener/)** | React to file changes in a directory |
+
+### FTP, SFTP, and SMB
+
+| Example | Description |
+|---------|-------------|
+| **[FTP Client: Read File](https://ballerina.io/learn/by-example/ftp-client-read-file/)** | Read file content from an FTP server |
+| **[FTP Client: Write File](https://ballerina.io/learn/by-example/ftp-client-write-file/)** | Write file content to an FTP server |
+| **[FTP Service](https://ballerina.io/learn/by-example/ftp-service-receive-file/)** | Handle files arriving on an FTP server |
+| **[SFTP Client: Read File](https://ballerina.io/learn/by-example/sftp-client-read-file/)** | Read file content from an SFTP server |
+| **[SFTP Client: Write File](https://ballerina.io/learn/by-example/sftp-client-write-file/)** | Write file content to an SFTP server |
+| **[SFTP Service](https://ballerina.io/learn/by-example/sftp-service-receive-file/)** | Handle files arriving on an SFTP server |
+| **[SMB Client: Read File](https://ballerina.io/learn/by-example/smb-client-read-file/)** | Read file content from an SMB share |
+| **[SMB Client: Write File](https://ballerina.io/learn/by-example/smb-client-write-file/)** | Write file content to an SMB share |
+| **[SMB Service](https://ballerina.io/learn/by-example/smb-service-receive-file/)** | Handle files arriving on an SMB share |
+
+### Excel (XLSX)
+
+| Example | Description |
+|---------|-------------|
+| **[XLSX to Records](https://ballerina.io/learn/by-example/xlsx-to-records/)** | Parse an Excel sheet into records |
+| **[Records to XLSX](https://ballerina.io/learn/by-example/records-to-xlsx/)** | Write records to an Excel sheet |
+| **[Excel Tables](https://ballerina.io/learn/by-example/xlsx-tables/)** | Create and read Excel tables by name |
+| **[XLSX Parsing Options](https://ballerina.io/learn/by-example/xlsx-to-records-advanced/)** | Header name mapping and row limits |
+
+### EDI
+
+| Example | Description |
+|---------|-------------|
+| **[EDI to Record](https://ballerina.io/learn/by-example/edi-to-record/)** | Convert EDI text to records using a schema |
+| **[Record to EDI](https://ballerina.io/learn/by-example/record-to-edi/)** | Convert records to EDI text using a schema |
+| **[Envelope Headers](https://ballerina.io/learn/by-example/edi-envelope-headers/)** | Read X12 or EDIFACT envelope headers without a schema |
+| **[Interchange Parsing](https://ballerina.io/learn/by-example/edi-interchange-parsing/)** | Parse an interchange into its envelope hierarchy |
+
+### ZIP archives
+
+| Example | Description |
+|---------|-------------|
+| **[Compress](https://ballerina.io/learn/by-example/zip-compress/)** | Archive a directory into a ZIP file |
+| **[Decompress](https://ballerina.io/learn/by-example/zip-decompress/)** | List and extract the entries of an archive |
+| **[Untrusted Archives](https://ballerina.io/learn/by-example/zip-decompress-untrusted/)** | Extract under limits and handle refusals by error type |
 
 ### Security
 
