@@ -52,7 +52,7 @@ S3 Bucket  ──(ObjectCreated)──►  SQS Queue  ──(poll)──►  sqs
 ### Step 2: Create the S3 bucket
 
 1. Open the [S3 Console](https://console.aws.amazon.com/s3/) and select **Create bucket**.
-2. Enter a globally unique bucket name and finish the creation with the default settings.
+2. Enter a unique bucket name and finish the creation with the default settings. The name must be globally unique if you use the default global namespace, or unique within your account and region if you use an [account regional namespace](https://docs.aws.amazon.com/AmazonS3/latest/userguide/gpbucketnamespaces.html).
 
 ### Step 3: Grant S3 permission to write to the queue
 
