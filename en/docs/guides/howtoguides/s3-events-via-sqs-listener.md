@@ -207,7 +207,7 @@ Add two **Record Type** artifacts to the project:
     | Visibility Timeout | `30` (seconds a received message is hidden from other consumers) |
 
     :::tip Best practice
-    Bind `accessKeyId`, `secretAccessKeyId`, and `queueUrl` to configurable variables rather than hardcoding them. In the expression editor, select **Configurables → New Configurable** to create a runtime-supplied value.
+    Bind `accessKeyId`, `secretAccessKey`, and `queueUrl` to configurable variables rather than hardcoding them. In the expression editor, select **Configurables → New Configurable** to create a runtime-supplied value.
     :::
 
     <ThemedImage
@@ -331,7 +331,7 @@ sticky = true
 
 ```toml
 accessKeyId = "<your-access-key-id>"
-secretAccessKeyId = "<your-secret-access-key>"
+secretAccessKey = "<your-secret-access-key>"
 # Use the queue URL you copied in Step 1
 queueUrl = "https://sqs.us-east-1.amazonaws.com/<account-id>/s3-events"
 ```
@@ -372,7 +372,7 @@ type S3Notification record {
 
 ```ballerina
 configurable string accessKeyId = ?;
-configurable string secretAccessKeyId = ?;
+configurable string secretAccessKey = ?;
 configurable string queueUrl = ?;
 ```
 
@@ -388,7 +388,7 @@ listener sqs:Listener sqsListener = new (
         region: "us-east-1",
         auth: {
             accessKeyId: string `${accessKeyId}`,
-            secretAccessKey: string `${secretAccessKeyId}`
+            secretAccessKey: string `${secretAccessKey}`
         }
     },
     {
