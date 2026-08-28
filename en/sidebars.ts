@@ -2399,6 +2399,7 @@ const sidebars: SidebarsConfig = {
                 'manage/icp/user-stores/default-user-store',
                 'manage/icp/user-stores/ldap-user-store',
                 'manage/icp/user-stores/sso-configuration',
+                'manage/icp/user-stores/sso-group-mapping',
               ],
             },
           ],
