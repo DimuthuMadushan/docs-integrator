@@ -47,10 +47,20 @@ S3 Bucket  ──(ObjectCreated)──►  SQS Queue  ──(poll)──►  sqs
 1. Open the [SQS Console](https://console.aws.amazon.com/sqs/) and select **Create queue**.
 2. Choose **Standard** queue type.
 3. Give the queue a name, for example `s3-events`, and complete the creation.
+4. Once created, open the queue and copy the **URL** shown in the details panel (for example `https://sqs.us-east-1.amazonaws.com/123456789012/s3-events`). You will need this value in [Step 7](#step-7-add-an-aws-sqs-trigger).
 
-### Step 2: Grant S3 permission to write to the queue
+### Step 2: Create the S3 bucket
 
-S3 needs explicit permission to publish messages to your queue. Open the queue, go to **Access policy**, and add the following statement inside the `Statement` array of the existing policy. Replace the placeholders with your own values.
+1. Open the [S3 Console](https://console.aws.amazon.com/s3/) and select **Create bucket**.
+2. Enter a unique bucket name. When choosing a bucket namespace, select the **Account Regional namespace (recommended)**, which ensures the bucket name is unique to your account and region. If you use the default global namespace instead, the name must be globally unique. Learn more about [bucket namespaces](https://docs.aws.amazon.com/AmazonS3/latest/userguide/gpbucketnamespaces.html).
+
+### Step 3: Grant S3 permission to write to the queue
+
+S3 needs explicit permission to publish messages to your queue. Open the queue you created in Step 1, go to **Access policy**, and add the following statement inside the `Statement` array of the existing policy. Replace the placeholders with your own values — use the bucket name you chose in Step 2 for `<your-bucket-name>`.
+
+:::tip Finding your AWS account ID
+Your 12-digit account ID appears in the top-right corner of the AWS Console when you select your account name. You can also find it in the queue ARN shown on the queue details page (for example `arn:aws:sqs:us-east-1:123456789012:s3-events` — here `123456789012` is the account ID).
+:::
 
 ```json
 {
@@ -74,26 +84,16 @@ S3 needs explicit permission to publish messages to your queue. Open the queue, 
 
 Save the updated policy.
 
-### Step 3: Create the S3 bucket
-
-1. Open the [S3 Console](https://console.aws.amazon.com/s3/) and select **Create bucket**.
-2. Enter a globally unique bucket name and finish the creation with the default settings.
-
 ### Step 4: Configure S3 event notifications
 
 Link the bucket to the queue so S3 knows where to send events.
 
 1. Open your bucket and go to the **Properties** tab.
 2. Scroll to **Event notifications** and select **Create event notification**.
-3. Fill in the form:
-
-   | Field | Value |
-   |---|---|
-   | Event name | `object-created` |
-   | Event types | `s3:ObjectCreated:*` |
-   | Destination | SQS queue → select `s3-events` |
-
-4. Select **Save changes**.
+3. Enter an **Event name**, for example `object-created`.
+4. Under **Event types**, expand **Object creation** and select **All object create events** (`s3:ObjectCreated:*`).
+5. Under **Destination**, select **SQS queue**. Choose **Choose from your SQS queues** and select the `s3-events` queue you created in Step 1.
+6. Select **Save changes**.
 
 :::tip Verify the setup
 Upload any `.csv` file to the bucket. Open the SQS console, select **Send and receive messages**, and click **Poll for messages**. You should see a JSON message appear. You may also see a one-off `s3:TestEvent` message immediately after configuration — that is normal and can be safely deleted.
@@ -152,7 +152,6 @@ Add two **Record Type** artifacts to the project:
     />
 
 2. Select **Import** to generate the types. This creates the `S3EventRecord` type along with its nested types (`S3`, `Bucket`, and `Object`).
-
     <ThemedImage
         alt="Generated S3EventRecord type diagram"
         sources={{
@@ -161,17 +160,27 @@ Add two **Record Type** artifacts to the project:
         }}
     />
 
-3. Select **+ Add Type** and choose **Create from scratch**. Set the name to `S3Notification`. Select the **+** icon on fields, set the field name to `events`, and set the type to `S3EventRecord[]`.
+3. Make sure **Allow Additional Fields** is checked for **each generated type**, since the actual S3 notification JSON can contain additional fields beyond the ones defined here.
+
+    <ThemedImage
+        alt="Allow Additional Fields checked for generated types"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/allow-additional-fields.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/allow-additional-fields.png'),
+        }}
+    />
+
+4. Select **+ Add Type** and choose **Create from scratch**. Set the name to `S3Notification`. Select the **+** icon on fields, set the field name to `Records`, and set the type to `S3EventRecord[]`. Check **Allow Additional Fields** for this type as well.
 
     <ThemedImage
         alt="Create S3Notification type from scratch"
         sources={{
-            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-notification-create.png'),
-            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-notification-create.png'),
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-notification-record.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-notification-record.png'),
         }}
     />
 
-4. Select **Save**. The complete type diagram shows the `S3Notification` type linked to the `S3EventRecord` array and its nested types.
+5. Select **Save**. The complete type diagram shows the `S3Notification` type linked to the `S3EventRecord` array and its nested types.
 
     <ThemedImage
         alt="Complete type diagram with S3Notification"
@@ -181,18 +190,18 @@ Add two **Record Type** artifacts to the project:
         }}
     />
 
-### Step 7: Add a Trigger artifact
+### Step 7: Add an AWS SQS Trigger
 
-1. Add a **Trigger** artifact to the integration and search for `aws sqs`. Select the **AWS SQS** trigger to open the listener configuration form.
+1. Go to the integration home and select Add Artifact. Under Event Integration, Select the **AWS SQS** trigger to open the listener configuration form.
 
 2. Fill in the connection parameters:
 
     | Field | Value |
     |---|---|
     | Region | The AWS region where your SQS queue is located, for example `us-east-1` |
-    | Access Key ID | Your AWS Access Key ID (use a configurable) |
-    | Secret Access Key | Your AWS Secret Access Key (use a configurable) |
-    | Queue URL | The full URL of your SQS queue, for example `https://sqs.us-east-1.amazonaws.com/<account-id>/s3-events` |
+    | Access Key ID | Your AWS Access Key ID (use a configurable). To create these credentials, go to the [IAM Console](https://console.aws.amazon.com/iam/) → **Users** → select your user → **Security credentials** tab → **Create access key**. See the [AWS SQS Setup Guide](../../connectors/catalog/messaging/aws.sqs/setup-guide.md) for detailed steps. |
+    | Secret Access Key | The secret key generated alongside the Access Key ID above (use a configurable). Copy it when it is first shown — AWS does not display it again. |
+    | Queue URL | The full URL you copied from the SQS queue details page in Step 1, for example `https://sqs.us-east-1.amazonaws.com/123456789012/s3-events` |
     | Poll Interval | `30` (seconds between polls) |
     | Wait Time | `20` (long-poll duration in seconds) |
     | Visibility Timeout | `30` (seconds a received message is hidden from other consumers) |
@@ -226,35 +235,77 @@ Switch to the **Ballerina Code** tab to see the full source, or continue buildin
         }}
     />
 
-2. Open the `onMessage` callback. Add a **Declare Variable** node — name it `notification`, set the type to `S3Notification`, and set the expression to `check message.body.cloneWithType(S3Notification)`. Add an **Error Handler** block to handle parse failures.
+2. Open the `onMessage` callback. Add a **printInfo** node under the **Logging** section with the message `"New S3 events are received"` to log when new events arrive.
 
     <ThemedImage
-        alt="Declare the notification variable"
+        alt="Add a log node for new S3 events"
         sources={{
-            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
-            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-s3-variable.png'),
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/log-printinfo-node.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/log-printinfo-node.png'),
         }}
     />
 
-3. Add a **Print** node with the value `"New S3 events are received"` to log when new events arrive.
+3. Add a **Declare Variable** node — name it `body`, set the type to `string`, and set the expression to `check message.body.ensureType()`.
 
-4. Add a **Foreach** node — set the collection to `notification.events`, the variable name to `eventRecord`, and the variable type to `S3EventRecord`.
+    <ThemedImage
+        alt="Declare the body variable"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-variable-body.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/declare-variable-body.png'),
+        }}
+    />
+
+4. Add a **Call Function** node and search for the `fromJsonStringWithType` function.
+
+    <ThemedImage
+        alt="Search for the fromJsonStringWithType function"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/from-json-string-with-type.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/from-json-string-with-type.png'),
+        }}
+    />
+
+    For **Str**, select `body` from variables. Set the **Result** variable name to `notification`, and set **T\*** to `S3Notification`.
+
+    <ThemedImage
+        alt="Configure the fromJsonStringWithType function parameters"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/call-function.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/call-function.png'),
+        }}
+    />
+
+5. Add a **Foreach** node — set the collection to `notification.Records`, the variable name to `eventRecord`, and the variable type to `S3EventRecord`.
 
     <ThemedImage
         alt="Add a foreach loop over notification events"
         sources={{
-            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
-            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-declare-foreach-loop.png'),
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/foreach-loop-node.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/foreach-loop-node.png'),
         }}
     />
 
-5. Inside the foreach loop, add a **Print** node with the value `eventRecord`.
+6. Inside the foreach loop, add a **printInfo** node under the **Logging** section. Set the message to a brief summary of the event using the following expression:
+
+    ```ballerina
+    string `Event: ${eventRecord.eventName}, Bucket: ${eventRecord.s3.bucket.name}, File: ${eventRecord.s3.'object.'key}`
+    ```
 
     <ThemedImage
-        alt="Print each event record"
+        alt="Log each event record with brief info"
         sources={{
-            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
-            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/s3-println.png'),
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/log-printinfo-s3-events.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/log-printinfo-s3-events.png'),
+        }}
+    />
+
+7. The complete `onMessage` flow should look like this:
+
+    <ThemedImage
+        alt="Complete onMessage callback flow"
+        sources={{
+            light: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/final-view.png'),
+            dark: useBaseUrl('/img/guides/usecases/s3-events-via-sqs-listener/final-view.png'),
         }}
     />
 
@@ -263,7 +314,7 @@ Switch to the **Ballerina Code** tab to see the full source, or continue buildin
 
 The integration produces the following files. Create or update them as shown below.
 
-**`Ballerina.toml`** — declares the SQS connector dependency:
+**`Ballerina.toml`** — the package descriptor for the integration:
 
 ```toml
 [package]
@@ -276,44 +327,45 @@ distribution = "2201.13.4"
 sticky = true
 ```
 
-**`Config.toml`** — supply your actual AWS credentials at runtime (never commit this file):
+**`Config.toml`** — supply your actual AWS credentials and queue URL at runtime (never commit this file):
 
 ```toml
 accessKeyId = "<your-access-key-id>"
 secretAccessKey = "<your-secret-access-key>"
+# Use the queue URL you copied in Step 1
 queueUrl = "https://sqs.us-east-1.amazonaws.com/<account-id>/s3-events"
 ```
 
 **`types.bal`** — types that mirror the S3 event notification structure:
 
 ```ballerina
-public type Bucket record {|
+public type Bucket record {
     string name;
     string arn;
-|};
+};
 
-public type Object record {|
+public type Object record {
     string 'key;
     int size;
     string eTag;
-|};
+};
 
-public type S3 record {|
+public type S3 record {
     Bucket bucket;
     Object 'object;
-|};
+};
 
-public type S3EventRecord record {|
+public type S3EventRecord record {
     string eventSource;
     string eventName;
     string eventTime;
     string awsRegion;
     S3 s3;
-|};
+};
 
-type S3Notification record {|
-    S3EventRecord[] events;
-|};
+type S3Notification record {
+    S3EventRecord[] Records;
+};
 ```
 
 **`config.bal`** — configurable variables supplied via Config.toml at runtime:
@@ -327,7 +379,8 @@ configurable string queueUrl = ?;
 **`main.bal`** — the listener and service logic:
 
 ```ballerina
-import ballerina/io;
+import ballerina/lang.value;
+import ballerina/log;
 import ballerinax/aws.sqs;
 
 listener sqs:Listener sqsListener = new (
@@ -349,10 +402,11 @@ listener sqs:Listener sqsListener = new (
 service sqs:Service on sqsListener {
     remote function onMessage(sqs:Message message) returns error? {
         do {
-            S3Notification notification = check message.body.cloneWithType(S3Notification);
-            io:println("New S3 events are received");
-            foreach S3EventRecord eventRecord in notification.events {
-                io:println(eventRecord);
+            log:printInfo("New S3 events are received");
+            string body = check message.body.ensureType();
+            S3Notification notification = check value:fromJsonStringWithType(string `${body}`);
+            foreach S3EventRecord eventRecord in notification.Records {
+                log:printInfo(string `Event: ${eventRecord.eventName}, Bucket: ${eventRecord.s3.bucket.name}, File: ${eventRecord.s3.'object.'key}`);
             }
         } on fail error err {
             // handle error
@@ -377,14 +431,14 @@ service sqs:Service on sqsListener {
 Within seconds the terminal should print output similar to:
 
 ```text
-New S3 events are received
-{"eventSource":"aws:s3","eventName":"ObjectCreated:Put","eventTime":"2026-08-21T07:30:00Z","awsRegion":"us-east-1","s3":{"bucket":{"name":"my-example-bucket","arn":"arn:aws:s3:::my-example-bucket"},"object":{"key":"documents/example.txt","size":1024,"eTag":"9b2cf535f27731c974343645a3985328"}}}
+time=2026-08-26T16:05:44.852+05:30 level=INFO module=user/s3_and_sqs_integration message="New S3 events are received"
+time=2026-08-26T16:05:44.852+05:30 level=INFO module=user/s3_and_sqs_integration message="Event: ObjectCreated:Put, Bucket: my-example-bucket, File: documents/example.txt"
 ```
 
 :::note Troubleshooting
 - **No messages appear** — verify the SQS access policy includes the S3 `SendMessage` permission and the `aws:SourceArn` condition matches your bucket ARN exactly.
 - **Parse error** — print the raw `message.body` value and compare it against the [S3 Event Message Structure](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-content-structure.html) to check if field names have changed.
-- **Test event causes a parse failure** — S3 sends a one-off `s3:TestEvent` message when you first configure event notifications. This message has a different structure and does not contain an `events` array. You can safely delete it from the SQS console.
+- **Test event causes a parse failure** — S3 sends a one-off `s3:TestEvent` message when you first configure event notifications. This message has a different structure and does not contain a `Records` array. You can safely delete it from the SQS console.
 :::
 
 ---
