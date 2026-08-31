@@ -502,11 +502,11 @@ const sidebars: SidebarsConfig = {
         {
           type: 'category',
           label: 'AWS SQS',
-          link: { type: 'doc', id: 'connectors/catalog/messaging/aws.sqs/aws-sqs-connector-overview' },
+          link: { type: 'doc', id: 'connectors/catalog/messaging/aws.sqs/overview' },
           items: [
             'connectors/catalog/messaging/aws.sqs/setup-guide',
-            'connectors/catalog/messaging/aws.sqs/actions',
-            'connectors/catalog/messaging/aws.sqs/triggers',
+            'connectors/catalog/messaging/aws.sqs/action-reference',
+            'connectors/catalog/messaging/aws.sqs/trigger-reference',
             'connectors/catalog/messaging/aws.sqs/example',
           ],
         },
