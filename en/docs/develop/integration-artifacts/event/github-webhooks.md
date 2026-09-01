@@ -26,7 +26,7 @@ GitHub event integrations receive webhook callbacks from GitHub and trigger hand
 2. In the **Artifacts** panel, select **GitHub** under **Event Integration**.
 3. In the creation form, fill in the following fields:
 
-   ![Github Webhook creation form](/img/develop/integration-artifacts/event/github-webhooks/step-creation-form.png)
+   ![GitHub Webhook creation form](/img/develop/integration-artifacts/event/github-webhooks/step-creation-form.png)
 
    | Field | Description | Default |
    |---|---|---|
