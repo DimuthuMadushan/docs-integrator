@@ -275,7 +275,7 @@ Once WSO2 Cloud Integration Platform builds the latest commit it automatically d
 
 Once WSO2 Cloud Integration Platform deploys an integration with configurations, the configurations become immutable. Any subsequent change results in a new deployment.
 
-WSO2 Cloud Integration Platform builds artifacts once per GitHub commit and then promotes it to subsequent higher environments. In the overview page, click **Promote** to promote it manually across environments. This can be also done in the **Deploy** page.
+WSO2 Cloud Integration Platform builds artifacts once per GitHub commit and then promotes them to subsequent higher environments. On the overview page, click **Promote** to promote them manually across environments. You can also do this on the **Deploy** page.
 
 ### Configurations
 
