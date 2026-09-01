@@ -107,7 +107,7 @@ import ballerinax/prometheus as _;
 import ballerinax/jaeger as _;
 ```
 
-To support Prometheus as the metrics reporter, an HTTP endpoint starts with the context of `/metrics` in default port `9797` when starting the Ballerina service.
+To support Prometheus as the metrics reporter, an HTTP endpoint starts with the context `/metrics` on the default port `9797` when the Ballerina service starts.
 
 Jaeger extension has an `Opentelemetry GRPC Span Exporter` which will push tracing data as batches to the endpoint (default - `http://localhost:4317`) in OpenTelemetry format.
 
