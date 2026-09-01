@@ -2365,10 +2365,10 @@ const sidebars: SidebarsConfig = {
             {
               type: 'category',
               label: 'Private Data Plane',
-              link: { type: 'doc', id: 'manage/cloud/private-date-plane/overview' },
+              link: { type: 'doc', id: 'manage/cloud/private-data-plane/overview' },
               items: [
-                'manage/cloud/private-date-plane/management-models',
-                'manage/cloud/private-date-plane/security-levels',
+                'manage/cloud/private-data-plane/management-models',
+                'manage/cloud/private-data-plane/security-levels',
               ],
             },
           ],
