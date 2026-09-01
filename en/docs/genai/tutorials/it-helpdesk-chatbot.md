@@ -351,4 +351,4 @@ curl -X POST http://localhost:9090/hthr/chat \
 </TabItem>
 </Tabs>
 
-The AI agent remembers previous conversations because the conversation history is stored in persistent MSSQL backed memory and retrieved using the same `sessionId`.
+The AI agent remembers previous conversations because the conversation history is stored in persistent MSSQL-backed memory and retrieved using the same `sessionId`.
