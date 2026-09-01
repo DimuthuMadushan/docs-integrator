@@ -7,17 +7,17 @@
 
 ### What you'll build
 
-Build an integration that connects to an SAP system with a `Jco` client and performs two operations in a single automation: sending an IDoc and executing an RFC-enabled function module. Every SAP connection parameter is bound to a configurable variable.
+Build an integration that connects to an SAP system with a SAP JCo (SAP Java Connector) client and performs two operations in a single automation: sending an IDoc and executing an RFC-enabled function module. Every SAP connection parameter is bound to a configurable variable.
 
 **Operations used:**
-- **Send I Doc** : Sends an IDoc to the SAP system over tRFC.
+- **Send IDoc (Intermediate Document)** : Sends an IDoc to the SAP system over tRFC.
 - **Execute** : Calls an RFC-enabled function module on the SAP system and returns the response.
 
 ### Architecture
 
 ```mermaid
 flowchart LR
-    A((User)) --> B[Send I Doc and Execute operations]
+    A((User)) --> B[Send IDoc and Execute operations]
     B --> C[Jco client]
     C --> D((SAP system))
 ```
@@ -69,23 +69,23 @@ Select **Save Connection**. The **Connections** section now lists `jcoClient` as
 - **sapUsername** (`string`) : The SAP logon user name.
 - **sapPassword** (`string`) : The SAP logon password.
 
-### Configuring the Jco Send I Doc and Execute operations
+### Configuring the Jco Send IDoc and Execute operations
 
 #### Step 5: Add an automation entry point
 
 Select **+** next to **Entry Points**, select **Automation**, and select **Create** to accept the default name (`main`). The flow canvas opens with **Start** and **Error Handler** nodes.
 
-#### Step 6: Expand the connection and select Send I Doc
+#### Step 6: Expand the connection and select Send IDoc
 
-Select **+** on the flow canvas, then expand `jcoClient` under **Connections** to display its operations: **Execute**, **Send I Doc**, and **Close**.
+Select **+** on the flow canvas, then expand `jcoClient` under **Connections** to display its operations: **Execute**, **Send IDoc**, and **Close**.
 
-![Connections panel expanded to show the jcoClient operations Execute, Send I Doc, and Close](/img/connectors/catalog/erp-business/sap.jco/sap_jco_client_screenshot_04_operations_panel.png)
+![Connections panel expanded to show the jcoClient operations Execute, Send IDoc, and Close](/img/connectors/catalog/erp-business/sap.jco/sap_jco_client_screenshot_04_operations_panel.png)
 
-Select **Send I Doc** to open the `jcoClient → sendIDoc` form, then enter:
+Select **Send IDoc** to open the `jcoClient → sendIDoc` form, then enter:
 
-- **I Doc** : An IDoc XML payload, for example an `ORDERS05` document with an `EDI_DC40` control record segment.
+- **IDoc** : An IDoc XML payload, for example an `ORDERS05` document with an `EDI_DC40` control record segment.
 
-![Send I Doc operation form with the I Doc field set to an ORDERS05 IDoc payload](/img/connectors/catalog/erp-business/sap.jco/sap_jco_client_screenshot_05_operation_form.png)
+![Send IDoc operation form with the IDoc field set to an ORDERS05 IDoc payload](/img/connectors/catalog/erp-business/sap.jco/sap_jco_client_screenshot_05_operation_form.png)
 
 Select **Save**. The `jco : sendIDoc` node connects between **Start** and **Error Handler**.
 
@@ -96,7 +96,7 @@ Select the **+** node between `jco : sendIDoc` and **Error Handler**, expand `jc
 - **Function Name** : The RFC function module to call, for example `STFC_CONNECTION`.
 - **Result** : The variable name to store the response in, for example `executeResult`.
 - **Return Type** : `xml`, to receive the raw response instead of a typed record.
-- **Parameters** (under **Advanced Configurations**) : `{importParameters: {"REQUTEXT": "Hello SAP"}}`, in expression mode.
+- **Parameters** (under **Advanced Configurations**) : Select `importParameters`, then add `REQUTEXT` as the key and `Hello SAP` as the value.
 
 Select **Save**. The `jco : execute` node connects between `jco : sendIDoc` and **Error Handler**.
 
@@ -135,7 +135,7 @@ flowchart LR
 
 ### Prerequisites
 
-- An SAP system with a program ID registered for inbound connections via transaction SM59, and an SAP gateway host and service reachable from the integration. See the [Setup Guide](setup-guide.md).
+- An SAP system with a program ID registered for inbound connections via transaction SM59, and an SAP gateway host and service reachable from the integration. Complete the [program ID registration](setup-guide.md#register-a-program-id-for-inbound-connections) and [IDoc partner profile](setup-guide.md#configure-idoc-partner-profile) setup.
 - The `sapjco3.jar` and `sapidoc3.jar` libraries, added manually to the project's `Ballerina.toml` as described in [Configure Ballerina.toml with JAR paths](setup-guide.md#configure-ballerinatoml-with-jar-paths). These proprietary libraries can't be bundled with the connector and must be obtained separately from the SAP Support Portal.
 
 ### Setting up the SAP JCo integration
@@ -166,7 +166,7 @@ With **Destination Configurations** selected, bind the remaining fields to confi
 - **Client Number** : The SAP client number.
 - **User** : The SAP logon user name.
 - **Password** : The SAP logon password.
-- **Service Type** : Select **IDocService**.
+- **Service Type** : Select **IDocService**. This walkthrough receives IDocs; for inbound RFC calls, select **RfcService** and use the [Trigger Reference](trigger-reference.md#service).
 
 ![Create SAP JCo Event Integration form showing the Gateway Host, Gateway Service, Program ID, and Destination Configurations fields bound to configurable variables](/img/connectors/catalog/erp-business/sap.jco/sap_jco_trigger_screenshot_02_listener_form.png)
 
@@ -211,7 +211,7 @@ Select **Save**.
 #### Step 7: Run the integration and dispatch a test IDoc
 
 1. Select **Run** to start the integration, and wait for the listener to register with the SAP gateway.
-2. From the SAP system, dispatch an IDoc to the registered program ID, for example, using the [Client Example](#sap-jco-client-example)'s Send I Doc operation or an equivalent SAP outbound process.
+2. From the SAP system, dispatch an IDoc to the registered program ID, for example, using the [Client Example](#sap-jco-client-example)'s Send IDoc operation or an equivalent SAP outbound process.
 3. Confirm the IDoc content appears in the integration's log output.
 
 ### Try it yourself
@@ -230,10 +230,10 @@ scenarios to understand how to automate processes involving SAP systems and exte
 1. [SAP Inventory Update via RFC](https://github.com/ballerina-platform/module-ballerinax-sap.jco/tree/main/examples/sap_inventory_update) - Integrate external inventory data into an SAP system and
    update inventory records through an RFC.
 
-2. [Automate iDoc Dispatch](https://github.com/ballerina-platform/module-ballerinax-sap.jco/tree/main/examples/idoc_automation) - Demonstrate the automation of generating and dispatching iDocs for
+2. [Automate IDoc Dispatch](https://github.com/ballerina-platform/module-ballerinax-sap.jco/tree/main/examples/idoc_automation) - Demonstrate the automation of generating and dispatching IDocs for
    shipment details.
 
-3. [Automated Supplier Order Processing via iDoc Listener](https://github.com/ballerina-platform/module-ballerinax-sap.jco/tree/main/examples/order_idoc_listener) - Set up an iDoc listener to automate
+3. [Automated Supplier Order Processing via IDoc Listener](https://github.com/ballerina-platform/module-ballerinax-sap.jco/tree/main/examples/order_idoc_listener) - Set up an IDoc listener to automate
    supplier order processing.
 
 4. [SAP Product Catalog Sync](https://github.com/ballerina-platform/module-ballerinax-sap.jco/tree/main/examples/sap_product_catalog) - Query SAP material master data using RFC table parameters

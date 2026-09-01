@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 # Solace (JMS)
 
-Solace (JMS) event integrations consume messages from a Solace PubSub+ queue or topic and trigger event handlers as each message arrives. The listener is built on the standard Java Message Service (JMS) 2.0 API. Use it when you want portable, spec-compliant JMS session semantics — SQL-92 message selectors, standard JMS acknowledgement modes, and session-transacted messaging — instead of Solace's native JCSMP API used by the [Solace](solace.md) event integration.
+Solace (JMS) event integrations consume messages from a Solace PubSub+ queue or topic and trigger event handlers as each message arrives. The trigger is built on the standard Java Message Service (JMS) 2.0 API. Use it when you want portable, spec-compliant JMS session semantics — SQL-92 message selectors, standard JMS acknowledgement modes, and session-transacted messaging — instead of Solace's native JCSMP API used by the [Solace](solace.md) event integration.
 
 ## Creating a Solace (JMS) events service
 
