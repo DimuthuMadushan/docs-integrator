@@ -10,6 +10,7 @@ The `ballerinax/sap.jco` connector provides native Ballerina access to SAP syste
 ## Key features
 
 - Execute RFC-enabled function modules on SAP systems with typed import, export, and table parameters
+- Call function modules transactionally over tRFC, qRFC, and bgRFC for exactly-once and in-order delivery
 - Send IDocs to SAP over tRFC and qRFC transports with automatic TID management
 - Receive inbound IDocs pushed from SAP via a listener and service model
 - Handle inbound RFC calls from SAP, acting as a registered server program
@@ -23,7 +24,7 @@ The connector provides a single client for outbound communication with SAP syste
 
 | Client | Actions |
 |--------|---------|
-| `Client` | RFC execution, IDoc sending, connection lifecycle |
+| `Client` | RFC execution, transactional RFC (tRFC, qRFC, bgRFC), IDoc sending, connection lifecycle |
 
 See the **[Action Reference](action-reference.md)** for the full list of operations, parameters, and sample code for each client.
 

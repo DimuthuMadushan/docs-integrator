@@ -12,7 +12,7 @@ Available clients:
 
 | Client | Purpose |
 |--------|---------|
-| [`Client`](#client) | Calls RFC-enabled function modules and sends IDocs to an SAP system |
+| [`Client`](#client) | Calls RFC-enabled function modules, sends them transactionally over tRFC, qRFC, and bgRFC, and sends IDocs to an SAP system |
 
 For event-driven integration, see the [Trigger Reference](trigger-reference.md).
 
@@ -190,6 +190,244 @@ ReadTableResponse result = check sapClient->execute("RFC_READ_TABLE", {
     {"WA": "100 Test Client"}
   ]
 }
+```
+
+</div>
+</details>
+
+##### Transactional delivery
+
+Transactional protocols give a function-module call a delivery guarantee that `execute` cannot: the call is applied **exactly once**, even when the caller retries because it never learned the outcome of an earlier attempt. The guarantee is carried by an identifier — a transaction ID (TID) for tRFC and qRFC, a unit ID for bgRFC — which SAP remembers until the caller confirms it.
+
+These calls are asynchronous on the SAP side, so export and table values the function module produces are discarded. Use `execute` when you need the result back.
+
+<details>
+<summary>sendTRfc</summary>
+
+<div>
+
+Calls an RFC-enabled function module as a transactional RFC (tRFC), which the SAP system executes exactly once.
+
+By default the TID is confirmed automatically once the send succeeds, which is all a fire-and-forget call needs. To retry a failed send, set `autoConfirm` to `false`, retry under the same TID, and call `confirmTid` once an attempt finally succeeds. SAP keeps an unconfirmed TID on record, recognises a resend under it, and refuses to execute the call twice. A confirmed TID must never be reused, because the system forgets it and a resend would execute the call again.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `functionName` | <code>string</code> | Yes | Name of the RFC function module to call |
+| `parameters` | <code>RfcParameters</code> | No | Input parameters organised by category. Defaults to an empty parameter set. |
+| `tid` | <code>string?</code> | No | Transaction ID to use. If not provided, one is created automatically. A supplied TID must be exactly 24 characters long; the content is unrestricted, so it may be derived from an application idempotency key. |
+| `autoConfirm` | <code>boolean</code> | No | Whether to confirm the TID after a successful send. Defaults to `true`. |
+
+**Returns:** `string|Error` — the TID the call was sent under
+
+**Sample code — fire and forget:**
+
+```ballerina
+string tid = check sapClient->sendTRfc("STFC_WRITE_TO_TCPIC", {
+    tableParameters: {"TCPICDAT": [{"LINE": "Posted from Ballerina"}]}
+});
+```
+
+**Sample code — retry safely under one TID:**
+
+```ballerina
+string tid = check sapClient->createTid();
+foreach int attempt in 1 ... 3 {
+    string|jco:Error sent = sapClient->sendTRfc("STFC_WRITE_TO_TCPIC", {
+        tableParameters: {"TCPICDAT": [{"LINE": "Posted from Ballerina"}]}
+    }, tid, autoConfirm = false);
+    if sent is string {
+        check sapClient->confirmTid(tid);
+        break;
+    }
+}
+```
+
+</div>
+</details>
+
+<details>
+<summary>sendQRfc</summary>
+
+<div>
+
+Calls an RFC-enabled function module as a queued RFC (qRFC). Calls placed on the same inbound queue are executed exactly once and in the order they were sent, which is what an interface needs when later updates must not overtake earlier ones.
+
+Entries remain in the queue until the inbound queue is registered with the QIN scheduler (transaction `SMQR`). Placing calls on the queue in order is the connector's responsibility; draining the queue is a backend configuration matter.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `functionName` | <code>string</code> | Yes | Name of the RFC function module to call |
+| `queueName` | <code>string</code> | Yes | SAP inbound queue that serialises the calls |
+| `parameters` | <code>RfcParameters</code> | No | Input parameters organised by category |
+| `tid` | <code>string?</code> | No | Transaction ID to use. If not provided, one is created automatically. Must be exactly 24 characters long. |
+| `autoConfirm` | <code>boolean</code> | No | Whether to confirm the TID after a successful send. Defaults to `true`. |
+
+**Returns:** `string|Error` — the TID the call was sent under
+
+**Sample code:**
+
+```ballerina
+foreach int sequence in 1 ... 3 {
+    _ = check sapClient->sendQRfc("STFC_WRITE_TO_TCPIC", "PRICE_MAT1000", {
+        tableParameters: {"TCPICDAT": [{"LINE": string `correction ${sequence}`}]}
+    });
+}
+```
+
+</div>
+</details>
+
+<details>
+<summary>sendBgRfcUnit</summary>
+
+<div>
+
+Commits one or more function calls to the SAP system as a single bgRFC unit of work. The calls are applied together or not at all, which is what keeps a posting and its audit entry from diverging.
+
+Supplying `queueNames` makes the unit type `Q`, executed in order within those queues; otherwise it is type `T`. Supplying a `unitId` derived from a business key makes a repeated submission idempotent: SAP recognises the unit and executes it only once.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `functionCalls` | <code>FunctionCall[]</code> | Yes | The calls that make up the unit. Each has a `functionName` and `parameters`. |
+| `unitConfig` | <code>BgRfcUnitConfig</code> | No | Unit configuration. Fields: `unitId` (32-character hexadecimal), `queueNames`, `lock`, `unitHistory`, `kernelTrace`, `commitCheck`, `programName`, `transactionCode`. |
+
+**Returns:** `BgRfcUnitInfo|Error` — the `unitId` and `unitType` of the committed unit
+
+**Sample code — two calls in one unit of work:**
+
+```ballerina
+jco:BgRfcUnitInfo unit = check sapClient->sendBgRfcUnit([
+    {
+        functionName: "STFC_WRITE_TO_TCPIC",
+        parameters: {tableParameters: {"TCPICDAT": [{"LINE": "posting"}]}}
+    },
+    {
+        functionName: "STFC_WRITE_TO_TCPIC",
+        parameters: {tableParameters: {"TCPICDAT": [{"LINE": "audit entry"}]}}
+    }
+], {unitHistory: true, programName: "FI_CLOSE"});
+```
+
+**Sample response:**
+
+```json
+{
+  "unitId": "B6F57175091E1FE1A6DE2FF27CEEC57C",
+  "unitType": "T"
+}
+```
+
+**Sample code — queued unit:**
+
+```ballerina
+jco:BgRfcUnitInfo unit = check sapClient->sendBgRfcUnit(
+        [{functionName: "STFC_WRITE_TO_TCPIC",
+          parameters: {tableParameters: {"TCPICDAT": [{"LINE": "customer 4711"}]}}}],
+        {queueNames: ["CUSTOMER_4711"], unitHistory: true});
+```
+
+</div>
+</details>
+
+<details>
+<summary>getBgRfcUnitState</summary>
+
+<div>
+
+Reads the processing state of a bgRFC unit from the SAP system.
+
+`COMMITTED` means processing finished and the unit is ready to be confirmed. `CONFIRMED` occurs only after `confirmBgRfcUnit` is called, so polling for `CONFIRMED` before confirming would never return.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `unit` | <code>BgRfcUnitInfo</code> | Yes | The unit returned by `sendBgRfcUnit` |
+
+**Returns:** `BgRfcUnitState|Error` — one of `NOT_FOUND`, `IN_PROCESS`, `COMMITTED`, `CONFIRMED`, `ROLLED_BACK`
+
+**Sample code:**
+
+```ballerina
+jco:BgRfcUnitState state = check sapClient->getBgRfcUnitState(unit);
+```
+
+</div>
+</details>
+
+<details>
+<summary>confirmBgRfcUnit</summary>
+
+<div>
+
+Confirms a bgRFC unit so that the SAP system can delete its status record. Confirm once `getBgRfcUnitState` reports `COMMITTED`. A confirmed unit ID must not be reused.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `unit` | <code>BgRfcUnitInfo</code> | Yes | The unit returned by `sendBgRfcUnit` |
+
+**Returns:** `Error?`
+
+**Sample code:**
+
+```ballerina
+if state is jco:COMMITTED {
+    check sapClient->confirmBgRfcUnit(unit);
+}
+```
+
+</div>
+</details>
+
+<details>
+<summary>createTid</summary>
+
+<div>
+
+Creates a transaction ID (TID) on the SAP system for use with `sendTRfc` or `sendQRfc`. Obtain the TID before the first send so that every retry can reuse it.
+
+**Parameters:**
+
+No parameters
+
+**Returns:** `string|Error`
+
+**Sample code:**
+
+```ballerina
+string tid = check sapClient->createTid();
+```
+
+</div>
+</details>
+
+<details>
+<summary>confirmTid</summary>
+
+<div>
+
+Confirms a transaction ID so that the SAP system can discard its record of it. Confirm only after the call has been delivered.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `tid` | <code>string</code> | Yes | The TID to confirm. Must be exactly 24 characters long. |
+
+**Returns:** `Error?`
+
+**Sample code:**
+
+```ballerina
+check sapClient->confirmTid(tid);
 ```
 
 </div>
