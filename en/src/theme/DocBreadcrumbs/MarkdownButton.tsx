@@ -22,7 +22,7 @@ export default function MarkdownButton({ markdownUrl }: MarkdownButtonProps): Re
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-const handleCopyPage = async () => {
+  const handleCopyPage = async () => {
     try {
       setCopyError(false);
 
