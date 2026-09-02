@@ -8,7 +8,7 @@ slug: /get-started/introduction
 
 # Introduction
 
-The WSO2 Integration Platform is an open-source integration solution for connecting AI agents, APIs, data, and events across cloud, on-prem, and hybrid environments. It lets you build any type of integration from a single API to a distributed AI-driven workflow and run it wherever your business needs it.
+The WSO2 Integration Platform is an 100% open-source integration solution for connecting AI agents, APIs, data, and events across cloud, on-prem, and hybrid environments. It lets you build any type of integration from a single API to a distributed AI-driven workflow and run it wherever your business needs it.
 
 The platform pairs the rapid development of low-code with the full control of pro-code, with AI assistance available across both, taking you from your first local integration to a managed, observable deployment at scale.
 
