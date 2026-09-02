@@ -13,7 +13,6 @@ This guide walks you through setting up a MySQL database and obtaining the conne
 
 - A running MySQL server. You can [install MySQL locally](https://dev.mysql.com/downloads/), use Docker (`docker run --name mysql -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql:8`), or use a managed service such as AWS RDS, Google Cloud SQL, or Azure Database for MySQL.
 - A database user with appropriate privileges for the operations you intend to perform.
-- For CDC: MySQL binary logging must be enabled with `ROW` format (see the CDC setup step below).
 
 ## Create a MySQL database and user
 
@@ -48,7 +47,7 @@ Record the following information. You will need it to configure the MySQL client
 
 ## Enable binary logging for CDC (optional)
 
-If you plan to use the Change Data Capture (CDC) listener, you must enable MySQL binary logging in `ROW` format.
+Change Data Capture (CDC) requires one additional prerequisite beyond the setup above: MySQL binary logging must be enabled in `ROW` format.
 
 1. Open the MySQL configuration file (`my.cnf` or `my.ini`) and add:
 

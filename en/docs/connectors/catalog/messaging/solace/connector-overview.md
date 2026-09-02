@@ -4,36 +4,34 @@ title: "Overview"
 
 # Overview
 
-Solace PubSub+ is an advanced event broker that supports publish/subscribe, queueing, request/reply, and streaming patterns. The Ballerina `ballerinax/solace` connector (v0.3.1) provides programmatic access to Solace PubSub+ through its JMS-based API, enabling you to produce and consume messages on queues and topics, with support for durable subscriptions, transacted sessions, and event-driven listener services.
-
+Solace PubSub+ is an advanced event broker that supports publish/subscribe, queueing, request/reply, and streaming patterns. The Ballerina `ballerinax/solace` connector provides programmatic access to Solace PubSub+ through the Solace Java Message Processing (JCSMP) API, letting you publish and consume messages on queues and topics, with support for guaranteed and direct delivery, durable subscriptions, transacted sessions, and event-driven listener services.
 
 ## Key features
 
-- Publish messages to Solace queues and topics via `MessageProducer`
-- Consume messages from queues and topics with blocking and non-blocking receive via `MessageConsumer`
-- Event-driven message processing with `Listener` and service callbacks for automatic dispatch
-- Flexible acknowledgement modes: auto, client, transacted, and dups-ok
-- Durable and non-durable topic subscriptions with configurable consumer types
-- Automatic data binding for message payloads: string, JSON, XML, byte[], records, and maps
-- TLS/SSL, basic auth, Kerberos, and OAuth 2.0 authentication support
-- Transacted sessions with commit/rollback for reliable message delivery
+- Publish messages to Solace queues and topics with `Message Producer`.
+- Consume messages from queues and topics with blocking and non-blocking receive via `Message Consumer`.
+- Event-driven message processing with a listener and compiler-validated service callbacks for automatic dispatch.
+- Direct (at-most-once) and persistent (guaranteed) delivery modes.
+- Automatic acknowledgement or client acknowledgement, with explicit `ack`, `nack`, `commit`, and `rollback` control.
+- Redelivery to the broker or routing to a dead message queue through `nack` with the `requeue` flag.
+- Durable and temporary topic subscriptions, and durable queue subscriptions.
+- Transacted sessions with commit and rollback for reliable message delivery.
+- TLS/SSL, basic authentication, Kerberos, and OAuth 2.0 authentication support.
 
 ## Actions
 
-Actions are operations you invoke on Solace PubSub+ from your integration. Use these actions for publishing messages, consuming from queues, and managing transacted sessions. The Solace connector exposes actions across two clients:
-
+Actions are operations you invoke on Solace PubSub+ from your integration. Use these actions to publish messages, consume from queues and topics, and manage transacted sessions. The Solace connector exposes actions across two clients:
 
 | Client | Actions |
 |--------|---------|
-| `Message Producer` | Publish messages to queues and topics, commit/rollback transacted sends |
-| `Message Consumer` | Receive messages (blocking/non-blocking), acknowledge, commit/rollback transacted receives |
+| `Message Producer` | Publish messages to queues and topics; commit or roll back a transacted session. |
+| `Message Consumer` | Receive messages (blocking or non-blocking); acknowledge, negatively acknowledge, commit, or roll back. |
 
 See the **[Action Reference](actions.md)** for the full list of operations, parameters, and sample code for each client.
 
 ## Triggers
 
-Triggers allow your integration to react to messages arriving on Solace queues or topics in real time. The connector uses a polling-based `solace:Listener` that dispatches messages to your `onMessage` callback automatically; no manual receive loop required.
-
+Triggers let your integration react to messages arriving on Solace queues or topics in real time. The connector uses a `solace:Listener` that dispatches each message to your `onMessage` callback automatically; no manual receive loop is required.
 
 Supported trigger events:
 
@@ -42,12 +40,11 @@ Supported trigger events:
 | Message received | `onMessage` | Fired when a message is received on the subscribed queue or topic. |
 | Processing error | `onError` | Fired when an error occurs during message receipt or data binding. |
 
-See the **[Trigger Reference](triggers.md)** for listener configuration, service callbacks, and the `EventData` payload structure.
+See the **[Trigger Reference](triggers.md)** for listener configuration, service callbacks, and the caller API.
 
 ## Documentation
 
 * **[Setup Guide](setup-guide.md)**: This guide walks you through setting up a Solace PubSub+ broker and obtaining the connection details required to use the Solace connector.
-
 
 * **[Action Reference](actions.md)**: Full reference for all clients: operations, parameters, return types, and sample code.
 

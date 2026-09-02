@@ -1,4 +1,4 @@
-# Examples
+# Example
 
 - [Solace Producer Example](#solace-producer-example)
 - [Solace Consumer Example](#solace-consumer-example)
@@ -6,93 +6,92 @@
 
 ## Solace Producer Example
 
-#### What you'll build
+### What you'll build
 
-Build a Solace PubSub+ message-publishing integration using the WSO2 Integrator low-code visual designer. The integration connects to a Solace PubSub+ broker and publishes a message to a configured topic, with all connection parameters stored as configurable variables.
+Build an integration that publishes a message to a Solace PubSub+ topic using the WSO2 Integrator low-code visual designer. The integration connects to a Solace broker with a `Message Producer` connection and sends a message to a topic, with every connection parameter bound to a configurable variable.
 
 **Operations used:**
-- **Send** : Publishes a message to the Solace PubSub+ broker on a configured topic
+- **Send** : Publishes a message to the configured Solace destination.
 
-#### Architecture
+### Architecture
 
 ```mermaid
 flowchart LR
-    A((User)) --> B[Send Operation]
-    B --> C[Solace MessageProducer Connector]
-    C --> D((Solace PubSub+ Broker))
+    A((User)) --> B[Send operation]
+    B --> C[Solace MessageProducer connector]
+    C --> D((Solace PubSub+ broker))
 ```
 
-#### Prerequisites
+### Prerequisites
 
-- A running Solace PubSub+ broker with access to a host URL, message VPN, username, and password
+- A running Solace PubSub+ broker accessible over a broker URL, with a message VPN, username, and password. See the [Setup Guide](setup-guide.md).
 
-#### Setting up the Solace MessageProducer integration
+### Setting up the Solace MessageProducer integration
 
 > **New to WSO2 Integrator?** Follow the [Create a New Integration](../../../../develop/create-integrations/create-a-new-integration.md) guide to set up your integration first, then return here to add the connector.
 
-#### Adding the Solace MessageProducer connector
+### Adding the Solace MessageProducer connector
 
-##### Step 1: Open the connector palette
+#### Step 1: Open the connector palette
 
-1. Navigate to the **Connections** section in the WSO2 Integrator panel.
-2. Select **+ Add Connection** to open the connector marketplace palette.
-3. Enter `solace` in the search box to filter results.
-4. Select **Solace MessageProducer** from the list.
+1. In the WSO2 Integrator sidebar, select **+** next to **Connections** to open the **Add Connection** palette.
+2. Enter `solace` in the search field.
 
-![Solace MessageProducer connector palette open with search field before any selection](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_01_palette.png)
+![Add Connection palette filtered to solace, listing Solace MessageProducer, Solace MessageConsumer, and Solace Caller alongside the legacy Jms connectors](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_01_palette.png)
 
-#### Configuring the Solace MessageProducer connection
+3. Select the **Solace MessageProducer** card.
 
-##### Step 2: Fill in connection parameters
+### Configuring the Solace MessageProducer connection
 
-Bind all sensitive parameters to configurable variables so they can be overridden at runtime without code changes. Use the **Configurables** panel to create each variable, then inject it into the corresponding field.
+#### Step 2: Bind the connection parameters to configurable variables
 
-- **Host URL** : The Solace broker host URL
-- **Message VPN** : The message VPN name on the broker
-- **Auth** : Authentication configuration; enter the record literal referencing `solaceUsername` and `solacePassword` configurable variables in Expression mode
-- **Username** (inside Auth) : Username for basic authentication
-- **Password** (inside Auth) : Password for basic authentication
+For each field, open its helper panel, select the **Configurables** tab, select **+ New Configurable**, and save a `configurable string` variable for it.
 
-![Solace MessageProducer connection form fully filled with all parameters before saving](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_02_connection_form.png)
+- **Url** : The Solace broker URL, bound to a configurable variable.
+- **Auth** : The authentication configuration; enter `{username: solaceUsername, password: solacePassword}` in expression mode, referencing configurable variables for both fields.
 
-##### Step 3: Save the connection
+![Configure Solace MessageProducer form with the Url and Auth fields bound to configurable variables before saving](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_02_connection_form.png)
 
-Select **Save Connection** to persist the connection. The **Connections** panel now shows `solaceMessageproducer` as an available connection in the project.
+#### Step 3: Save the connection
 
-![Solace MessageProducer Connections panel showing solaceMessageproducer entry after saving](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_03_connections_list.png)
+Select **Save Connection**. The **Connections** section now lists `solaceMessageproducer` as an available connection in the project.
 
-##### Step 4: Set actual values for your configurables
+#### Step 4: Set actual values for your configurables
 
 1. In the left panel, select **Configurations**.
-2. Set a value for each configurable listed below.
+2. Enter a value for each configurable listed below.
 
-- **solaceHostUrl** (string) : The Solace broker host URL (for example, `tcp://your-host:55555`)
-- **solaceMessageVpn** (string) : The message VPN name on the broker
-- **solaceUsername** (string) : Username for basic authentication
-- **solacePassword** (string) : Password for basic authentication
-- **solaceTopicName** (string) : Topic name to publish messages to
+- **solaceUrl** (`string`) : The Solace broker URL, for example, `tcp://localhost:55554`.
+- **solaceUsername** (`string`) : Username for basic authentication.
+- **solacePassword** (`string`) : Password for basic authentication.
+- **solaceTopicName** (`string`) : The topic to publish messages to.
 
-#### Configuring the Solace MessageProducer Send operation
+### Configuring the Solace MessageProducer Send operation
 
-##### Step 5: Add the Automation entry point
+#### Step 5: Add an automation entry point
 
-Open the **Automation** entry point (`main`) in the WSO2 Integrator panel under **Entry Points**. The flow canvas opens. Select the **+** button on the canvas to open the operations node panel. Under **Connections**, select `solaceMessageproducer` to expand its available operations.
+Select **+** next to **Entry Points**, select **Automation**, and select **Create** to accept the default name (`main`). The flow canvas opens with **Start** and **Error Handler** nodes.
 
-![Solace MessageProducer connection node expanded showing all available operations before selection](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_04_operations_panel.png)
+#### Step 6: Expand the connection and select Send
 
-##### Step 6: Select the Send operation and configure its parameters
+Select **+** on the flow canvas, then expand `solaceMessageproducer` under **Connections** to display its operations.
 
-Select **Send** from the operations list. The **Send** operation form opens with the title `solaceMessageproducer → send`. Configure the following parameter:
+#### Step 7: Configure the Send operation
 
-- **Message** : A `solace:Message` record; set the `payload` field to `"Hello from Solace!"`
+Select **Send** to open the `solaceMessageproducer → send` form, then enter:
 
-![Solace MessageProducer Send operation configuration filled with all values](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_05_operation_filled.png)
+- **Message** : A `solace:Message` record; set the `payload` field to `"Hello from Solace!"`.
+- **Destination** : `{topicName: solaceTopicName}`.
 
-Select **Save** to add the node to the flow.
+![Send operation form with the Message payload and topic Destination filled in before saving](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_05_operation_form.png)
 
-![Completed Solace MessageProducer automation flow](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_06_completed_flow.png)
+#### Step 8: Save the operation
 
-#### Try it yourself
+Select **Save**. The `solace : send` node connects between **Start** and **Error Handler** in the automation flow.
+
+![Completed automation flow with the solace : send node between Start and Error Handler](/img/connectors/catalog/messaging/solace/solace_producer_screenshot_06_completed_flow.png)
+
+### Try it yourself
 
 Try this sample in WSO2 Integration Platform.
 
@@ -100,93 +99,90 @@ Try this sample in WSO2 Integration Platform.
 
 [View source on GitHub](https://github.com/wso2/integration-samples/tree/main/integrator-default-profile/connectors/solace_message_producer_connector_sample)
 
-
 ## Solace Consumer Example
 
-#### What you'll build
+### What you'll build
 
-Build a Solace MessageConsumer integration that connects to a Solace broker, receives a message from a queue, and logs the result. This integration uses the WSO2 Integrator low-code canvas to configure the connection and operation visually.
+Build an integration that connects to a Solace broker with a `Message Consumer` connection and receives a single message from a queue. This example uses the WSO2 Integrator low-code canvas to configure the connection and the receive operation visually.
 
 **Operations used:**
-- **Receive** : Receives a message from the configured Solace queue, blocking until a message arrives or a timeout occurs
+- **Receive** : Receives a message from the configured Solace queue, blocking until a message arrives or the call times out.
 
-#### Architecture
+### Architecture
 
 ```mermaid
 flowchart LR
-    A((User)) --> B[Receive Operation]
-    B --> C[Solace MessageConsumer Connector]
-    C --> D((Solace Broker))
+    A((User)) --> B[Receive operation]
+    B --> C[Solace MessageConsumer connector]
+    C --> D((Solace PubSub+ broker))
 ```
 
-#### Prerequisites
+### Prerequisites
 
-- A Solace broker accessible via a host URL
+- A running Solace PubSub+ broker with a durable queue already provisioned. See the [Setup Guide](setup-guide.md); durable queues aren't created automatically.
 
-#### Setting up the Solace MessageConsumer integration
+### Setting up the Solace MessageConsumer integration
 
 > **New to WSO2 Integrator?** Follow the [Create a New Integration](../../../../develop/create-integrations/create-a-new-integration.md) guide to set up your integration first, then return here to add the connector.
 
-#### Adding the Solace MessageConsumer connector
+### Adding the Solace MessageConsumer connector
 
-##### Step 1: Open the Add connection panel
+#### Step 1: Open the connector palette
 
-In the WSO2 Integrator sidebar, hover over **Connections** and select the **+** icon to open the Add Connection panel.
+1. In the WSO2 Integrator sidebar, select **+** next to **Connections** to open the **Add Connection** palette.
+2. Enter `solace` in the search field.
 
-![Solace MessageConsumer connector palette open with search field before any selection](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_01_palette.png)
+![Add Connection palette filtered to solace, listing Solace MessageConsumer, Solace MessageProducer, and Solace Caller alongside the legacy Jms connectors](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_01_palette.png)
 
-#### Configuring the Solace MessageConsumer connection
+3. Select the **Solace MessageConsumer** card.
 
-##### Step 2: Fill in the connection form
+### Configuring the Solace MessageConsumer connection
 
-Enter the following parameters, binding each field to a configurable variable:
+#### Step 2: Bind the connection parameters to configurable variables
 
-- **Connection Name** : Auto-filled name for this connection instance
-- **Url** : The Solace broker host URL, bound to a configurable variable
-- **Subscription Config** : Queue or topic subscription record, bound to a configurable variable
+- **Auth** : Enter `{username: solaceUsername, password: solacePassword}` in expression mode, referencing configurable variables for both fields.
+- **Subscription Config** : Enter `{queueName: solaceQueueName}` in expression mode, referencing a configurable variable for the queue name.
 
-![Solace MessageConsumer connection form fully filled with all parameters before saving](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_02_connection_form.png)
+![Configure Solace MessageConsumer form with the Auth and Subscription Config fields bound to configurable variables before saving](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_02_connection_form.png)
 
-##### Step 3: Save the connection
+#### Step 3: Save the connection
 
-Select **Save** to persist the connection. The `solaceMessageconsumer` node appears in the Connections list on the canvas.
+Select **Save Connection**. The **Connections** section now lists `solaceMessageconsumer` as an available connection in the project.
 
-![Solace MessageConsumer Connections panel showing solaceMessageconsumer entry after saving](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_03_connections_list.png)
+#### Step 4: Set actual values for your configurables
 
-##### Step 4: Set actual values for your configurables
+1. In the left panel, select **Configurations**.
+2. Enter a value for each configurable listed below.
 
-In the left panel, select **Configurations** and set a value for each configurable listed below:
+- **solaceUrl** (`string`) : The Solace broker URL, for example, `tcp://localhost:55554`.
+- **solaceUsername** (`string`) : Username for basic authentication.
+- **solacePassword** (`string`) : Password for basic authentication.
+- **solaceQueueName** (`string`) : The queue to receive messages from. The queue must already exist on the broker.
 
-- **solaceHostUrl** (string) : The full host URL of your Solace broker (for example, `tcp://<broker-host>`)
-- **solaceQueueName** (string) : The name of the Solace queue to subscribe to
+### Configuring the Solace MessageConsumer Receive operation
 
-#### Configuring the Solace MessageConsumer Receive operation
+#### Step 5: Add an automation entry point
 
-##### Step 5: Add an automation entry point
+Select **+** next to **Entry Points**, select **Automation**, and select **Create** to accept the default name (`main`). The flow canvas opens with **Start** and **Error Handler** nodes.
 
-1. In the WSO2 Integrator sidebar, hover over **Entry Points** and select the **+** icon.
-2. Select **Automation** from the artifact type panel.
-3. Select **Create** to create the automation (named `main` by default).
+#### Step 6: Expand the connection and select Receive
 
-##### Step 6: Select and configure the Receive operation
+Select **+** on the flow canvas, then expand `solaceMessageconsumer` under **Connections** to display its operations. Select **Receive** to open the `solaceMessageconsumer → receive` form.
 
-1. Select the **+** icon on the placeholder node between **Start** and **Error Handler** on the canvas.
-2. Under **Connections** in the node panel, expand **solaceMessageconsumer** to reveal available operations.
+#### Step 7: Configure the Receive operation
 
-![Solace MessageConsumer connection node expanded showing all available operations before selection](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_04_operations_panel.png)
+This operation has no required parameters. Enter the following optional values:
 
-3. Select **Receive** to open the operation configuration panel.
-4. Configure the following parameter:
+- **Result** : The variable name to store the received message in.
+- **T** : A narrowed message type, for example, `record {|*Message; T payload;|}`, to bind the payload to a specific type. Leave this as `solace:Message` to receive the raw message.
 
-- **Result** : Variable name to store the received message
+![Receive operation form showing the Result variable name and the T type parameter set to solace:Message](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_05_operation_form.png)
 
-![Solace MessageConsumer Receive operation configuration filled with all values](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_05_operation_filled.png)
+#### Step 8: Save the operation and log the result
 
-5. Select **Save** to add the `solace : receive` node to the automation flow.
+Select **Save** to add the `solace : receive` node to the flow. Add a **Log Info** step after it, logging the received message.
 
-![Completed Solace MessageConsumer automation flow](/img/connectors/catalog/messaging/solace/solace_consumer_screenshot_06_completed_flow.png)
-
-#### Try it yourself
+### Try it yourself
 
 Try this sample in WSO2 Integration Platform.
 
@@ -194,29 +190,27 @@ Try this sample in WSO2 Integration Platform.
 
 [View source on GitHub](https://github.com/wso2/integration-samples/tree/main/integrator-default-profile/connectors/solace_message_consumer_connector_sample)
 
-
----
 ## Solace Trigger Example
+
 ### What you'll build
 
-This integration connects to a Solace PubSub+ broker as an event consumer. When a message is published to a configured Solace queue or topic by an external producer, the trigger listener receives it and routes it to the `onMessage` handler. The handler deserializes the incoming message as a `SolaceMessagePayload` record and logs the full payload as a JSON string using `log:printInfo`, providing a foundation for building event-driven processing pipelines on top of Solace PubSub+.
+Build an integration that reacts to messages arriving on a Solace queue. A `solace:Listener` subscribes to the queue and dispatches every message to an `onMessage` handler, which deserializes the payload into an `OrderMessage` record and logs it as a JSON string.
+
+**Operations used:**
+- **onMessage** : Invoked when a message is received on the subscribed queue.
 
 ### Architecture
 
 ```mermaid
 flowchart LR
-    A((Solace Producer)) --> B[(Solace Queue/Topic)]
-    B --> C[[Solace Listener]]
-    C --> D[Handler: onMessage]
-    D --> E[log:printInfo]
+    A((Solace producer)) --> B[(Solace queue)]
+    B --> C[Solace listener]
+    C --> D[onMessage handler]
 ```
 
 ### Prerequisites
 
-- A running **Solace PubSub+ broker** (self-hosted, Docker, or Solace Cloud) accessible from the integration host.
-- A **message VPN** configured on the broker with a queue or topic the integration can subscribe to.
-- A **client username and password** with `Guaranteed Endpoint Permission` (for queues) or `Subscribe` permission (for topics) on the target destination.
-- The broker's **SMF (Solace Message Format) host URL**.
+- A running Solace PubSub+ broker with a durable queue already provisioned, and a client username with permission to consume from it. See the [Setup Guide](setup-guide.md).
 
 ### Setting up the Solace integration
 
@@ -224,87 +218,101 @@ flowchart LR
 
 ### Adding the Solace trigger
 
-#### Step 1: Open the Artifacts palette and select the Solace trigger
+#### Step 1: Open the Artifacts palette and configure the listener
 
-1. On the integration canvas, select **+ Add Artifact** to open the Artifacts palette.
-2. In the **Event Integration** category, locate and select the **Solace** card.
+Select **+ Add Artifact**, then select the **Solace Event Integration** card in the **Event Integration** category. The **Create Solace Event Integration** form opens.
 
-![Artifacts palette open showing the Event Integration category with the Solace trigger card visible](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_01_artifact_palette.png)
+For each field, open its helper panel, select the **Configurables** tab, select **+ New Configurable**, and save a `configurable string` variable for it.
 
-### Configuring the Solace listener
+- **Listener Name** : A name for the listener, for example, `solaceListener`.
+- **Broker URL** : The Solace broker URL, bound to a configurable variable.
+- **Message VPN** : The message VPN to connect to. Defaults to `default`.
+- **Basic Authentication** : Select this option, then bind **Username** and **Password** to configurable variables.
 
-#### Step 2: Bind Solace listener parameters to configuration variables
+![Create Solace Event Integration form showing the Listener Name, Broker URL, Message VPN, and Basic Authentication fields](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_01_artifact_palette.png)
 
-For each required listener field, open the **Helper Panel** next to the field, select the **Configurables** tab, select **+ New Configurable**, enter a camelCase variable name and the correct primitive type (`configurable string` for text/URL/credential fields), and select **Save**. The configuration name is then placed in the field as a reference.
+#### Step 2: Configure the destination and acknowledgement mode
 
-- **Broker URL** : The Solace broker's SMF host URL, bound to a `configurable string`
-- **Message VPN** : The Solace message VPN the client connects to, bound to a `configurable string`
-- **Username** : The client username used for broker authentication, bound to a `configurable string`
-- **Password** : The client password for broker authentication, bound to a `configurable string`
-- **Queue Name** : The name of the Solace queue or topic the integration subscribes to, bound to a `configurable string`
+Scroll down and configure the remaining fields:
 
-![Trigger configuration form with all Solace listener parameters bound to configurable variables, before clicking Create](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_02_trigger_config_form.png)
+- **Queue** : Select this destination type.
+- **Queue Name** : The queue to consume messages from, bound to a configurable variable. The queue must already exist on the broker.
+- **Acknowledgement Mode** : Leave this at the default **Auto Ack**.
+
+![Create Solace Event Integration form with Username and Password bound to configurables and the Queue Name field showing the Configurables menu](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_02_trigger_config_form.png)
 
 #### Step 3: Set actual values for your configurations
 
-In the left panel of WSO2 Integrator, select **Configurations** (at the bottom of the project tree, under Data Mappers) and select **View Configuration**. The Configurations panel opens where you can set a value for each configuration:
+1. In the left panel, select **Configurations**.
+2. Enter a value for each configurable listed below.
 
-- **solaceHost** (string) : The full SMF URL of your Solace broker
-- **solaceVpnName** (string) : The message VPN name configured on your broker
-- **solaceUsername** (string) : The Solace client username with subscription permissions
-- **solacePassword** (string) : The password for the Solace client username
-- **solaceQueueName** (string) : The name of the queue or topic to consume messages from
+- **solaceHost** (`string`) : The Solace broker URL.
+- **solaceUsername** (`string`) : The client username with permission to consume from the queue.
+- **solacePassword** (`string`) : The password for the client username.
+- **solaceQueueName** (`string`) : The name of the queue to consume messages from.
 
-![Configurations panel open showing all Solace configurable variables listed with empty value fields](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_03_configurations_panel.png)
+#### Step 4: Create the listener and service
 
-#### Step 4: Select Create to register the listener and open the Service view
+Select **Create**. The listener and service are registered, and the Service view opens with an empty **Event Handlers** list.
 
-After binding all parameters and setting configuration values, select **Create** on the trigger configuration form. The Solace listener is automatically registered and the Service view opens, showing the listener chip; no separate "Add Listener" step is required.
+![Service view for the new Solace Event Integration service showing an empty Event Handlers list](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_03_service_view_empty.png)
 
 ### Handling Solace events
 
-#### Step 5: Open the Add Handler side panel
+#### Step 5: Add the onMessage handler
 
-1. In the Service view, select **+ Add Handler** on the right side of the Event Handlers section.
-2. The **Select Handler to Add** side panel opens, listing the available handler options for the Solace trigger (for example, `onMessage` and `onError`).
+Select **+ Add Handler**. The **Select Handler to Add** panel lists the available handlers for this trigger.
 
-![Service view with the Select Handler to Add side panel open listing the available Solace handler options](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_04_add_handler_panel.png)
+![Select Handler to Add panel listing the onMessage and onError handlers](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_04_add_handler_panel.png)
 
-#### Step 6: Select the onMessage handler and define the SolaceMessagePayload record type
+Select **onMessage**.
 
-1. In the **Select Handler to Add** side panel, select **onMessage** to open the Message Handler Configuration panel.
-2. In the **Message Configuration** section, select **Define Value** to open the modal.
-3. Select the **Create Type Schema** tab.
-4. In the **Name** field, enter `SolaceMessagePayload`.
-5. Select the **+** icon next to **Fields** to add each payload field; enter the field name and a type for each. Add the following fields:
-  - `messageId`: `string`
-  - `content`: `string`
-  - `destination`: `string`
-6. Select **Save** to create the record type and close the modal.
+#### Step 6: Define the message type
 
-![Define Value modal on the Create Type Schema tab showing the SolaceMessagePayload record name and fields filled in before Save](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_05_message_define_value.png)
+In the **New onMessage Configuration** panel, select **Define Value**, then select the **Create Type Schema** tab. Enter `OrderMessage` as the type name and add an `orderId` field of type `string`. Select **Save** to create the type.
 
-#### Step 7: Save the handler configuration and add a log statement to the flow
+![New onMessage Configuration panel showing the OrderMessage type bound to the message parameter](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_05_message_define_value.png)
 
-1. In the Message Handler Configuration panel, select **Save** to open the flow canvas for the `onMessage` handler.
-2. In the handler body, add a `log:printInfo(message.toJsonString())` step using the flow canvas.
-3. Verify the `log:printInfo` node appears between **Start** and **Error Handler** on the canvas.
+Select **Save** again to open the flow canvas for the `onMessage` remote function.
 
-![Handler flow canvas showing the onMessage handler with the log:printInfo step connected between Start and Error Handler](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_06_handler_flow.png)
+#### Step 7: Log the received message
 
-#### Step 8: Confirm the onMessage handler is registered in the Service view
+Add a **Log Info** step to the flow, and set its **Msg** field to `message.toJsonString()`.
 
-Select the back arrow in the canvas header (or re-select the Solace trigger service in the project tree) to return to the Service view. The Event Handlers list now shows the registered **`onMessage`** handler row, confirming the handler is active and ready to receive Solace messages.
+![onMessage flow canvas with a log : printInfo step configured to log message.toJsonString()](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_06_handler_flow.png)
 
-![Final Service view showing the registered onMessage handler row in the Event Handlers list](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_07_service_view_final.png)
+Select **Save**, then select the back arrow to return to the Service view.
+
+#### Step 8: Confirm the handler is registered
+
+The **Event Handlers** list now shows the registered `onMessage` handler.
+
+![Service view with the onMessage handler registered in the Event Handlers list](/img/connectors/catalog/messaging/solace/solace_trigger_screenshots_07_service_view_final.png)
 
 ### Running the integration
 
-#### Step 9: Run the integration and trigger a test Solace message
+#### Step 9: Run the integration and publish a test message
 
-1. In the WSO2 Integrator panel, select **Run** to start the integration. Wait for the listener to connect to the Solace broker (watch for a "Listening on queue/topic" log line).
-2. Send a test message using one of the following approaches:
-  - **A separate WSO2 Integrator Solace Producer integration** (recommended): assemble a Solace producer from the same low-code canvas and publish a test message to the same queue or topic.
-  - **Solace's `sdkperf` CLI tool**: run the tool targeting your broker's SMF host, client username, password, and queue name to publish a single persistent message.
-  - **The Solace PubSub+ Manager web console**: navigate to **Queues → Try Me** (for queues) or **Try Me** (for direct topics) in the broker's management UI and publish a test message body such as `{"messageId":"msg-001","content":"hello solace","destination":"test/queue"}`.
-3. Observe the integration's log output. The payload JSON string should appear printed by `log:printInfo`, confirming end-to-end message receipt and deserialization.
+1. Select **Run** to start the integration, and wait for the listener to connect to the broker.
+2. Publish a test message to the same queue, for example, with a Solace MessageProducer integration built from the [producer example](#solace-producer-example), or from the broker's **Try Me** tool in PubSub+ Manager.
+3. Confirm the message payload appears in the integration's log output as a JSON string.
+
+### Try it yourself
+
+Try this sample in WSO2 Integration Platform.
+
+[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/connectors/solace_trigger_sample)
+
+[View source on GitHub](https://github.com/wso2/integration-samples/tree/main/integrator-default-profile/connectors/solace_trigger_sample)
+
+## More code examples
+
+The `ballerinax/solace` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-solace/tree/main/examples), covering the following use cases:
+
+1. [Order Fulfillment](https://github.com/ballerina-platform/module-ballerinax-solace/tree/main/examples/order-fulfillment) - Send orders to a queue and process them with `CLIENT_ACK` mode. Shows point-to-point (queue) messaging where a message is only acknowledged once it has been fulfilled successfully, so a worker that crashes beforehand picks it back up on restart.
+
+2. [Live Price Alerts](https://github.com/ballerina-platform/module-ballerinax-solace/tree/main/examples/live-price-alerts) - Publish stock price updates to hierarchical topics and raise alerts only for significant moves. Shows publish/subscribe (topic) messaging with a topic wildcard and direct (at-most-once) delivery.
+
+3. [Transactional Inventory Sync](https://github.com/ballerina-platform/module-ballerinax-solace/tree/main/examples/transactional-inventory-sync) - Apply inventory deltas from a queue within a transacted session, rolling back and safely discarding a bad update instead of corrupting inventory state. Shows transacted consumption with `commit`/`rollback`.
+
+4. [Payment Processing](https://github.com/ballerina-platform/module-ballerinax-solace/tree/main/examples/payment-processing) - Reject an invalid payment outright while retrying one that hits a simulated transient failure. Shows negative acknowledgement (`nack`) and the difference between rejecting a message to the dead message queue and requeuing it for redelivery.

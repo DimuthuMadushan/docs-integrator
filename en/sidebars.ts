@@ -1380,6 +1380,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'connectors/catalog/database/oracledb/setup-guide',
             'connectors/catalog/database/oracledb/actions',
+            'connectors/catalog/database/oracledb/triggers',
             'connectors/catalog/database/oracledb/example',
           ],
         },
@@ -1644,6 +1645,7 @@ const sidebars: SidebarsConfig = {
             'connectors/catalog/erp-business/sap.jco/setup-guide',
             'connectors/catalog/erp-business/sap.jco/action-reference',
             'connectors/catalog/erp-business/sap.jco/trigger-reference',
+            'connectors/catalog/erp-business/sap.jco/example',
           ],
         },
         {
@@ -1847,6 +1849,17 @@ const sidebars: SidebarsConfig = {
             'connectors/catalog/messaging/solace/actions',
             'connectors/catalog/messaging/solace/triggers',
             'connectors/catalog/messaging/solace/example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Solace (JMS)',
+          link: { type: 'doc', id: 'connectors/catalog/messaging/solace.jms/connector-overview' },
+          items: [
+            'connectors/catalog/messaging/solace.jms/setup-guide',
+            'connectors/catalog/messaging/solace.jms/actions',
+            'connectors/catalog/messaging/solace.jms/triggers',
+            'connectors/catalog/messaging/solace.jms/example',
           ],
         },
         {
