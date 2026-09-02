@@ -135,7 +135,7 @@ The following table outlines the inbound and outbound connections from a private
 <td>HTTPS</td>
 </tr>
 <tr>
-<td>LetsEncrypt</td>
+<td>Let's Encrypt</td>
 <td>Outbound</td>
 <td>HTTPS</td>
 </tr>
