@@ -52,7 +52,7 @@ dynamodb:Client dynamoDb = check new (config);
 
 ### Operations
 
-#### Table Management
+#### Table management
 
 <details>
 <summary>createTable</summary>
@@ -278,7 +278,7 @@ dynamodb:TableDescription description = check dynamoDb->deleteTable("HighScores"
 </div>
 </details>
 
-#### Item Operations
+#### Item operations
 
 <details>
 <summary>createItem</summary>
@@ -437,7 +437,7 @@ dynamodb:ItemDescription item = check dynamoDb->deleteItem({
 </div>
 </details>
 
-#### Query and Scan
+#### Query and scan
 
 <details>
 <summary>query</summary>
@@ -532,7 +532,7 @@ check from dynamodb:ScanOutput result in items
 </div>
 </details>
 
-#### Batch Operations
+#### Batch operations
 
 <details>
 <summary>getBatchItems</summary>
@@ -587,7 +587,7 @@ check from dynamodb:BatchItem result in batch
 
 <div>
 
-Puts or deletes multiple items across one or more tables in a single call. Each table can receive up to 25 `PutRequest` or `DeleteRequest` entries per call. Items DynamoDB could not process due to throughput limits are returned in `UnprocessedItems` with the same shape as `RequestItems`, so they can be fed directly back into a subsequent call.
+Puts or deletes multiple items across one or more tables in a single call. A call carries at most 25 `PutRequest` or `DeleteRequest` operations in total, counted across every table in the request. Items DynamoDB could not process due to throughput limits are returned in `UnprocessedItems` with the same shape as `RequestItems`, so they can be fed directly back into a subsequent call.
 
 **Parameters:**
 
@@ -624,7 +624,7 @@ map<dynamodb:WriteRequest[]> pending = result?.UnprocessedItems ?: {};
 </div>
 </details>
 
-#### Backup Management
+#### Backup management
 
 <details>
 <summary>createBackup</summary>

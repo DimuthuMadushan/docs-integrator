@@ -14,7 +14,7 @@ This guide explains how to configure Amazon DynamoDB and obtain the AWS credenti
 - An active AWS account ([sign up at aws.amazon.com](https://aws.amazon.com/))
 - Sufficient IAM permissions to create users, policies, and DynamoDB tables in your target region
 
-## Create a DynamoDB Table
+## Create a DynamoDB table
 
 You can create the table your application operates on either through the connector itself (using `createTable`) or ahead of time in the [DynamoDB console](https://console.aws.amazon.com/dynamodbv2).
 
@@ -24,7 +24,7 @@ A DynamoDB table is defined by its primary key, which is either a partition key 
 If you create the table through the AWS console before running your Ballerina application, note the table name and region — you will need them when configuring the connector.
 :::
 
-## Obtain IAM User Credentials
+## Obtain IAM user credentials
 
 To generate an IAM access key, follow the [obtaining IAM user credentials](https://central.ballerina.io/ballerinax/aws/latest#obtaining-iam-user-credentials) guide on Ballerina Central.
 
@@ -43,7 +43,6 @@ Once you have a user, attach an IAM policy granting the DynamoDB permissions you
                 "dynamodb:DeleteTable",
                 "dynamodb:DescribeTimeToLive",
                 "dynamodb:CreateBackup",
-                "dynamodb:DeleteBackup",
                 "dynamodb:PutItem",
                 "dynamodb:GetItem",
                 "dynamodb:UpdateItem",
@@ -54,6 +53,11 @@ Once you have a user, attach an IAM policy granting the DynamoDB permissions you
                 "dynamodb:BatchWriteItem"
             ],
             "Resource": "arn:aws:dynamodb:<REGION>:<ACCOUNT_ID>:table/<TABLE_NAME>"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "dynamodb:DeleteBackup",
+            "Resource": "arn:aws:dynamodb:<REGION>:<ACCOUNT_ID>:table/<TABLE_NAME>/backup/*"
         },
         {
             "Effect": "Allow",
@@ -71,7 +75,7 @@ Once you have a user, attach an IAM policy granting the DynamoDB permissions you
 `dynamodb:ListTables` and `dynamodb:DescribeLimits` are account-level actions and cannot be scoped to a table ARN — AWS denies them when the resource is anything other than `*`. Omit that statement entirely if your application calls neither operation.
 :::
 
-## Choose an Authentication Method
+## Choose an authentication method
 
 The connector supports multiple credential strategies. Use whichever matches your deployment environment:
 

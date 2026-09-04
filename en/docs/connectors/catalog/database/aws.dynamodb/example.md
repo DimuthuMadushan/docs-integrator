@@ -25,7 +25,7 @@ flowchart LR
 ## Prerequisites
 
 - An active AWS account. If you don't have one, [sign up for a free AWS account](https://aws.amazon.com/free/).
-- A DynamoDB table with at least one item, and a string partition key named `id`. To create one, follow the [DynamoDB getting started guide](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/getting-started-step-1.html). If your table uses a different key attribute name or type, adjust the key in step 7 to match.
+- A DynamoDB table with at least one item, keyed by a simple primary key: a string partition key named `id` and no sort key. To create one, follow the [DynamoDB getting started guide](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/getting-started-step-1.html), setting the partition key to `id` and leaving the sort key empty. `GetItem` needs the complete primary key, so a table that also has a sort key needs that second attribute added to the key in step 7. If your partition key uses a different name or type, adjust step 7 to match.
 - An IAM user with an access key. Grant it `dynamodb:GetItem` on the table you read.
 
 ## Setting up the AWS DynamoDB integration
