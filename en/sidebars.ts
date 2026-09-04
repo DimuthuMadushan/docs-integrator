@@ -501,6 +501,16 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'AWS SES',
+          link: { type: 'doc', id: 'connectors/catalog/marketing-social/aws.ses/connector-overview' },
+          items: [
+            'connectors/catalog/marketing-social/aws.ses/setup-guide',
+            'connectors/catalog/marketing-social/aws.ses/actions',
+            'connectors/catalog/marketing-social/aws.ses/example',
+          ],
+        },
+        {
+          type: 'category',
           label: 'AWS SNS',
           link: { type: 'doc', id: 'connectors/catalog/communication/aws.sns/aws-sns-connector-overview' },
           items: [
