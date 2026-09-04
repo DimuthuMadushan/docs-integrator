@@ -14,8 +14,8 @@ Before configuring SSO in ICP, complete the following in your identity provider:
 1. Register a new OIDC application (also called a "client" or "app registration").
 2. Note the **Client ID** and **Client Secret** issued for the application.
 3. Add the following **Redirect URI** to the allowed list:
-   - Local/on-prem (distribution pack): `http://localhost:9446/auth/callback`
-   - Production: `https://<your-icp-domain>/auth/callback`
+   - Local/on-prem (distribution pack): `https://localhost:9446/sso/callback`
+   - Production: `https://<your-icp-domain>/sso/callback`
 4. Ensure the identity provider includes the following claims in the ID token:
    - `sub` (required)
    - `email` or `preferred_username` (at least one required)
@@ -53,12 +53,12 @@ ssoTokenEndpoint = "https://your-provider.com/oauth2/token"
 ssoLogoutEndpoint = "https://your-provider.com/oauth2/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/auth/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
 
-For production deployments, replace the redirect URI with your public domain (e.g. `https://icp.example.com/auth/callback`).
+For production deployments, replace the redirect URI with your public domain (e.g. `https://icp.example.com/sso/callback`).
 
 Restart the ICP server after saving changes.
 
@@ -89,7 +89,7 @@ ssoTokenEndpoint = "https://api.asgardeo.io/t/<org>/oauth2/token"
 ssoLogoutEndpoint = "https://api.asgardeo.io/t/<org>/oidc/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/auth/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -104,7 +104,7 @@ ssoTokenEndpoint = "https://<domain>.okta.com/oauth2/default/v1/token"
 ssoLogoutEndpoint = "https://<domain>.okta.com/oauth2/default/v1/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/auth/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -119,7 +119,7 @@ ssoTokenEndpoint = "https://<domain>.auth0.com/oauth/token"
 ssoLogoutEndpoint = "https://<domain>.auth0.com/v2/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/auth/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -134,7 +134,7 @@ ssoTokenEndpoint = "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/to
 ssoLogoutEndpoint = "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/auth/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -149,7 +149,7 @@ ssoTokenEndpoint = "https://<keycloak-domain>/realms/<realm>/protocol/openid-con
 ssoLogoutEndpoint = "https://<keycloak-domain>/realms/<realm>/protocol/openid-connect/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/auth/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "preferred_username"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -164,10 +164,12 @@ When a user authenticates via SSO for the first time, ICP automatically creates 
 
 After the account is created, an administrator must assign the appropriate roles and permissions before the user can access ICP resources. See [Access Control](../access-control.md).
 
-## Security Notes
+To assign groups automatically from your identity provider instead of by hand, see [SSO Group Mapping](sso-group-mapping.md).
+
+## Security notes
 
 - **Protect the client secret** — do not commit it to version control. Use environment variables or a secrets manager and inject the value at deployment time.
-- **Use HTTPS in production** — `ssoRedirectUri` must use `https://` for production deployments. `http://localhost` is an accepted exception in OIDC for local testing, but plain HTTP should never be used with a public hostname.
+- **Use HTTPS** — ICP serves the console over HTTPS by default, so `ssoRedirectUri` uses `https://` for local installations as well as production. If you have explicitly disabled TLS, `http://localhost` is an accepted exception in OIDC for local testing, but plain HTTP should never be used with a public hostname.
 - **Redirect URI must match exactly** — the URI in `conf/deployment.toml` must match the one registered with your identity provider character for character, including protocol, hostname, port (if non-standard), and path.
 
 ## Troubleshooting
@@ -187,6 +189,9 @@ SSO and local password authentication are independent. If the same email address
 
 **What happens if the identity provider is unavailable?**  
 SSO login will fail during an outage. Local password authentication (if enabled) remains unaffected.
+
+**Can I enforce SSO-only login?**  
+Yes. Set `passwordLoginDisabled = true` to require all users to authenticate through the identity provider. This also requires `ssoAdminClaim` and at least one `ssoAdminValues` entry, so that an administrator can still sign in. See [SSO Group Mapping](sso-group-mapping.md).
 
 **Can I configure more than one identity provider?**  
 ICP currently supports one OIDC provider per deployment.
