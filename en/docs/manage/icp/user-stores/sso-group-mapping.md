@@ -26,9 +26,10 @@ scope. Mapping a claim to a group never widens the group's own permissions.
    ```toml
    ssoScopes = ["openid", "email", "profile", "groups"]
    ```
-4. You know the exact claim values your provider sends. Inspect a real ID token
-   (for example with [jwt.io](https://jwt.io)) rather than assuming — values are
-   case-sensitive and must match exactly.
+4. You know the exact claim values your provider sends. Decode a token locally, or
+   check the claim configuration in your identity provider, rather than assuming —
+   values are case-sensitive and must match exactly. An ID token carries identity and
+   group claims and may still be valid, so do not paste one into a third-party decoder.
 :::
 
 ## Upgrading an existing deployment

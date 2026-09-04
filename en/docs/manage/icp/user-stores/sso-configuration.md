@@ -14,7 +14,7 @@ Before configuring SSO in ICP, complete the following in your identity provider:
 1. Register a new OIDC application (also called a "client" or "app registration").
 2. Note the **Client ID** and **Client Secret** issued for the application.
 3. Add the following **Redirect URI** to the allowed list:
-   - Local/on-prem (distribution pack): `http://localhost:9446/sso/callback`
+   - Local/on-prem (distribution pack): `https://localhost:9446/sso/callback`
    - Production: `https://<your-icp-domain>/sso/callback`
 4. Ensure the identity provider includes the following claims in the ID token:
    - `sub` (required)
@@ -53,7 +53,7 @@ ssoTokenEndpoint = "https://your-provider.com/oauth2/token"
 ssoLogoutEndpoint = "https://your-provider.com/oauth2/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/sso/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -89,7 +89,7 @@ ssoTokenEndpoint = "https://api.asgardeo.io/t/<org>/oauth2/token"
 ssoLogoutEndpoint = "https://api.asgardeo.io/t/<org>/oidc/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/sso/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -104,7 +104,7 @@ ssoTokenEndpoint = "https://<domain>.okta.com/oauth2/default/v1/token"
 ssoLogoutEndpoint = "https://<domain>.okta.com/oauth2/default/v1/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/sso/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -119,7 +119,7 @@ ssoTokenEndpoint = "https://<domain>.auth0.com/oauth/token"
 ssoLogoutEndpoint = "https://<domain>.auth0.com/v2/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/sso/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -134,7 +134,7 @@ ssoTokenEndpoint = "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/to
 ssoLogoutEndpoint = "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/sso/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "email"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -149,7 +149,7 @@ ssoTokenEndpoint = "https://<keycloak-domain>/realms/<realm>/protocol/openid-con
 ssoLogoutEndpoint = "https://<keycloak-domain>/realms/<realm>/protocol/openid-connect/logout"
 ssoClientId = "your-client-id"
 ssoClientSecret = "your-client-secret"
-ssoRedirectUri = "http://localhost:9446/sso/callback"
+ssoRedirectUri = "https://localhost:9446/sso/callback"
 ssoUsernameClaim = "preferred_username"
 ssoScopes = ["openid", "email", "profile"]
 ```
@@ -166,7 +166,7 @@ After the account is created, an administrator must assign the appropriate roles
 
 To assign groups automatically from your identity provider instead of by hand, see [SSO Group Mapping](sso-group-mapping.md).
 
-## Security Notes
+## Security notes
 
 - **Protect the client secret** — do not commit it to version control. Use environment variables or a secrets manager and inject the value at deployment time.
 - **Use HTTPS** — ICP serves the console over HTTPS by default, so `ssoRedirectUri` uses `https://` for local installations as well as production. If you have explicitly disabled TLS, `http://localhost` is an accepted exception in OIDC for local testing, but plain HTTP should never be used with a public hostname.
