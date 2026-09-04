@@ -67,7 +67,7 @@ Attach the Amazon SES permissions your application needs. The following policy c
 ```
 
 :::note
-The list and template actions cannot be scoped to an identity ARN — AWS denies them when the resource is anything other than `*`. Add the matching `Create*`, `Update*`, and `Delete*` actions only if your application manages these resources rather than just reading them.
+None of these actions can be scoped to an identity ARN, so they need a statement of their own with `Resource` set to `*` — the two-statement split Amazon SES [documents](https://docs.aws.amazon.com/ses/latest/dg/control-user-access.html) for restricting which identities a user may send from. Some do accept a narrower resource of their own, such as a contact list or template ARN, if you want to scope them further. Add the matching `Create*`, `Update*`, and `Delete*` actions only if your application manages these resources rather than just reading them.
 :::
 
 ## Next steps

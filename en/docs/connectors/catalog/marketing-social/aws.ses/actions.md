@@ -404,7 +404,15 @@ Updates the metadata of a contact list. This operation does a complete replaceme
 
 ```ballerina
 check client->updateContactList("ProductNewsletter", {
-    description: "Weekly product news"
+    description: "Weekly product news",
+    topics: [
+        {
+            topicName: "product-updates",
+            displayName: "Product updates",
+            description: "News about product releases",
+            defaultSubscriptionStatus: ses:OPT_OUT
+        }
+    ]
 });
 ```
 
@@ -552,7 +560,7 @@ check client->createContact("ProductNewsletter", {
 
 <div>
 
-Updates a contact's preferences for a list. It is not necessary to specify every existing topic preference, only the ones that need updating.
+Updates a contact's preferences for a list. A `topicPreferences` value replaces the contact's whole preference list, so it has to carry every existing preference and not only the ones being changed — Amazon SES removes any that are omitted.
 
 **Parameters:**
 
@@ -567,8 +575,14 @@ Updates a contact's preferences for a list. It is not necessary to specify every
 **Sample code:**
 
 ```ballerina
+ses:ContactDetails contact = check client->getContact("ProductNewsletter", "reader@example.com");
+ses:TopicPreference[] preferences = from ses:TopicPreference preference in contact.topicPreferences ?: []
+    select preference.topicName == "product-updates"
+        ? {topicName: preference.topicName, subscriptionStatus: ses:OPT_OUT}
+        : preference;
+
 check client->updateContact("ProductNewsletter", "reader@example.com", {
-    topicPreferences: [{topicName: "product-updates", subscriptionStatus: ses:OPT_OUT}]
+    topicPreferences: preferences
 });
 ```
 

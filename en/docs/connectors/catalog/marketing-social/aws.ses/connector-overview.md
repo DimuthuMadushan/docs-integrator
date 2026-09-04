@@ -5,15 +5,16 @@ title: "Overview"
 description: "Overview of the ballerinax/aws.ses connector for WSO2 Integrator."
 ---
 
-# AWS SES
+# Overview
 
-The AWS SES connector enables integration with [Amazon Simple Email Service (Amazon SES)](https://aws.amazon.com/ses/), a cost-effective and scalable cloud email platform for sending transactional messages, marketing campaigns, and bulk communications. It provides full access to the Amazon SES API v2, allowing applications to send email, manage sending identities, maintain contact lists, and handle email templates. Flexible credential support makes it suitable for both local development and AWS-hosted deployments.
+The AWS SES connector enables integration with [Amazon Simple Email Service (Amazon SES)](https://aws.amazon.com/ses/), a cost-effective and scalable cloud email platform for sending transactional messages, marketing campaigns, and bulk communications. It works over the Amazon SES API v2, allowing applications to send email, manage sending identities, maintain contact lists, and handle email templates. Flexible credential support makes it suitable for both local development and AWS-hosted deployments.
 
 ## Key features
 
 - Send email as a simple assembled message, a raw MIME message with attachments, or a personalized templated message
 - Bulk email sending with per-recipient template substitution and individual outcome reporting
-- Manage email identities including DKIM setup (Easy DKIM and BYODKIM), custom MAIL FROM domains, and sending authorization policies
+- Verify, retrieve, list, and delete email identities, with DKIM signing (Easy DKIM or BYODKIM) configurable when a domain identity is verified
+- Retrieve an identity's verification status, DKIM attributes, custom MAIL FROM settings, and sending authorization policies
 - Manage contact lists, contacts, and topics with subscription filtering and unsubscribe-link support
 - Create, update, retrieve, list, and delete email templates and custom verification email templates
 - Auto-paginating streams over all list operations so results beyond the first page are retrieved transparently
